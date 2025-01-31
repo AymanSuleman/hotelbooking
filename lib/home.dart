@@ -1,14 +1,87 @@
-
 import 'package:flutter/material.dart';
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:hotelbooking/details.dart';
+import 'package:hotelbooking/favorite.dart';
+import 'package:hotelbooking/history.dart';
+import 'package:hotelbooking/profile.dart';
+// import 'package:roombooking/detail.dar
+// import 'package:hotelbooking/details.dart';
+// import 'package:hotelbooking/favorite.dart';
+// import 'package:hotelbooking/history.dart';
+// import 'package:hotelbooking/profile.dart';
+
+void main() {
+  runApp(MaterialApp(
+    debugShowCheckedModeBanner: false,
+    home: HomeScreen(),
+  ));
+}
+
+// import 'package:flutter/material.dart';
+
+class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
+  final String title;
+  final Function(String)? onSearch;
+
+  CustomAppBar({required this.title, this.onSearch});
+
+  @override
+  _CustomAppBarState createState() => _CustomAppBarState();
+
+  @override
+  Size get preferredSize => Size.fromHeight(kToolbarHeight);
+}
+
+class _CustomAppBarState extends State<CustomAppBar> {
+  bool _isSearching = false;
+  TextEditingController _searchController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      backgroundColor: Colors.white,
+      elevation: 0,
+      title: _isSearching
+          ? TextField(
+              controller: _searchController,
+              autofocus: true,
+              decoration: InputDecoration(
+                hintText: "Search...",
+                border: InputBorder.none,
+              ),
+              onChanged: widget.onSearch, // Call search function
+            )
+          : Text(widget.title,
+              style:
+                  TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+      actions: [
+        IconButton(
+          icon: Icon(_isSearching ? Icons.clear : Icons.search,
+              color: Colors.black),
+          onPressed: () {
+            setState(() {
+              _isSearching = !_isSearching;
+              if (!_isSearching) {
+                _searchController.clear();
+                if (widget.onSearch != null) {
+                  widget.onSearch!(""); // Reset search
+                }
+              }
+            });
+          },
+        ),
+      ],
+    );
+  }
+}
 
 class HomeScreen extends StatefulWidget {
-  HomeScreen({super.key});
-
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
   int _selectedIndex = 0;
 
   void _onItemTapped(int index) {
@@ -24,62 +97,153 @@ class _HomeScreenState extends State<HomeScreen> {
     ProfileScreen(),
   ];
 
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       body: screens[_selectedIndex],
+//       bottomNavigationBar: CurvedNavigationBar(
+//         key: _bottomNavigationKey,
+//         backgroundColor: Colors.transparent,
+//         color: Colors.blue,
+//         buttonBackgroundColor: Colors.blue,
+//         height: 60,
+//         animationDuration: Duration(milliseconds: 300),
+//         animationCurve: Curves.easeInOut,
+//         index: _selectedIndex,
+//         onTap: _onItemTapped,
+//         items: <Widget>[
+//           Icon(Icons.home,
+//               size: 30,
+//               color: _selectedIndex == 0 ? Colors.white : Colors.blue),
+//           Icon(Icons.favorite,
+//               size: 30,
+//               color: _selectedIndex == 1 ? Colors.white : Colors.blue),
+//           Icon(Icons.history,
+//               size: 30,
+//               color: _selectedIndex == 2 ? Colors.blue : Colors.white),
+//           Icon(Icons.person,
+//               size: 30,
+//               color: _selectedIndex == 3 ? Colors.blue : Colors.white),
+//         ],
+//       ),
+//     );
+//   }
+// }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
       body: screens[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.white,
-        selectedItemColor: Colors.orange,
-        unselectedItemColor: Colors.black,
-        currentIndex: _selectedIndex,
+      bottomNavigationBar: CurvedNavigationBar(
+        key: _bottomNavigationKey,
+        backgroundColor: Colors.transparent,
+        color: _selectedIndex == 0 ||
+                _selectedIndex == 1 ||
+                _selectedIndex == 2 ||
+                _selectedIndex == 3
+            ? Colors.blue // background for selected items
+            : Colors.white, // background for non-selected items
+        buttonBackgroundColor: _selectedIndex == 0 ||
+                _selectedIndex == 1 ||
+                _selectedIndex == 2 ||
+                _selectedIndex == 3
+            ? Colors.blue // background for selected button
+            : Colors.white, // background for non-selected button
+        height: 60,
+        animationDuration: Duration(milliseconds: 300),
+        animationCurve: Curves.easeInOut,
+        index: _selectedIndex,
         onTap: _onItemTapped,
-        items: [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.favorite), label: 'Favorite'),
-          BottomNavigationBarItem(icon: Icon(Icons.book_online), label: 'Booking History'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+        items: <Widget>[
+          Icon(Icons.home,
+              size: 30,
+              color: _selectedIndex == 0 ? Colors.white : Colors.white),
+          Icon(Icons.favorite,
+              size: 30,
+              color: _selectedIndex == 1 ? Colors.white : Colors.white),
+          Icon(Icons.history,
+              size: 30,
+              color: _selectedIndex == 2 ? Colors.white : Colors.white),
+          Icon(Icons.person,
+              size: 30,
+              color: _selectedIndex == 3 ? Colors.white : Colors.white),
         ],
       ),
     );
   }
 }
 
-// Home Page
+// ✅ Sample Pages
 class HomePage extends StatefulWidget {
-  HomePage({super.key});
-
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
   final List<Map<String, dynamic>> popularPlaces = [
-    {'image': 'assets/reefs.jpg', 'title': 'The Reefs', 'rating': 4.9},
-    {'image': 'assets/devils_cove.jpg', 'title': 'Devils Cove', 'rating': 4.7},
+    {
+      'image':
+          'https://t4.ftcdn.net/jpg/06/32/20/07/240_F_632200724_WuOGPlu1XfDjqUinsBGzHXaa8TVtdqD9.jpg',
+      'title': 'The Reefs',
+      'rating': 4.9
+    },
+    {
+      'image':
+          'https://t3.ftcdn.net/jpg/03/21/78/98/240_F_321789819_Jyv66AM5PoY0j9tZzjkB1c807zQQXtZh.jpg',
+      'title': 'Devils Cove',
+      'rating': 4.7
+    },
+    {
+      'image':
+          'https://t3.ftcdn.net/jpg/09/79/53/60/240_F_979536087_YmIDF56Qtz7i1JiEXv3eXzI5gitM8BvS.jpg',
+      'title': 'Devils Cove',
+      'rating': 4.7
+    },
+    {
+      'image':
+          'https://as2.ftcdn.net/v2/jpg/09/64/96/87/1000_F_964968792_O79xKuKm2BYv0dFoQ4b1ryvzd4RgNeRD.jpg',
+      'title': 'Devils Cove',
+      'rating': 4.7
+    },
   ];
 
   final List<Map<String, dynamic>> otherStays = [
-    {'image': 'assets/stay1.jpg', 'title': 'Beachside Retreat', 'description': 'A relaxing beachside stay with amazing views.'},
-    {'image': 'assets/stay2.jpg', 'title': 'Mountain Escape', 'description': 'Enjoy the serenity of the mountains.'},
+    {
+      'image':
+          'https://t3.ftcdn.net/jpg/09/79/53/60/240_F_979536087_YmIDF56Qtz7i1JiEXv3eXzI5gitM8BvS.jpg',
+      'title': 'Beachside Retreat',
+      'description': 'A relaxing beachside stay with amazing views.'
+    },
+    {
+      'image':
+          'https://as2.ftcdn.net/v2/jpg/09/64/96/87/1000_F_964968792_O79xKuKm2BYv0dFoQ4b1ryvzd4RgNeRD.jpg',
+      'title': 'Mountain Escape',
+      'description': 'Enjoy the serenity of the mountains.'
+    },
+     {
+      'image':
+          'https://as2.ftcdn.net/v2/jpg/09/64/96/87/1000_F_964968792_O79xKuKm2BYv0dFoQ4b1ryvzd4RgNeRD.jpg',
+      'title': 'Mountain Escape',
+      'description': 'Enjoy the serenity of the mountains.'
+    },
+     {
+      'image':
+          'https://as2.ftcdn.net/v2/jpg/09/64/96/87/1000_F_964968792_O79xKuKm2BYv0dFoQ4b1ryvzd4RgNeRD.jpg',
+      'title': 'Mountain Escape',
+      'description': 'Enjoy the serenity of the mountains.'
+    },
+     {
+      'image':
+          'https://as2.ftcdn.net/v2/jpg/09/64/96/87/1000_F_964968792_O79xKuKm2BYv0dFoQ4b1ryvzd4RgNeRD.jpg',
+      'title': 'Mountain Escape',
+      'description': 'Enjoy the serenity of the mountains.'
+    },
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: Text('Bali - Indonesia', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.notifications, color: Colors.black),
-            onPressed: () {},
-          )
-        ],
-      ),
+      appBar: CustomAppBar(title: 'bali indonesia'),
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.all(16.0),
@@ -88,7 +252,8 @@ class _HomePageState extends State<HomePage> {
             children: [
               FeaturedCard(),
               SizedBox(height: 20),
-              Text('What else is popular', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              Text('What else is popular',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               SizedBox(height: 10),
               Container(
                 height: 200,
@@ -108,7 +273,8 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               SizedBox(height: 20),
-              Text('Other Stays', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              Text('Other Stays',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               SizedBox(height: 10),
               ListView.builder(
                 shrinkWrap: true,
@@ -130,7 +296,6 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-// Featured Card
 class FeaturedCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -139,7 +304,8 @@ class FeaturedCard extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
         image: DecorationImage(
-          image: AssetImage('assets/bali.jpg'),
+          image: NetworkImage(
+              'https://t3.ftcdn.net/jpg/04/16/48/08/240_F_416480811_HmtgLEq1GLmqy0WpKuAfuaYFn7u08IyF.jpg'),
           fit: BoxFit.cover,
         ),
       ),
@@ -158,68 +324,35 @@ class FeaturedCard extends StatelessWidget {
           Padding(
             padding: EdgeInsets.all(16.0),
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Discover the most popular places in Bali',
-                  style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                  'Discover the most popular places',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                Spacer(),
+                // Spacer()
+                SizedBox(
+                  height: 10,
+                ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blueAccent,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                    backgroundColor: Colors.blue,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20)),
                   ),
-                  onPressed: () {},
-                  child: Text('Explore Now'),
-                )
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// Popular Place Card
-class PopularPlaceCard extends StatelessWidget {
-  final String image;
-  final String title;
-  final double rating;
-
-  PopularPlaceCard({required this.image, required this.title, required this.rating});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 160,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(15),
-        image: DecorationImage(image: AssetImage(image), fit: BoxFit.cover),
-      ),
-      child: Stack(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              color: Colors.black.withOpacity(0.3),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.all(10.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Spacer(),
-                Text(title, style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
-                Row(
-                  children: [
-                    Icon(Icons.star, color: Colors.yellow, size: 16),
-                    SizedBox(width: 5),
-                    Text('$rating Stars', style: TextStyle(color: Colors.white)),
-                  ],
-                )
+                  onPressed: () {
+                    // Add navigation or action
+                  },
+                  child: Text(
+                    'Explore Now',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
               ],
             ),
           ),
@@ -235,64 +368,136 @@ class OtherStayCard extends StatelessWidget {
   final String title;
   final String description;
 
-  OtherStayCard({required this.image, required this.title, required this.description});
+  OtherStayCard({
+    required this.image,
+    required this.title,
+    required this.description,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 8.0),
-      child: Card(
-        child: ListTile(
-          leading: Image.asset(image, width: 80, height: 80, fit: BoxFit.cover),
-          title: Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
-          subtitle: Text(description),
+      child: InkWell(
+        onTap: () {
+          // Navigate to the details page
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => HotelDetailPage(
+                image: image,
+                // title: title,
+                // description: description,
+              ),
+            ),
+          );
+        },
+        child: Card(
+          child: Column(
+            children: [
+              ListTile(
+                leading: Image.network(image, width: 80, height: 80, fit: BoxFit.cover),
+                title: Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
+                subtitle: Text(description),
+              ),
+              
+              // More ListTile items added here for extra details
+             
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-// Wishlist Page
-class WishlistScreen extends StatefulWidget {
-  WishlistScreen({super.key});
 
-  @override
-  State<WishlistScreen> createState() => _WishlistScreenState();
-}
 
-class _WishlistScreenState extends State<WishlistScreen> {
+class PopularPlaceCard extends StatelessWidget {
+  final String image;
+  final String title;
+  final double rating;
+
+  PopularPlaceCard({
+    required this.image,
+    required this.title,
+    required this.rating,
+  });
+
   @override
   Widget build(BuildContext context) {
-    return Center(child: Text("Wishlist Page"));
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => HotelDetailPage(
+                image: image,
+              ),
+            ));
+      },
+      splashColor: Colors.blue.withOpacity(0.5), // blue ripple effect
+      borderRadius: BorderRadius.circular(15), // Matches the card shape
+      child: Container(
+        width: 160,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15),
+          image: DecorationImage(image: NetworkImage(image), fit: BoxFit.cover),
+        ),
+        child: Stack(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                color: Colors.black.withOpacity(0.3),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.all(10.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Spacer(),
+                  Hero(
+                    tag: title, // Unique tag for smooth animation
+                    child: Material(
+                      color: Colors.transparent,
+                      child: Text(
+                        title,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      Icon(Icons.star, color: Colors.yellow, size: 16),
+                      SizedBox(width: 5),
+                      Text('$rating Stars',
+                          style: TextStyle(color: Colors.white)),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            Positioned(
+              top: 10,
+              right: 10,
+              child: Icon(
+                Icons.favorite_border,
+                color: Colors.white,
+                size: 30,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
-// History Page
-class HistoryScreen extends StatefulWidget {
-  HistoryScreen({super.key});
 
-  @override
-  State<HistoryScreen> createState() => _HistoryScreenState();
-}
 
-class _HistoryScreenState extends State<HistoryScreen> {
-  @override
-  Widget build(BuildContext context) {
-    return Center(child: Text("History Page"));
-  }
-}
-
-// Profile Page
-class ProfileScreen extends StatefulWidget {
-  ProfileScreen({super.key});
-
-  @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
-}
-
-class _ProfileScreenState extends State<ProfileScreen> {
-  @override
-  Widget build(BuildContext context) {
-    return Center(child: Text("Profile Page"));
-  }
-}

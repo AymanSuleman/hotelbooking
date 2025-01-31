@@ -60,10 +60,10 @@ class SignUpScreen extends StatelessWidget {
               ElevatedButton(
                 onPressed: () {
                   Navigator.push(
-                    context, 
-                    MaterialPageRoute(builder: (context) => SignInPage(),)
-                  
-                  );
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SignInPage(),
+                      ));
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.deepPurple,
@@ -103,10 +103,18 @@ class SignUpScreen extends StatelessWidget {
                 children: [
                   Text("Already have an account? "),
                   GestureDetector(
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SignInPage(),
+                          ));
+                    },
                     child: Text(
                       "Sign In here",
-                      style: TextStyle(color: Colors.deepPurple, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                          color: Colors.deepPurple,
+                          fontWeight: FontWeight.bold),
                     ),
                   ),
                 ],

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:hotelbooking/home.dart';
+import 'package:hotelbooking/signup.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({Key? key}) : super(key: key);
@@ -54,10 +56,10 @@ class _SignInPageState extends State<SignInPage> {
               ElevatedButton(
                 onPressed: () {
                   Navigator.push(
-                    context, 
-                    MaterialPageRoute(builder: (context) => SignInPage(),)
-                  
-                  );
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => HomeScreen(),
+                      ));
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.deepPurple,
@@ -74,10 +76,17 @@ class _SignInPageState extends State<SignInPage> {
                 children: [
                   Text("Don't have an account? "),
                   GestureDetector(
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => SignUpApp()),
+                      );
+                    },
                     child: Text(
                       "Sign Up here",
-                      style: TextStyle(color: Colors.deepPurple, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                          color: Colors.deepPurple,
+                          fontWeight: FontWeight.bold),
                     ),
                   ),
                 ],

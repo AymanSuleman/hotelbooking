@@ -66,7 +66,7 @@ class SignUpScreen extends StatelessWidget {
                       ));
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.deepPurple,
+                  backgroundColor: Colors.blue,
                   padding: EdgeInsets.symmetric(vertical: 15),
                 ),
                 child: Text(
@@ -113,7 +113,7 @@ class SignUpScreen extends StatelessWidget {
                     child: Text(
                       "Sign In here",
                       style: TextStyle(
-                          color: Colors.deepPurple,
+                          color: Colors.blue,
                           fontWeight: FontWeight.bold),
                     ),
                   ),

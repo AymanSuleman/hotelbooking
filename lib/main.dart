@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:hotelbooking/bookingprocess.dart';
 import 'package:hotelbooking/change_pass.dart';
+import 'package:hotelbooking/checkin.dart';
 import 'package:hotelbooking/details.dart';
 import 'package:hotelbooking/favorite.dart';
 import 'package:hotelbooking/history.dart';
 import 'package:hotelbooking/home.dart';
+import 'package:hotelbooking/locationAdd.dart';
 import 'package:hotelbooking/profile.dart';
 import 'package:hotelbooking/signin.dart';
 import 'package:hotelbooking/signup.dart';
@@ -41,7 +43,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: HomeScreen(),
+      home: LocationScreen(),
     );
   }
 }

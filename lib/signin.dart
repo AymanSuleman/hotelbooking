@@ -62,7 +62,7 @@ class _SignInPageState extends State<SignInPage> {
                       ));
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.deepPurple,
+                  backgroundColor: Colors.blue,
                   padding: EdgeInsets.symmetric(vertical: 15),
                 ),
                 child: Text(
@@ -85,7 +85,7 @@ class _SignInPageState extends State<SignInPage> {
                     child: Text(
                       "Sign Up here",
                       style: TextStyle(
-                          color: Colors.deepPurple,
+                          color: Colors.blue,
                           fontWeight: FontWeight.bold),
                     ),
                   ),

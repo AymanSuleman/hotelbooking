@@ -1,147 +1,151 @@
 import 'package:flutter/material.dart';
+import 'package:hotelbooking/reviewSummery.dart';
 
 void main() {
-  runApp(HotelBookingApp());
+  runApp(MaterialApp(
+    debugShowCheckedModeBanner: false,
+    home: PaymentMethodsScreen(),
+  ));
 }
 
-class HotelBookingApp extends StatelessWidget {
+class PaymentMethodsScreen extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Hotel Booking',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: HotelBookingPage(),
-    );
-  }
+  _PaymentMethodsScreenState createState() => _PaymentMethodsScreenState();
 }
 
-class HotelBookingPage extends StatelessWidget {
+class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
+  String selectedPayment = "Cash"; // Default selected payment method
+
+  final List<Map<String, dynamic>> paymentOptions = [
+    {"title": "Cash", "icon": Icons.attach_money},
+    {"title": "Wallet", "icon": Icons.account_balance_wallet},
+    {"title": "Credit & Debit Card", "icon": Icons.credit_card},
+    {"title": "Paypal", "icon": Icons.payment},
+    {"title": "Apple Pay", "icon": Icons.apple},
+    {"title": "Google Pay", "icon": Icons.account_balance},
+  ];
+
+  void onSelectPayment(String paymentMethod) {
+    setState(() {
+      selectedPayment = paymentMethod;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Hotel Booking'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text("Payment Methods"),
+        centerTitle: true,
+        backgroundColor: Colors.white,
+        elevation: 0,
+        foregroundColor: Colors.black,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Luxury Hotel',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 8),
-            Text(
-              '123 Luxury Street, City, Country',
-              style: TextStyle(fontSize: 16, color: Colors.grey),
-            ),
-            SizedBox(height: 16),
-            Container(
-              height: 200,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                image: DecorationImage(
-                  image: NetworkImage(
-                      'https://via.placeholder.com/400x200'), // Replace with your image URL
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-            SizedBox(height: 16),
-            Text(
-              'Room Details',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 8),
-            Text(
-              '1 King Bed, Deluxe Room, Free Wi-Fi',
-              style: TextStyle(fontSize: 16, color: Colors.grey),
-            ),
-            SizedBox(height: 16),
-            Text(
-              'Price: \$200 per night',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
+            buildSectionTitle("Cash"),
+            buildPaymentOption("Cash", Icons.attach_money),
+            buildSectionTitle("Wallet"),
+            buildPaymentOption("Wallet", Icons.account_balance_wallet),
+            buildSectionTitle("Credit & Debit Card"),
+            buildCardPaymentOption("Credit & Debit Card", Icons.credit_card),
+            buildSectionTitle("More Payment Options"),
+            buildPaymentOption("Paypal", Icons.payment),
+            buildPaymentOption("Apple Pay", Icons.apple),
+            buildPaymentOption("Google Pay", Icons.account_balance),
             Spacer(),
-            Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => BookingConfirmationPage(),
-                    ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                ),
-                child: Text(
-                  'Book Now',
-                  style: TextStyle(fontSize: 18),
-                ),
-              ),
-            ),
+            buildConfirmButton(),
           ],
         ),
       ),
     );
   }
-}
 
-class BookingConfirmationPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Booking Confirmation'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+  Widget buildSectionTitle(String title) {
+    return Padding(
+      padding: EdgeInsets.only(top: 15, bottom: 5),
+      child: Text(title,
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+    );
+  }
+
+  Widget buildPaymentOption(String title, IconData icon) {
+    return GestureDetector(
+      onTap: () => onSelectPayment(title),
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+        margin: EdgeInsets.only(bottom: 8),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Colors.grey[200],
+        ),
+        child: Row(
           children: [
-            Icon(
-              Icons.check_circle,
-              color: Colors.green,
-              size: 100,
-            ),
-            SizedBox(height: 16),
-            Text(
-              'Booking Confirmed!',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 8),
-            Text(
-              'Your room has been successfully booked.',
-              style: TextStyle(fontSize: 16, color: Colors.grey),
-            ),
-            SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
-              ),
-              child: Text(
-                'Back to Home',
-                style: TextStyle(fontSize: 18),
-              ),
+            Icon(icon, size: 24, color: Colors.blue),
+            SizedBox(width: 10),
+            Expanded(child: Text(title, style: TextStyle(fontSize: 16))),
+            Radio<String>(
+              value: title,
+              groupValue: selectedPayment,
+              onChanged: (value) => onSelectPayment(value!),
             ),
           ],
         ),
       ),
     );
   }
-}
 
+  Widget buildCardPaymentOption(String title, IconData icon) {
+    return GestureDetector(
+      onTap: () {
+        // Navigate to card details page (implement separately)
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+        margin: EdgeInsets.only(bottom: 8),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Colors.grey[200],
+        ),
+        child: Row(
+          children: [
+            Icon(icon, size: 24, color: Colors.blue),
+            SizedBox(width: 10),
+            Expanded(child: Text(title, style: TextStyle(fontSize: 16))),
+            Icon(Icons.arrow_forward_ios, size: 18, color: Colors.grey),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildConfirmButton() {
+    return ElevatedButton(
+      onPressed: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ReviewSummaryScreen(),
+            ));
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.blue,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      ),
+      child: SizedBox(
+        width: double.infinity,
+        height: 50,
+        child: Center(
+            child: Text("Confirm Payment",
+                style: TextStyle(fontSize: 18, color: Colors.white))),
+      ),
+    );
+  }
+}

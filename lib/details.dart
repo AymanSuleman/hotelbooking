@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:hotelbooking/userInfo.dart';
 
 class HotelDetail extends StatefulWidget {
   final String image;
@@ -101,7 +102,7 @@ class _HotelDetailState extends State<HotelDetail> with SingleTickerProviderStat
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: Colors.white,
                     ),
                   ),
                 ),
@@ -377,7 +378,8 @@ class _HotelDetailState extends State<HotelDetail> with SingleTickerProviderStat
               _buildDateTimeSelector("Check In", checkInDateTime, true),
               SizedBox(height: 10),
               _buildDateTimeSelector("Check Out", checkOutDateTime, false),
-              SizedBox(height: 10),
+              SizedBox(height: 30),
+              
               TextField(
                 decoration: InputDecoration(
                   hintText: "Enter note to owner",
@@ -389,11 +391,16 @@ class _HotelDetailState extends State<HotelDetail> with SingleTickerProviderStat
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.blue,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
+
+                  onPressed: () {
+                    showGuestSelectionSheet(context);
+                  },
                   child: Padding(
                     padding: EdgeInsets.symmetric(vertical: 12),
-                    child: Text("Continue", style: TextStyle(fontSize: 18, color: Colors.white)),
+                    child: Text("Continue", style: TextStyle(fontSize: 18, color: Colors.white,fontWeight: FontWeight.bold)),
                   ),
                 ),
               ),
@@ -484,5 +491,104 @@ class _HotelDetailState extends State<HotelDetail> with SingleTickerProviderStat
     String amPm = hour >= 12 ? "PM" : "AM";
     int formattedHour = hour > 12 ? hour - 12 : (hour == 0 ? 12 : hour);
     return "$formattedHour:${minute.toString().padLeft(2, '0')} $amPm";
+  }
+}
+ void showGuestSelectionSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16.0)),
+      ),
+      builder: (context) => GuestSelectionBottomSheet(),
+    );
+  }
+
+// guest selection
+
+class GuestSelectionBottomSheet extends StatefulWidget {
+  @override
+  _GuestSelectionBottomSheetState createState() => _GuestSelectionBottomSheetState();
+}
+
+class _GuestSelectionBottomSheetState extends State<GuestSelectionBottomSheet> {
+  int adults = 1;
+  int children = 0;
+  int infants = 0;
+
+  void updateGuestCount(String type, bool increment) {
+    setState(() {
+      switch (type) {
+        case 'Adults':
+          if (increment) adults++; else if (adults > 1) adults--;
+          break;
+        case 'Children':
+          if (increment) children++; else if (children > 0) children--;
+          break;
+        case 'Infants':
+          if (increment) infants++; else if (infants > 0) infants--;
+          break;
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text("Select Guest", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          SizedBox(height: 10),
+          buildGuestRow("Adults", "Ages 18 or Above", adults),
+          buildGuestRow("Children", "Ages 2-17", children),
+          buildGuestRow("Infants", "Under Age 2", infants),
+          SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: () {
+             Navigator.push(context, MaterialPageRoute(builder: (context) => UserInfo(),));
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            ),
+            child: SizedBox(width: double.infinity, height: 50, child: Center(child: Text("Continue", style: TextStyle(fontSize: 18,color: Colors.white,fontWeight: FontWeight.bold)))),
+          ),
+          SizedBox(height: 10),
+        ],
+      ),
+    );
+  }
+
+  Widget buildGuestRow(String title, String subtitle, int count) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              Text(subtitle, style: TextStyle(fontSize: 14, color: Colors.grey)),
+            ],
+          ),
+          Row(
+            children: [
+              IconButton(
+                onPressed: () => updateGuestCount(title, false),
+                icon: Icon(Icons.remove_circle,color: Colors.blue,),
+              ),
+              Text(count.toString(), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              IconButton(
+                onPressed: () => updateGuestCount(title, true),
+                icon: Icon(Icons.add_circle,color: Colors.blue,),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 }

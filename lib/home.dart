@@ -42,6 +42,21 @@ class _CustomAppBarState extends State<CustomAppBar> {
     return AppBar(
       backgroundColor: Colors.white,
       elevation: 0,
+      automaticallyImplyLeading: _isSearching,
+      leading: _isSearching
+          ? IconButton(
+              icon: Icon(Icons.arrow_back, color: Colors.black),
+              onPressed: () {
+                setState(() {
+                  _isSearching = false;
+                  _searchController.clear();
+                  if (widget.onSearch != null) {
+                    widget.onSearch!(""); // Reset search
+                  }
+                });
+              },
+            )
+          : null,
       title: _isSearching
           ? TextField(
               controller: _searchController,
@@ -94,42 +109,10 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<Widget> screens = [
     HomePage(),
     WishlistScreen(),
-    HistoryScreen(),
+    MyBookingsScreen(),
+    // HistoryScreen(),
     ProfileScreen(),
   ];
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: screens[_selectedIndex],
-//       bottomNavigationBar: CurvedNavigationBar(
-//         key: _bottomNavigationKey,
-//         backgroundColor: Colors.transparent,
-//         color: Colors.blue,
-//         buttonBackgroundColor: Colors.blue,
-//         height: 60,
-//         animationDuration: Duration(milliseconds: 300),
-//         animationCurve: Curves.easeInOut,
-//         index: _selectedIndex,
-//         onTap: _onItemTapped,
-//         items: <Widget>[
-//           Icon(Icons.home,
-//               size: 30,
-//               color: _selectedIndex == 0 ? Colors.white : Colors.blue),
-//           Icon(Icons.favorite,
-//               size: 30,
-//               color: _selectedIndex == 1 ? Colors.white : Colors.blue),
-//           Icon(Icons.history,
-//               size: 30,
-//               color: _selectedIndex == 2 ? Colors.blue : Colors.white),
-//           Icon(Icons.person,
-//               size: 30,
-//               color: _selectedIndex == 3 ? Colors.blue : Colors.white),
-//         ],
-//       ),
-//     );
-//   }
-// }
 
   @override
   Widget build(BuildContext context) {
@@ -210,41 +193,47 @@ class _HomePageState extends State<HomePage> {
 
   final List<Map<String, dynamic>> otherStays = [
     {
-      'image':
+      "name": "GoldenValley",
+      "price": "\$150/night",
+      "location": "New York, USA",
+      "rating": 4.9,
+      "discount": "10% Off",
+      "image":
           'https://t3.ftcdn.net/jpg/09/79/53/60/240_F_979536087_YmIDF56Qtz7i1JiEXv3eXzI5gitM8BvS.jpg',
-      'title': 'Beachside Retreat',
-      'description': 'A relaxing beachside stay with amazing views.'
     },
     {
-      'image':
+      "name": "AlohaVista",
+      "price": "\$450/night",
+      "location": "New York, USA",
+      "rating": 4.8,
+      "discount": "10% Off",
+      "image":
           'https://as2.ftcdn.net/v2/jpg/09/64/96/87/1000_F_964968792_O79xKuKm2BYv0dFoQ4b1ryvzd4RgNeRD.jpg',
-      'title': 'Mountain Escape',
-      'description': 'Enjoy the serenity of the mountains.'
     },
-     {
-      'image':
+    {
+      "name": "AlohaVista",
+      "price": "\$450/night",
+      "location": "New York, USA",
+      "rating": 4.8,
+      "discount": "10% Off",
+      "image":
           'https://as2.ftcdn.net/v2/jpg/09/64/96/87/1000_F_964968792_O79xKuKm2BYv0dFoQ4b1ryvzd4RgNeRD.jpg',
-      'title': 'Mountain Escape',
-      'description': 'Enjoy the serenity of the mountains.'
     },
-     {
-      'image':
+    {
+      "name": "AlohaVista",
+      "price": "\$450/night",
+      "location": "New York, USA",
+      "rating": 4.8,
+      "discount": "10% Off",
+      "image":
           'https://as2.ftcdn.net/v2/jpg/09/64/96/87/1000_F_964968792_O79xKuKm2BYv0dFoQ4b1ryvzd4RgNeRD.jpg',
-      'title': 'Mountain Escape',
-      'description': 'Enjoy the serenity of the mountains.'
-    },
-     {
-      'image':
-          'https://as2.ftcdn.net/v2/jpg/09/64/96/87/1000_F_964968792_O79xKuKm2BYv0dFoQ4b1ryvzd4RgNeRD.jpg',
-      'title': 'Mountain Escape',
-      'description': 'Enjoy the serenity of the mountains.'
     },
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: 'bali indonesia'),
+      appBar: CustomAppBar(title: 'Bali indonesia'),
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.all(16.0),
@@ -284,8 +273,13 @@ class _HomePageState extends State<HomePage> {
                 itemBuilder: (context, index) {
                   return OtherStayCard(
                     image: otherStays[index]['image'],
-                    title: otherStays[index]['title'],
-                    description: otherStays[index]['description'],
+                    name: otherStays[index]['name'],
+                    // title: otherStays[index]['title'],
+                    // description: otherStays[index]['description'],
+                    price: otherStays[index]['price'],
+                    rating: otherStays[index]['rating'],
+                    location: otherStays[index]['location'],
+                    discount: otherStays[index]['discount'],
                   );
                 },
               ),
@@ -363,57 +357,133 @@ class FeaturedCard extends StatelessWidget {
   }
 }
 
-// Other Stay Card
+// lets try
 class OtherStayCard extends StatelessWidget {
   final String image;
-  final String title;
-  final String description;
+  final String name;
+  // final String title;
+  // final String description;
+  final String price; // Add price as an optional parameter
+  final double rating; // Add rating as an optional parameter
+  final String location; // Add location as an optional parameter
+  final String discount; // Add discount as an optional parameter
 
   OtherStayCard({
     required this.image,
-    required this.title,
-    required this.description,
+    required this.name,
+    // required this.title,
+    // required this.description,
+    required this.price, // Default empty value if not provided
+    required this.rating,
+    required this.location,
+    required this.discount,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 8.0),
-      child: InkWell(
-        onTap: () {
-          // Navigate to the details page
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => HotelDetail(
-                image: image,
-                // title: title,
-                // description: description,
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Padding(
+        padding: const EdgeInsets.all(6.0),
+        child: Row(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(6.0),
+              child: Image.network(
+                image,
+                width: 80,
+                height: 80,
+                fit: BoxFit.cover,
               ),
             ),
-          );
-        },
-        child: Card(
-          child: Column(
-            children: [
-              ListTile(
-                leading: Image.network(image, width: 80, height: 80, fit: BoxFit.cover),
-                title: Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
-                subtitle: Text(description),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Discount & Favorite Icon in the same row
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          discount,
+                          style: const TextStyle(
+                            fontSize: 10,
+                            color: Colors.blue,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      Icon(
+                        Icons.favorite_border_outlined,
+                        color: Colors.blue,
+                        size: 20,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  // Title & Rating in the same row
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          name,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.star,
+                            color: Colors.yellow,
+                            size: 14,
+                          ),
+                          Text(
+                            rating.toString(),
+                            style: const TextStyle(
+                                fontSize: 12, color: Colors.black),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    location,
+                    style: const TextStyle(fontSize: 12),
+                  ),
+                  Text(
+                    price,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Colors.blue,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
               ),
-              
-              // More ListTile items added here for extra details
-             
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
 }
 
-
-
+// Populer place card
 class PopularPlaceCard extends StatelessWidget {
   final String image;
   final String title;
@@ -499,6 +569,3 @@ class PopularPlaceCard extends StatelessWidget {
     );
   }
 }
-
-
-

@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:hotelbooking/home.dart';
 
@@ -30,7 +28,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
       "image":
           'https://as2.ftcdn.net/v2/jpg/09/64/96/87/1000_F_964968792_O79xKuKm2BYv0dFoQ4b1ryvzd4RgNeRD.jpg',
     },
-     {
+    {
       "name": "AlohaVista",
       "price": "\$450/night",
       "location": "New York, USA",
@@ -39,7 +37,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
       "image":
           'https://as2.ftcdn.net/v2/jpg/09/64/96/87/1000_F_964968792_O79xKuKm2BYv0dFoQ4b1ryvzd4RgNeRD.jpg',
     },
-     {
+    {
       "name": "AlohaVista",
       "price": "\$450/night",
       "location": "New York, USA",
@@ -54,7 +52,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-        title: 'Bali - Indonesia',
+        title: 'Favorite',
         onSearch: (String) {},
       ),
       body: Padding(
@@ -128,7 +126,8 @@ class _FavoriteItemState extends State<FavoriteItem> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
                           color: Colors.grey[300],
                           borderRadius: BorderRadius.circular(8),
@@ -174,7 +173,8 @@ class _FavoriteItemState extends State<FavoriteItem> {
                           ),
                           Text(
                             widget.rating.toString(),
-                            style: const TextStyle(fontSize: 12, color: Colors.black),
+                            style: const TextStyle(
+                                fontSize: 12, color: Colors.black),
                           ),
                         ],
                       ),

@@ -1,3 +1,4 @@
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -15,7 +16,8 @@ class HotelDetail extends StatefulWidget {
   _HotelDetailState createState() => _HotelDetailState();
 }
 
-class _HotelDetailState extends State<HotelDetail> with SingleTickerProviderStateMixin {
+class _HotelDetailState extends State<HotelDetail>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   int _currentImageIndex = 0;
   bool _isExpanded = false; // State for "Read More"
@@ -46,6 +48,8 @@ class _HotelDetailState extends State<HotelDetail> with SingleTickerProviderStat
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        centerTitle: true,
+        title: Text('detail Page'),
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
@@ -63,7 +67,8 @@ class _HotelDetailState extends State<HotelDetail> with SingleTickerProviderStat
         padding: const EdgeInsets.all(8.0),
         child: Card(
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 20.0),
+            padding:
+                const EdgeInsets.symmetric(vertical: 20.0, horizontal: 20.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -92,7 +97,8 @@ class _HotelDetailState extends State<HotelDetail> with SingleTickerProviderStat
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,
-                    padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 30, vertical: 15),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -194,7 +200,9 @@ class _HotelDetailState extends State<HotelDetail> with SingleTickerProviderStat
                         ],
                       ),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                        // height: min(300, 500),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 6),
                         decoration: BoxDecoration(
                           color: Colors.grey[300],
                           borderRadius: BorderRadius.circular(12),
@@ -272,7 +280,8 @@ class _HotelDetailState extends State<HotelDetail> with SingleTickerProviderStat
               },
               child: Text(
                 _isExpanded ? "Read Less" : "Read More",
-                style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+                style:
+                    TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
               ),
             ),
           SizedBox(height: 15),
@@ -345,67 +354,82 @@ class _HotelDetailState extends State<HotelDetail> with SingleTickerProviderStat
       builder: (BuildContext context) {
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.blue.shade100,
-                      borderRadius: BorderRadius.circular(5),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.shade100,
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: Text(
+                        "10% Off",
+                        style: TextStyle(
+                            color: Colors.blue, fontWeight: FontWeight.bold),
+                      ),
                     ),
-                    child: Text(
-                      "10% Off",
-                      style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+                    Spacer(),
+                    RatingBarIndicator(
+                      rating: 4.5,
+                      itemBuilder: (context, index) =>
+                          Icon(Icons.star, color: Colors.amber),
+                      itemCount: 5,
+                      itemSize: 20.0,
                     ),
-                  ),
-                  Spacer(),
-                  RatingBarIndicator(
-                    rating: 4.5,
-                    itemBuilder: (context, index) => Icon(Icons.star, color: Colors.amber),
-                    itemCount: 5,
-                    itemSize: 20.0,
-                  ),
-                  Text(" (365 reviews)"),
-                ],
-              ),
-              SizedBox(height: 10),
-              Text("HarborHaven Hideaway", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-              Text("1012 Ocean Avenue, New York, USA", style: TextStyle(color: Colors.grey)),
-              SizedBox(height: 20),
-              _buildDateTimeSelector("Check In", checkInDateTime, true),
-              SizedBox(height: 10),
-              _buildDateTimeSelector("Check Out", checkOutDateTime, false),
-              SizedBox(height: 30),
-              
-              TextField(
-                decoration: InputDecoration(
-                  hintText: "Enter note to owner",
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                    Text(" (365 reviews)"),
+                  ],
                 ),
-              ),
-              Spacer(),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.blue,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                  ),
-
-                  onPressed: () {
-                    showGuestSelectionSheet(context);
-                  },
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 12),
-                    child: Text("Continue", style: TextStyle(fontSize: 18, color: Colors.white,fontWeight: FontWeight.bold)),
+                SizedBox(height: 10),
+                Text("HarborHaven Hideaway",
+                    style:
+                        TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                Text("1012 Ocean Avenue, New York, USA",
+                    style: TextStyle(color: Colors.grey)),
+                SizedBox(height: 20),
+                _buildDateTimeSelector("Check In", checkInDateTime, true),
+                SizedBox(height: 10),
+                _buildDateTimeSelector("Check Out", checkOutDateTime, false),
+                SizedBox(height: 30),
+                TextField(
+                  decoration: InputDecoration(
+                    hintText: "Enter note to owner",
+                    border: OutlineInputBorder(),
+                    contentPadding:
+                        EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                   ),
                 ),
-              ),
-              SizedBox(height: 10),
-            ],
+                // Spacer(),
+                SizedBox(
+                  height: 30,
+                ),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8)),
+                    ),
+                    onPressed: () {
+                      showGuestSelectionSheet(context);
+                    },
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 12),
+                      child: Text("Continue",
+                          style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 10),
+              ],
+            ),
           ),
         );
       },
@@ -434,23 +458,31 @@ class _HotelDetailState extends State<HotelDetail> with SingleTickerProviderStat
     setState(() {
       if (isCheckIn) {
         checkInDateTime = DateTime(
-          pickedDate.year, pickedDate.month, pickedDate.day,
-          pickedTime.hour, pickedTime.minute,
+          pickedDate.year,
+          pickedDate.month,
+          pickedDate.day,
+          pickedTime.hour,
+          pickedTime.minute,
         );
       } else {
         checkOutDateTime = DateTime(
-          pickedDate.year, pickedDate.month, pickedDate.day,
-          pickedTime.hour, pickedTime.minute,
+          pickedDate.year,
+          pickedDate.month,
+          pickedDate.day,
+          pickedTime.hour,
+          pickedTime.minute,
         );
       }
     });
   }
 
-  Widget _buildDateTimeSelector(String title, DateTime dateTime, bool isCheckIn) {
+  Widget _buildDateTimeSelector(
+      String title, DateTime dateTime, bool isCheckIn) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        Text(title,
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
         SizedBox(height: 5),
         GestureDetector(
           onTap: () => _selectDateTime(context, isCheckIn),
@@ -465,11 +497,13 @@ class _HotelDetailState extends State<HotelDetail> with SingleTickerProviderStat
               children: [
                 Text(
                   "${_getWeekday(dateTime.weekday)}, ${dateTime.day} ${_getMonth(dateTime.month)} ${dateTime.year}",
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold),
                 ),
                 Text(
                   "${_formatTime(dateTime.hour, dateTime.minute)}",
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
@@ -480,7 +514,20 @@ class _HotelDetailState extends State<HotelDetail> with SingleTickerProviderStat
   }
 
   String _getMonth(int month) {
-    return ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][month - 1];
+    return [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec"
+    ][month - 1];
   }
 
   String _getWeekday(int day) {
@@ -493,22 +540,24 @@ class _HotelDetailState extends State<HotelDetail> with SingleTickerProviderStat
     return "$formattedHour:${minute.toString().padLeft(2, '0')} $amPm";
   }
 }
- void showGuestSelectionSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16.0)),
-      ),
-      builder: (context) => GuestSelectionBottomSheet(),
-    );
-  }
+
+void showGuestSelectionSheet(BuildContext context) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(16.0)),
+    ),
+    builder: (context) => GuestSelectionBottomSheet(),
+  );
+}
 
 // guest selection
 
 class GuestSelectionBottomSheet extends StatefulWidget {
   @override
-  _GuestSelectionBottomSheetState createState() => _GuestSelectionBottomSheetState();
+  _GuestSelectionBottomSheetState createState() =>
+      _GuestSelectionBottomSheetState();
 }
 
 class _GuestSelectionBottomSheetState extends State<GuestSelectionBottomSheet> {
@@ -520,13 +569,19 @@ class _GuestSelectionBottomSheetState extends State<GuestSelectionBottomSheet> {
     setState(() {
       switch (type) {
         case 'Adults':
-          if (increment) adults++; else if (adults > 1) adults--;
+          if (increment)
+            adults++;
+          else if (adults > 1) adults--;
           break;
         case 'Children':
-          if (increment) children++; else if (children > 0) children--;
+          if (increment)
+            children++;
+          else if (children > 0) children--;
           break;
         case 'Infants':
-          if (increment) infants++; else if (infants > 0) infants--;
+          if (increment)
+            infants++;
+          else if (infants > 0) infants--;
           break;
       }
     });
@@ -539,7 +594,8 @@ class _GuestSelectionBottomSheetState extends State<GuestSelectionBottomSheet> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text("Select Guest", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          Text("Select Guest",
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           SizedBox(height: 10),
           buildGuestRow("Adults", "Ages 18 or Above", adults),
           buildGuestRow("Children", "Ages 2-17", children),
@@ -547,13 +603,26 @@ class _GuestSelectionBottomSheetState extends State<GuestSelectionBottomSheet> {
           SizedBox(height: 20),
           ElevatedButton(
             onPressed: () {
-             Navigator.push(context, MaterialPageRoute(builder: (context) => UserInfo(),));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => UserInfo(),
+                  ));
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.blue,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8)),
             ),
-            child: SizedBox(width: double.infinity, height: 50, child: Center(child: Text("Continue", style: TextStyle(fontSize: 18,color: Colors.white,fontWeight: FontWeight.bold)))),
+            child: SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: Center(
+                    child: Text("Continue",
+                        style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold)))),
           ),
           SizedBox(height: 10),
         ],
@@ -570,20 +639,29 @@ class _GuestSelectionBottomSheetState extends State<GuestSelectionBottomSheet> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-              Text(subtitle, style: TextStyle(fontSize: 14, color: Colors.grey)),
+              Text(title,
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              Text(subtitle,
+                  style: TextStyle(fontSize: 14, color: Colors.grey)),
             ],
           ),
           Row(
             children: [
               IconButton(
                 onPressed: () => updateGuestCount(title, false),
-                icon: Icon(Icons.remove_circle,color: Colors.blue,),
+                icon: Icon(
+                  Icons.remove_circle,
+                  color: Colors.blue,
+                ),
               ),
-              Text(count.toString(), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              Text(count.toString(),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               IconButton(
                 onPressed: () => updateGuestCount(title, true),
-                icon: Icon(Icons.add_circle,color: Colors.blue,),
+                icon: Icon(
+                  Icons.add_circle,
+                  color: Colors.blue,
+                ),
               ),
             ],
           ),

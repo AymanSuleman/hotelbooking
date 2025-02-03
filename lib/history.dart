@@ -93,62 +93,45 @@ import 'package:flutter/material.dart';
 import 'package:hotelbooking/home.dart';
 
 void main() {
-  runApp(HistoryApp());
+  runApp(MaterialApp(
+    debugShowCheckedModeBanner: false,
+    home: MyBookingsScreen(),
+  ));
 }
 
-class HistoryApp extends StatelessWidget {
+class MyBookingsScreen extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: HistoryScreen(),
-    );
-  }
+  _MyBookingsScreenState createState() => _MyBookingsScreenState();
 }
 
-class HistoryScreen extends StatelessWidget {
-  final List<Map<String, dynamic>> items = [
+class _MyBookingsScreenState extends State<MyBookingsScreen> {
+  final List<Map<String, dynamic>> completedBookings = [
     {
-      "title": "The Reefs",
-      "subtext": "A beautiful resort by the beach.",
-      "price": "\$200.00",
       "image":
           "https://t4.ftcdn.net/jpg/06/32/20/07/240_F_632200724_WuOGPlu1XfDjqUinsBGzHXaa8TVtdqD9.jpg",
+      "name": "HarborHaven Hideaway",
+      "location": "New York, USA",
+      "rating": 4.8,
+      "discount": "10% OFF",
+      "price": "\$700/night"
     },
     {
-      "title": "Devils Cove",
-      "subtext": "A hidden gem with breathtaking views.",
-      "price": "\$250.00",
       "image":
-          "https://t3.ftcdn.net/jpg/03/21/78/98/240_F_321789819_Jyv66AM5PoY0j9tZzjkB1c807zQQXtZh.jpg",
+          "https://t4.ftcdn.net/jpg/06/32/20/07/240_F_632200724_WuOGPlu1XfDjqUinsBGzHXaa8TVtdqD9.jpg",
+      "name": "AlohaVista",
+      "location": "New York, USA",
+      "rating": 4.6,
+      "discount": "15% OFF",
+      "price": "\$450/night"
     },
     {
-      "title": "Beachside Retreat",
-      "subtext": "Stay close to the ocean and unwind.",
-      "price": "\$150.00",
       "image":
-          "https://t3.ftcdn.net/jpg/09/79/53/60/240_F_979536087_YmIDF56Qtz7i1JiEXv3eXzI5gitM8BvS.jpg",
-    },
-    {
-      "title": "Mountain Escape",
-      "subtext": "Experience serenity with mountain views.",
-      "price": "\$180.00",
-      "image":
-          "https://as2.ftcdn.net/v2/jpg/09/64/96/87/1000_F_964968792_O79xKuKm2BYv0dFoQ4b1ryvzd4RgNeRD.jpg",
-    },
-    {
-      "title": "Sunset Villas",
-      "subtext": "A romantic getaway for couples.",
-      "price": "\$300.00",
-      "image":
-          "https://t3.ftcdn.net/jpg/06/62/45/33/240_F_662453349_0F0wU2lQ4wDaVnCjSzoNmWsRHv8kC9go.jpg",
-    },
-    {
-      "title": "Ocean Breeze",
-      "subtext": "Perfect for a relaxing beach holiday.",
-      "price": "\$220.00",
-      "image":
-          "https://t4.ftcdn.net/jpg/04/63/09/29/240_F_463092963_FwxvzwP8DtsgEZwDqlOdIjDUnyBd62PV.jpg",
+          "https://t4.ftcdn.net/jpg/06/32/20/07/240_F_632200724_WuOGPlu1XfDjqUinsBGzHXaa8TVtdqD9.jpg",
+      "name": "GoldenValley",
+      "location": "New York, USA",
+      "rating": 4.9,
+      "discount": "5% OFF",
+      "price": "\$150/night"
     },
   ];
 
@@ -156,48 +139,139 @@ class HistoryScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(
-        title: 'Bali - Indonesia',
+        title: 'History',
         onSearch: (String) {},
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(10.0),
+      body: Expanded(
+        child: ListView.builder(
+          itemCount: completedBookings.length,
+          itemBuilder: (context, index) {
+            final booking = completedBookings[index];
+            return _buildBookingCard(booking);
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBookingCard(Map<String, dynamic> booking) {
+    return Card(
+      margin: EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "Your Booking history is here",
-              style: TextStyle(color: Colors.grey, fontSize: 16),
+            // Row: Image + Hotel Info
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Image on Left
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Image.network(
+                    booking["image"],
+                    width: 100,
+                    height: 100,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                SizedBox(width: 10),
+                // Hotel Details on Right
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Row: Discount + Rating at the Top
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[300],
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              booking["discount"],
+                              style: TextStyle(
+                                  color: Colors.blue,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          SizedBox(width: 10),
+                          Row(
+                            children: [
+                              Icon(Icons.star, color: Colors.orange, size: 16),
+                              SizedBox(width: 3),
+                              Text(
+                                booking["rating"].toString(),
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 10),
+                      // Hotel Name and Location
+                      Text(
+                        booking["name"],
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Text(
+                        booking["location"],
+                        style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                      ),
+                      SizedBox(height: 5),
+                      Text(
+                        booking["price"],
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
             SizedBox(height: 10),
-            Expanded(
-              child: ListView.builder(
-                itemCount: items.length,
-                itemBuilder: (context, index) {
-                  final item = items[index];
-                  return Card(
-                    margin: EdgeInsets.symmetric(vertical: 5),
-                    child: ListTile(
-                      leading: ClipRRect(
-                        borderRadius: BorderRadius.circular(8.0),
-                        child: Image.network(
-                          item["image"],
-                          width: 50,
-                          height: 50,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      title: Text(item["title"],
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                      subtitle: Text(item["subtext"]),
-                      trailing: Text(
-                        item["price"],
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      onTap: () {},
+            // Buttons Below the Row
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8)),
                     ),
-                  );
-                },
-              ),
+                    child: Text(
+                      "Re-Book",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+                SizedBox(width: 10),
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () {},
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.blue,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8)),
+                    ),
+                    child: Text("Add Review"),
+                  ),
+                ),
+              ],
             ),
           ],
         ),

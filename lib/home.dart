@@ -252,7 +252,7 @@ class _HomePageState extends State<HomePage> {
                   itemCount: popularPlaces.length,
                   itemBuilder: (context, index) {
                     return Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 8.0),
+                      padding: const EdgeInsets.only(right: 10),
                       child: PopularPlaceCard(
                         image: popularPlaces[index]['image'],
                         title: popularPlaces[index]['title'],
@@ -276,7 +276,7 @@ class _HomePageState extends State<HomePage> {
                     name: otherStays[index]['name'],
                     // title: otherStays[index]['title'],
                     // description: otherStays[index]['description'],
-                    price: otherStays[index]['price'],
+                    // price: otherStays[index]['price'],
                     rating: otherStays[index]['rating'],
                     location: otherStays[index]['location'],
                     discount: otherStays[index]['discount'],
@@ -363,7 +363,7 @@ class OtherStayCard extends StatelessWidget {
   final String name;
   // final String title;
   // final String description;
-  final String price; // Add price as an optional parameter
+  // final String price; // Add price as an optional parameter
   final double rating; // Add rating as an optional parameter
   final String location; // Add location as an optional parameter
   final String discount; // Add discount as an optional parameter
@@ -373,7 +373,7 @@ class OtherStayCard extends StatelessWidget {
     required this.name,
     // required this.title,
     // required this.description,
-    required this.price, // Default empty value if not provided
+    // required this.price, // Default empty value if not provided
     required this.rating,
     required this.location,
     required this.discount,
@@ -465,14 +465,14 @@ class OtherStayCard extends StatelessWidget {
                     location,
                     style: const TextStyle(fontSize: 12),
                   ),
-                  Text(
-                    price,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Colors.blue,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  // Text(
+                  //   price,
+                  //   style: const TextStyle(
+                  //     fontSize: 14,
+                  //     color: Colors.blue,
+                  //     fontWeight: FontWeight.bold,
+                  //   ),
+                  // ),
                 ],
               ),
             ),

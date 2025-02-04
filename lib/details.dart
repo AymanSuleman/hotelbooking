@@ -135,12 +135,15 @@ class _HotelDetailState extends State<HotelDetail>
                     },
                   ),
                   items: imageList.map((image) {
-                    return ClipRRect(
-                      borderRadius: BorderRadius.circular(15),
-                      child: Image.network(
-                        image,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(15),
+                        child: Image.network(
+                          image,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     );
                   }).toList(),

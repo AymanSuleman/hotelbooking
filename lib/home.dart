@@ -555,14 +555,25 @@ class PopularPlaceCard extends StatelessWidget {
               ),
             ),
             Positioned(
-              top: 10,
-              right: 10,
-              child: Icon(
-                Icons.favorite_border,
-                color: Colors.white,
-                size: 30,
-              ),
-            ),
+                top: 10,
+                right: 10,
+                // child: Icon(
+                //   Icons.favorite_border,
+                //   color: Colors.white,
+                //   size: 30,
+                // ),
+                child: Container(
+                  padding: EdgeInsets.all(8), // Padding for inner spacing
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300], // Background color
+                    shape: BoxShape.circle, // Makes it round
+                  ),
+                  child: Icon(
+                    Icons.favorite_border,
+                    color: Colors.blue, // Icon color
+                    // size: 10,
+                  ),
+                )),
           ],
         ),
       ),

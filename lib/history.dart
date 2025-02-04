@@ -117,7 +117,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
     },
     {
       "image":
-          "https://t4.ftcdn.net/jpg/06/32/20/07/240_F_632200724_WuOGPlu1XfDjqUinsBGzHXaa8TVtdqD9.jpg",
+          'https://as2.ftcdn.net/v2/jpg/09/64/96/87/1000_F_964968792_O79xKuKm2BYv0dFoQ4b1ryvzd4RgNeRD.jpg',
       "name": "AlohaVista",
       "location": "New York, USA",
       "rating": 4.6,
@@ -142,14 +142,12 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
         title: 'History',
         onSearch: (String) {},
       ),
-      body: Expanded(
-        child: ListView.builder(
-          itemCount: completedBookings.length,
-          itemBuilder: (context, index) {
-            final booking = completedBookings[index];
-            return _buildBookingCard(booking);
-          },
-        ),
+      body: ListView.builder(
+        itemCount: completedBookings.length,
+        itemBuilder: (context, index) {
+          final booking = completedBookings[index];
+          return _buildBookingCard(booking);
+        },
       ),
     );
   }

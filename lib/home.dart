@@ -111,7 +111,8 @@ class _HomeScreenState extends State<HomeScreen> {
     WishlistScreen(),
     MyBookingsScreen(),
     // HistoryScreen(),
-    ProfileScreen(),
+    // ProfileScreen(),
+    AnimatedStudentProfile()
   ];
 
   @override
@@ -233,6 +234,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: CustomAppBar(title: 'Bali indonesia'),
       body: SingleChildScrollView(
         child: Padding(

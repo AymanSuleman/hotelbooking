@@ -229,7 +229,35 @@ class _HomePageState extends State<HomePage> {
           'https://as2.ftcdn.net/v2/jpg/09/64/96/87/1000_F_964968792_O79xKuKm2BYv0dFoQ4b1ryvzd4RgNeRD.jpg',
     },
   ];
-
+  final List<Map<String, dynamic>> featuredListings = [
+    {
+      "title": "Japanese-Style Hotel",
+      "location": "Manado, Sulawesi Utara",
+      "price": "\$10,000/night",
+      "oldPrice": "\$15,000",
+      "size": "2,000 Sqft",
+      "imageUrl":
+          'https://t3.ftcdn.net/jpg/09/79/53/60/240_F_979536087_YmIDF56Qtz7i1JiEXv3eXzI5gitM8BvS.jpg',
+    },
+    {
+      "title": "Japanese-Style Hotel",
+      "location": "Manado, Sulawesi Utara",
+      "price": "\$10,000/night",
+      "oldPrice": "\$15,000",
+      "size": "2,000 Sqft",
+      "imageUrl":
+          'https://as2.ftcdn.net/v2/jpg/09/64/96/87/1000_F_964968792_O79xKuKm2BYv0dFoQ4b1ryvzd4RgNeRD.jpg',
+    },
+    {
+      "title": "Japanese-Style Hotel",
+      "location": "Manado, Sulawesi Utara",
+      "price": "\$10,000/night",
+      "oldPrice": "\$15,000",
+      "size": "2,000 Sqft",
+      "imageUrl":
+          'https://t3.ftcdn.net/jpg/09/79/53/60/240_F_979536087_YmIDF56Qtz7i1JiEXv3eXzI5gitM8BvS.jpg',
+    }
+  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -266,20 +294,100 @@ class _HomePageState extends State<HomePage> {
               Text('Other Stays',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               SizedBox(height: 10),
+
+              //new
               ListView.builder(
-                shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
-                itemCount: otherStays.length,
+                shrinkWrap: true,
+                itemCount: featuredListings.length,
                 itemBuilder: (context, index) {
-                  return OtherStayCard(
-                    image: otherStays[index]['image'],
-                    name: otherStays[index]['name'],
-                    // title: otherStays[index]['title'],
-                    // description: otherStays[index]['description'],
-                    // price: otherStays[index]['price'],
-                    rating: otherStays[index]['rating'],
-                    location: otherStays[index]['location'],
-                    discount: otherStays[index]['discount'],
+                  var listing = featuredListings[index];
+                  return Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    elevation: 5,
+                    margin: EdgeInsets.only(bottom: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.vertical(
+                              top: Radius.circular(15),
+                              bottom: Radius.circular(15)),
+                          child: Image.network(
+                            listing["imageUrl"],
+                            height: 200,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Row to align title on the left and price on the right
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      listing["title"],
+                                      style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold),
+                                      maxLines: 1,
+                                      overflow: TextOverflow
+                                          .ellipsis, // Prevents text overflow
+                                    ),
+                                  ),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        listing["price"],
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.orange),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 4),
+
+                              // Location Row
+                              Row(
+                                children: [
+                                  Icon(Icons.location_on,
+                                      size: 16, color: Colors.grey),
+                                  SizedBox(width: 4),
+                                  Text(listing["location"],
+                                      style: TextStyle(color: Colors.grey)),
+                                ],
+                              ),
+                              SizedBox(height: 4),
+
+                              // Size Row
+                              Row(
+                                children: [
+                                  Icon(Icons.square_foot,
+                                      size: 16, color: Colors.grey),
+                                  SizedBox(width: 4),
+                                  Text(listing["size"],
+                                      style: TextStyle(color: Colors.grey)),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+// );
+                      // ],
+                    ),
                   );
                 },
               ),
@@ -358,130 +466,6 @@ class FeaturedCard extends StatelessWidget {
 }
 
 // lets try
-class OtherStayCard extends StatelessWidget {
-  final String image;
-  final String name;
-  // final String title;
-  // final String description;
-  // final String price; // Add price as an optional parameter
-  final double rating; // Add rating as an optional parameter
-  final String location; // Add location as an optional parameter
-  final String discount; // Add discount as an optional parameter
-
-  OtherStayCard({
-    required this.image,
-    required this.name,
-    // required this.title,
-    // required this.description,
-    // required this.price, // Default empty value if not provided
-    required this.rating,
-    required this.location,
-    required this.discount,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 4.0),
-      child: Padding(
-        padding: const EdgeInsets.all(6.0),
-        child: Row(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(6.0),
-              child: Image.network(
-                image,
-                width: 80,
-                height: 80,
-                fit: BoxFit.cover,
-              ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Discount & Favorite Icon in the same row
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 6, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: Colors.grey[300],
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          discount,
-                          style: const TextStyle(
-                            fontSize: 10,
-                            color: Colors.blue,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      Icon(
-                        Icons.favorite_border_outlined,
-                        color: Colors.blue,
-                        size: 20,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  // Title & Rating in the same row
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          name,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.star,
-                            color: Colors.yellow,
-                            size: 14,
-                          ),
-                          Text(
-                            rating.toString(),
-                            style: const TextStyle(
-                                fontSize: 12, color: Colors.black),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    location,
-                    style: const TextStyle(fontSize: 12),
-                  ),
-                  // Text(
-                  //   price,
-                  //   style: const TextStyle(
-                  //     fontSize: 14,
-                  //     color: Colors.blue,
-                  //     fontWeight: FontWeight.bold,
-                  //   ),
-                  // ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
 
 // Populer place card
 class PopularPlaceCard extends StatelessWidget {
@@ -557,11 +541,6 @@ class PopularPlaceCard extends StatelessWidget {
             Positioned(
                 top: 10,
                 right: 10,
-                // child: Icon(
-                //   Icons.favorite_border,
-                //   color: Colors.white,
-                //   size: 30,
-                // ),
                 child: Container(
                   padding: EdgeInsets.all(8), // Padding for inner spacing
                   decoration: BoxDecoration(

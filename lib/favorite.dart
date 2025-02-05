@@ -51,6 +51,8 @@ class _WishlistScreenState extends State<WishlistScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
+
       appBar: CustomAppBar(
         title: 'Favorite',
         onSearch: (String) {},

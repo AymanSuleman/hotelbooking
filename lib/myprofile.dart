@@ -50,6 +50,7 @@ class _MyProfileState extends State<MyProfile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         leading: IconButton(
           onPressed: () {
@@ -87,8 +88,8 @@ class _MyProfileState extends State<MyProfile> {
                   Expanded(
                     child: TextField(
                       controller: _phoneController,
-                      style:
-                          TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                          fontSize: 20.0, fontWeight: FontWeight.bold),
                       decoration: InputDecoration(
                         hintText: 'Enter your phone number',
                         border: InputBorder.none, // No border

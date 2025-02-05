@@ -34,6 +34,7 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
@@ -45,24 +46,29 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
         elevation: 0,
         foregroundColor: Colors.black,
       ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            buildSectionTitle("Cash"),
-            buildPaymentOption("Cash", Icons.attach_money),
-            buildSectionTitle("Wallet"),
-            buildPaymentOption("Wallet", Icons.account_balance_wallet),
-            buildSectionTitle("Credit & Debit Card"),
-            buildCardPaymentOption("Credit & Debit Card", Icons.credit_card),
-            buildSectionTitle("More Payment Options"),
-            buildPaymentOption("Paypal", Icons.payment),
-            buildPaymentOption("Apple Pay", Icons.apple),
-            buildPaymentOption("Google Pay", Icons.account_balance),
-            Spacer(),
-            buildConfirmButton(),
-          ],
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              buildSectionTitle("Cash"),
+              buildPaymentOption("Cash", Icons.attach_money),
+              buildSectionTitle("Wallet"),
+              buildPaymentOption("Wallet", Icons.account_balance_wallet),
+              buildSectionTitle("Credit & Debit Card"),
+              buildCardPaymentOption("Credit & Debit Card", Icons.credit_card),
+              buildSectionTitle("More Payment Options"),
+              buildPaymentOption("Paypal", Icons.payment),
+              buildPaymentOption("Apple Pay", Icons.apple),
+              buildPaymentOption("Google Pay", Icons.account_balance),
+              // Spacer(),
+              SizedBox(
+                height: 20,
+              ),
+              buildConfirmButton(),
+            ],
+          ),
         ),
       ),
     );

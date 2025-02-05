@@ -49,18 +49,18 @@ class _FirstScreenState extends State<FirstScreen> {
             children: [
               // Logo from URL
               // Image.network(
-                // 'https://cdn-icons-png.flaticon.com/512/3178/3178286.png',
-                //// Replace with preferred logo
-                // ' https://cdn-icons-png.flaticon.com/512/3203/3203071.png',
+              // 'https://cdn-icons-png.flaticon.com/512/3178/3178286.png',
+              //// Replace with preferred logo
+              // ' https://cdn-icons-png.flaticon.com/512/3203/3203071.png',
 
-                // height: 80,
+              // height: 80,
               // ),
               SizedBox(height: 10),
               // App Name
               Text(
-                "Hotel Booking",
+                "Room Booking",
                 style: TextStyle(
-                  fontSize: 22,
+                  fontSize: 30,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),

@@ -111,8 +111,8 @@ class _HomeScreenState extends State<HomeScreen> {
     WishlistScreen(),
     MyBookingsScreen(),
     // HistoryScreen(),
-    // ProfileScreen(),
-    AnimatedStudentProfile()
+    ProfileScreen(),
+    // AnimatedStudentProfile()
   ];
 
   @override
@@ -305,6 +305,7 @@ class _HomePageState extends State<HomePage> {
                 itemBuilder: (context, index) {
                   var listing = featuredListings[index];
                   return Card(
+                    color: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15),
                     ),
@@ -317,12 +318,27 @@ class _HomePageState extends State<HomePage> {
                           borderRadius: BorderRadius.vertical(
                               top: Radius.circular(15),
                               bottom: Radius.circular(15)),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black
+                                      .withOpacity(0.7), // Shadow color
+                                  spreadRadius: 6, // Spread of the shadow
+                                  blurRadius: 8, // Blur effect for the shadow
+                                  offset: Offset(4,
+                                      8), // Shadow position (vertical offset)
+                                ),
+                              ],
+                            ),
+                          
                           child: Image.network(
                             listing["imageUrl"],
                             height: 200,
                             width: double.infinity,
                             fit: BoxFit.cover,
                           ),
+                        ),
                         ),
                         Padding(
                           padding: const EdgeInsets.all(10.0),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:hotelbooking/myprofile.dart';
+import 'package:hotelbooking/signup.dart';
 
 void main() {
   runApp(MyApp());
@@ -62,14 +63,21 @@ class ProfileScreen extends StatelessWidget {
               SizedBox(height: 20),
               buildListTile(
                   context, Icons.person, "Personal Info", MyProfile()),
-              buildListTile(context, Icons.lock, "Privacy & Sharing"),
+              buildListTile(context, Icons.lock, "Privacy & Sharing",
+                  PrivacySharingScreen()),
               buildListTile(context, Icons.notifications, "Notification",
                   NotificationSettingsScreen()),
               buildListTile(context, Icons.reviews, "Review"),
               ListTile(
                 leading: Icon(Icons.logout, color: Colors.red),
                 title: Text("Log Out", style: TextStyle(color: Colors.red)),
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Signup(),
+                      ));
+                },
               ),
             ],
           ),
@@ -91,6 +99,8 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 }
+
+// Notification....
 
 class NotificationSettingsScreen extends StatefulWidget {
   @override
@@ -181,6 +191,67 @@ class _NotificationSettingsScreenState
           ),
         ],
       ),
+    );
+  }
+}
+
+//privacy and sharing.....
+
+class PrivacySharingScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        backgroundColor: Colors.white,
+
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text("Privacy & sharing", style: TextStyle(color: Colors.black)),
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("Manage your account data",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+            SizedBox(height: 8),
+            Text(
+                "You can make a request to download or delete your personal data from Travely.",
+                style: TextStyle(color: Colors.grey)),
+            SizedBox(height: 20),
+            _buildOption(
+              context,
+              "Request your personal data",
+              "We'll create a file for you to download your personal data.",
+            ),
+            _buildOption(
+              context,
+              "Delete your account",
+              "By doing this your account and data will permanently be deleted.",
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOption(BuildContext context, String title, String subtitle) {
+    return Column(
+      children: [
+        ListTile(
+          title: Text(title,
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+          subtitle: Text(subtitle, style: TextStyle(color: Colors.grey)),
+          trailing: Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+          onTap: () {},
+        ),
+        Divider(),
+      ],
     );
   }
 }

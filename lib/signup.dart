@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hotelbooking/signin.dart';
 
-void main() {
-  runApp(MaterialApp(
-    debugShowCheckedModeBanner: false,
-    home: Signup(),
-  ));
-}
+// void main() {
+//   runApp(MaterialApp(
+//     debugShowCheckedModeBanner: false,
+//     home: Signup(),
+//   ));
+// }
 
 class Signup extends StatefulWidget {
   @override
@@ -52,7 +52,9 @@ class _SignupState extends State<Signup> {
                 hintText: "John Doe",
                 filled: true,
                 fillColor: Colors.grey.shade200,
-                border: OutlineInputBorder(borderSide: BorderSide.none, borderRadius: BorderRadius.circular(8)),
+                border: OutlineInputBorder(
+                    borderSide: BorderSide.none,
+                    borderRadius: BorderRadius.circular(8)),
               ),
             ),
             SizedBox(height: 16),
@@ -65,7 +67,9 @@ class _SignupState extends State<Signup> {
                 hintText: "example@gmail.com",
                 filled: true,
                 fillColor: Colors.grey.shade200,
-                border: OutlineInputBorder(borderSide: BorderSide.none, borderRadius: BorderRadius.circular(8)),
+                border: OutlineInputBorder(
+                    borderSide: BorderSide.none,
+                    borderRadius: BorderRadius.circular(8)),
               ),
             ),
             SizedBox(height: 16),
@@ -79,9 +83,13 @@ class _SignupState extends State<Signup> {
                 hintText: "****",
                 filled: true,
                 fillColor: Colors.grey.shade200,
-                border: OutlineInputBorder(borderSide: BorderSide.none, borderRadius: BorderRadius.circular(8)),
+                border: OutlineInputBorder(
+                    borderSide: BorderSide.none,
+                    borderRadius: BorderRadius.circular(8)),
                 suffixIcon: IconButton(
-                  icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
+                  icon: Icon(_obscurePassword
+                      ? Icons.visibility_off
+                      : Icons.visibility),
                   onPressed: () {
                     setState(() {
                       _obscurePassword = !_obscurePassword;
@@ -109,7 +117,8 @@ class _SignupState extends State<Signup> {
                   onTap: () {}, // Handle Terms & Conditions action
                   child: Text(
                     "Terms & Condition",
-                    style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                        color: Colors.blue, fontWeight: FontWeight.bold),
                   ),
                 ),
               ],
@@ -123,12 +132,18 @@ class _SignupState extends State<Signup> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
                   padding: EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8)),
                 ),
                 onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => SignInScreen(),));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SignInScreen(),
+                      ));
                 },
-                child: Text("Sign Up", style: TextStyle(fontSize: 16, color: Colors.white)),
+                child: Text("Sign Up",
+                    style: TextStyle(fontSize: 16, color: Colors.white)),
               ),
             ),
             SizedBox(height: 16),
@@ -170,7 +185,8 @@ class _SignupState extends State<Signup> {
                     children: [
                       TextSpan(
                         text: "Sign In",
-                        style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            color: Colors.blue, fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),

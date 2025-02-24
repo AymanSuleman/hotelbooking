@@ -177,7 +177,9 @@ class _SignupState extends State<Signup> {
             // Already have an account? Sign In
             Center(
               child: GestureDetector(
-                onTap: () {}, // Handle Sign In navigation
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => SignInScreen(),));
+                }, // Handle Sign In navigation
                 child: RichText(
                   text: TextSpan(
                     text: "Already have an account? ",

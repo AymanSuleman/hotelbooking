@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:hotelbooking/change_pass.dart';
 import 'package:hotelbooking/home.dart';
+import 'package:hotelbooking/signup.dart';
 
 void main() {
   runApp(MyApp());
@@ -91,7 +93,13 @@ class SignInScreen extends StatelessWidget {
             Align(
               alignment: Alignment.centerRight,
               child: TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  // Navigate to forgot password page
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => ChangePass()));
+
+                },
                 child: Text("Forgot Password?"),
               ),
             ),
@@ -138,8 +146,23 @@ class SignInScreen extends StatelessWidget {
             // Sign Up
             Center(
               child: TextButton(
-                onPressed: () {},
-                child: Text("Don't have an account? Sign Up"),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Signup()));
+                },
+                child: RichText(
+                  text: TextSpan(
+                    text: "Don't have an account? ",
+                    style: TextStyle(color: Colors.black),
+                    children: [
+                      TextSpan(
+                        text: "Sign Up",
+                        style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
           ],

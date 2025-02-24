@@ -11,12 +11,12 @@ import 'package:hotelbooking/profile.dart';
 // import 'package:hotelbooking/history.dart';
 // import 'package:hotelbooking/profile.dart';
 
-// void main() {
-//   runApp(MaterialApp(
-//     debugShowCheckedModeBanner: false,
-//     home: HomeScreen(),
-//   ));
-// }
+void main() {
+  runApp(MaterialApp(
+    debugShowCheckedModeBanner: false,
+    home: HomeScreen(),
+  ));
+}
 
 // import 'package:flutter/material.dart';
 

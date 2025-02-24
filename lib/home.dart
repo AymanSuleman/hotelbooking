@@ -11,12 +11,12 @@ import 'package:hotelbooking/profile.dart';
 // import 'package:hotelbooking/history.dart';
 // import 'package:hotelbooking/profile.dart';
 
-void main() {
-  runApp(MaterialApp(
-    debugShowCheckedModeBanner: false,
-    home: HomeScreen(),
-  ));
-}
+// void main() {
+//   runApp(MaterialApp(
+//     debugShowCheckedModeBanner: false,
+//     home: HomeScreen(),
+//   ));
+// }
 
 // import 'package:flutter/material.dart';
 
@@ -331,14 +331,13 @@ class _HomePageState extends State<HomePage> {
                                 ),
                               ],
                             ),
-                          
-                          child: Image.network(
-                            listing["imageUrl"],
-                            height: 200,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
+                            child: Image.network(
+                              listing["imageUrl"],
+                              height: 200,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                            ),
                           ),
-                        ),
                         ),
                         Padding(
                           padding: const EdgeInsets.all(10.0),

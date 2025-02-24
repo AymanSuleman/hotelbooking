@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hotelbooking/signin.dart';
 
-// void main() {
-//   runApp(MaterialApp(
-//     debugShowCheckedModeBanner: false,
-//     home: Signup(),
-//   ));
-// }
+void main() {
+  runApp(MaterialApp(
+    debugShowCheckedModeBanner: false,
+    home: Signup(),
+  ));
+}
 
 class Signup extends StatefulWidget {
   @override

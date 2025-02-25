@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
-import 'package:hotelbooking/bookingprocess.dart';
+// import 'package:hotelbooking/bookingprocess.dart';
 import 'package:hotelbooking/details.dart';
 import 'package:hotelbooking/favorite.dart';
 import 'package:hotelbooking/history.dart';

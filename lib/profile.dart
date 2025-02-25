@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_switch/flutter_switch.dart';
+// import 'package:flutter_switch/flutter_switch.dart';/
 import 'package:hotelbooking/myprofile.dart';
 import 'package:hotelbooking/signup.dart';
 
@@ -201,8 +201,7 @@ class PrivacySharingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.white,
-
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,

@@ -269,6 +269,7 @@ class PaymentSuccessPage extends StatefulWidget {
 class _PaymentSuccessPageState extends State<PaymentSuccessPage>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
+  // ignore: unused_field
   late Animation<double> _scaleAnimation;
   late Animation<Color?> _colorAnimation;
   late Animation<double> _iconAnimation;
@@ -283,8 +284,7 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage>
 
     _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0)
         .animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
-    _colorAnimation = ColorTween(
-            begin: Colors.blue.shade100, end: Colors.blue)
+    _colorAnimation = ColorTween(begin: Colors.blue.shade100, end: Colors.blue)
         .animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
     _iconAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
         CurvedAnimation(parent: _controller, curve: Curves.elasticOut));
@@ -355,7 +355,8 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage>
                 Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => HomeScreen(), // Replace with your Home widget
+                      builder: (context) =>
+                          HomeScreen(), // Replace with your Home widget
                     ));
               },
               child: Text(
@@ -369,5 +370,3 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage>
     );
   }
 }
-
-

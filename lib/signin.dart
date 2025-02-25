@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hotelbooking/change_pass.dart';
-import 'package:hotelbooking/home.dart';
+// import 'package:hotelbooking/home.dart';
+import 'package:hotelbooking/locationAdd.dart';
 import 'package:hotelbooking/signup.dart';
 
 void main() {
@@ -95,10 +96,8 @@ class SignInScreen extends StatelessWidget {
               child: TextButton(
                 onPressed: () {
                   // Navigate to forgot password page
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => ChangePass()));
-
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => ChangePass()));
                 },
                 child: Text("Forgot Password?"),
               ),
@@ -113,7 +112,7 @@ class SignInScreen extends StatelessWidget {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => HomeScreen(),
+                        builder: (context) => LocationScreen(),
                       ));
                 },
                 style: ElevatedButton.styleFrom(
@@ -147,9 +146,8 @@ class SignInScreen extends StatelessWidget {
             Center(
               child: TextButton(
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => Signup()));
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => Signup()));
                 },
                 child: RichText(
                   text: TextSpan(
@@ -158,7 +156,8 @@ class SignInScreen extends StatelessWidget {
                     children: [
                       TextSpan(
                         text: "Sign Up",
-                        style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            color: Colors.blue, fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),

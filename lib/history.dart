@@ -90,6 +90,7 @@
 // }
 
 import 'package:flutter/material.dart';
+import 'package:hotelbooking/details.dart';
 import 'package:hotelbooking/home.dart';
 
 void main() {
@@ -249,7 +250,12 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
                   child: ElevatedButton(
                     onPressed: () {
                       // Navigate to the booking details page
-                      Navigator.pushNamed(context, '/lib/details');
+                      // Navigator.pushNamed(context, '/lib/details');
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => HotelDetail(
+                        image: '',
+                        
+                        
+                        ),));
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,

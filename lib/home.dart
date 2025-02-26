@@ -1,24 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
-// import 'package:hotelbooking/bookingprocess.dart';
 import 'package:hotelbooking/details.dart';
 import 'package:hotelbooking/favorite.dart';
 import 'package:hotelbooking/history.dart';
 import 'package:hotelbooking/profile.dart';
-// import 'package:roombooking/detail.dar
-// import 'package:hotelbooking/details.dart';
-// import 'package:hotelbooking/favorite.dart';
-// import 'package:hotelbooking/history.dart';
-// import 'package:hotelbooking/profile.dart';
-
-void main() {
-  runApp(MaterialApp(
-    debugShowCheckedModeBanner: false,
-    home: HomeScreen(),
-  ));
-}
-
-// import 'package:flutter/material.dart';
 
 class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
   final String title;
@@ -110,9 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
     HomePage(),
     WishlistScreen(),
     MyBookingsScreen(),
-    // HistoryScreen(),
     ProfileScreen(),
-    // AnimatedStudentProfile()
   ];
 
   @override
@@ -482,8 +465,6 @@ class FeaturedCard extends StatelessWidget {
   }
 }
 
-// lets try
-
 // Populer place card
 class PopularPlaceCard extends StatelessWidget {
   final String image;
@@ -559,15 +540,18 @@ class PopularPlaceCard extends StatelessWidget {
                 top: 10,
                 right: 10,
                 child: Container(
-                  padding: EdgeInsets.all(8), // Padding for inner spacing
+                  // padding: EdgeInsets.all(8), // Padding for inner spacing
                   decoration: BoxDecoration(
                     color: Colors.grey[300], // Background color
                     shape: BoxShape.circle, // Makes it round
                   ),
-                  child: Icon(
-                    Icons.favorite_border,
-                    color: Colors.blue, // Icon color
-                    // size: 10,
+                  child: IconButton(
+                    onPressed: () {},
+                    icon: Icon(
+                      Icons.favorite_border,
+                      color: Colors.blue, // Icon color
+                      // size: 10,
+                    ),
                   ),
                 )),
           ],

@@ -246,7 +246,15 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
               children: [
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      // Navigate to the booking details page
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => BookingDetailsPage()),
+
+                      
+                      );
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,
                       shape: RoundedRectangleBorder(

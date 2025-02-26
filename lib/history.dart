@@ -97,7 +97,6 @@ void main() {
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
     home: MyBookingsScreen(),
-    
   ));
 }
 
@@ -249,13 +248,13 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
-                      // Navigate to the booking details page
-                      // Navigator.pushNamed(context, '/lib/details');
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => HotelDetail(
-                        image: '',
-                        
-                        
-                        ),));
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => HotelDetail(
+                              image: '',
+                            ),
+                          ));
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,

@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:hotelbooking/home.dart';
 
@@ -11,48 +12,57 @@ class WishlistScreen extends StatefulWidget {
 class _WishlistScreenState extends State<WishlistScreen> {
   final List<Map<String, dynamic>> items = [
     {
-      "name": "GoldenValley",
+      "name": "Golden Valley",
       "price": "\$150/night",
       "location": "New York, USA",
       "rating": 4.9,
       "discount": "10% Off",
       "image":
           'https://t3.ftcdn.net/jpg/09/79/53/60/240_F_979536087_YmIDF56Qtz7i1JiEXv3eXzI5gitM8BvS.jpg',
+      "isFavorite": false, // Track favorite status
     },
     {
-      "name": "AlohaVista",
+      "name": "Aloha Vista",
       "price": "\$450/night",
       "location": "New York, USA",
       "rating": 4.8,
       "discount": "10% Off",
       "image":
           'https://as2.ftcdn.net/v2/jpg/09/64/96/87/1000_F_964968792_O79xKuKm2BYv0dFoQ4b1ryvzd4RgNeRD.jpg',
+      "isFavorite": false,
     },
     {
-      "name": "AlohaVista",
-      "price": "\$450/night",
-      "location": "New York, USA",
-      "rating": 4.8,
-      "discount": "10% Off",
+      "name": "Sea Breeze",
+      "price": "\$300/night",
+      "location": "Los Angeles, USA",
+      "rating": 4.7,
+      "discount": "15% Off",
       "image":
           'https://as2.ftcdn.net/v2/jpg/09/64/96/87/1000_F_964968792_O79xKuKm2BYv0dFoQ4b1ryvzd4RgNeRD.jpg',
+      "isFavorite": false,
     },
     {
-      "name": "AlohaVista",
-      "price": "\$450/night",
-      "location": "New York, USA",
-      "rating": 4.8,
-      "discount": "10% Off",
+      "name": "Mountain Retreat",
+      "price": "\$250/night",
+      "location": "Denver, USA",
+      "rating": 4.6,
+      "discount": "20% Off",
       "image":
           'https://as2.ftcdn.net/v2/jpg/09/64/96/87/1000_F_964968792_O79xKuKm2BYv0dFoQ4b1ryvzd4RgNeRD.jpg',
+      "isFavorite": false,
     },
   ];
+
+  void toggleFavorite(int index) {
+    setState(() {
+      items[index]["isFavorite"] = !items[index]["isFavorite"];
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-
       appBar: CustomAppBar(
         title: 'Favorite',
         onSearch: (String) {},
@@ -70,6 +80,8 @@ class _WishlistScreenState extends State<WishlistScreen> {
               price: item["price"],
               rating: item["rating"],
               discount: item["discount"],
+              isFavorite: item["isFavorite"],
+              onFavoriteToggle: () => toggleFavorite(index),
             );
           },
         ),
@@ -78,7 +90,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
   }
 }
 
-class FavoriteItem extends StatefulWidget {
+class FavoriteItem extends StatelessWidget {
   const FavoriteItem({
     Key? key,
     required this.imagePath,
@@ -87,6 +99,8 @@ class FavoriteItem extends StatefulWidget {
     required this.price,
     required this.rating,
     required this.discount,
+    required this.isFavorite,
+    required this.onFavoriteToggle,
   }) : super(key: key);
 
   final String imagePath;
@@ -95,12 +109,9 @@ class FavoriteItem extends StatefulWidget {
   final String price;
   final double rating;
   final String discount;
+  final bool isFavorite;
+  final VoidCallback onFavoriteToggle;
 
-  @override
-  _FavoriteItemState createState() => _FavoriteItemState();
-}
-
-class _FavoriteItemState extends State<FavoriteItem> {
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -112,7 +123,7 @@ class _FavoriteItemState extends State<FavoriteItem> {
             ClipRRect(
               borderRadius: BorderRadius.circular(6.0),
               child: Image.network(
-                widget.imagePath,
+                imagePath,
                 width: 80,
                 height: 80,
                 fit: BoxFit.cover,
@@ -135,7 +146,7 @@ class _FavoriteItemState extends State<FavoriteItem> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
-                          widget.discount,
+                          discount,
                           style: const TextStyle(
                             fontSize: 10,
                             color: Colors.blue,
@@ -143,10 +154,13 @@ class _FavoriteItemState extends State<FavoriteItem> {
                           ),
                         ),
                       ),
-                      Icon(
-                        Icons.favorite,
-                        color: Colors.blue,
-                        size: 20,
+                      GestureDetector(
+                        onTap: onFavoriteToggle,
+                        child: Icon(
+                          isFavorite ? Icons.favorite : Icons.favorite_border,
+                          color: isFavorite ? Colors.red : Colors.grey,
+                          size: 20,
+                        ),
                       ),
                     ],
                   ),
@@ -157,7 +171,7 @@ class _FavoriteItemState extends State<FavoriteItem> {
                     children: [
                       Expanded(
                         child: Text(
-                          widget.title,
+                          title,
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -174,7 +188,7 @@ class _FavoriteItemState extends State<FavoriteItem> {
                             size: 14,
                           ),
                           Text(
-                            widget.rating.toString(),
+                            rating.toString(),
                             style: const TextStyle(
                                 fontSize: 12, color: Colors.black),
                           ),
@@ -184,11 +198,11 @@ class _FavoriteItemState extends State<FavoriteItem> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    widget.location,
+                    location,
                     style: const TextStyle(fontSize: 12),
                   ),
                   Text(
-                    widget.price,
+                    price,
                     style: const TextStyle(
                       fontSize: 14,
                       color: Colors.blue,

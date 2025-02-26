@@ -466,7 +466,8 @@ class FeaturedCard extends StatelessWidget {
 }
 
 // Populer place card
-class PopularPlaceCard extends StatelessWidget {
+
+class PopularPlaceCard extends StatefulWidget {
   final String image;
   final String title;
   final double rating;
@@ -478,24 +479,33 @@ class PopularPlaceCard extends StatelessWidget {
   });
 
   @override
+  _PopularPlaceCardState createState() => _PopularPlaceCardState();
+}
+
+class _PopularPlaceCardState extends State<PopularPlaceCard> {
+  bool isFavorite = false; // Track favorite state
+
+  @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
         Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => HotelDetail(
-                image: image,
-              ),
-            ));
+          context,
+          MaterialPageRoute(
+            builder: (context) => HotelDetail(image: widget.image),
+          ),
+        );
       },
       splashColor: Colors.blue.withOpacity(0.5), // blue ripple effect
-      borderRadius: BorderRadius.circular(15), // Matches the card shape
+      borderRadius: BorderRadius.circular(15),
       child: Container(
         width: 160,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15),
-          image: DecorationImage(image: NetworkImage(image), fit: BoxFit.cover),
+          image: DecorationImage(
+            image: NetworkImage(widget.image),
+            fit: BoxFit.cover,
+          ),
         ),
         child: Stack(
           children: [
@@ -512,11 +522,11 @@ class PopularPlaceCard extends StatelessWidget {
                 children: [
                   Spacer(),
                   Hero(
-                    tag: title, // Unique tag for smooth animation
+                    tag: widget.title,
                     child: Material(
                       color: Colors.transparent,
                       child: Text(
-                        title,
+                        widget.title,
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 16,
@@ -529,7 +539,7 @@ class PopularPlaceCard extends StatelessWidget {
                     children: [
                       Icon(Icons.star, color: Colors.yellow, size: 16),
                       SizedBox(width: 5),
-                      Text('$rating Stars',
+                      Text('${widget.rating} Stars',
                           style: TextStyle(color: Colors.white)),
                     ],
                   ),
@@ -537,23 +547,26 @@ class PopularPlaceCard extends StatelessWidget {
               ),
             ),
             Positioned(
-                top: 10,
-                right: 10,
-                child: Container(
-                  // padding: EdgeInsets.all(8), // Padding for inner spacing
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300], // Background color
-                    shape: BoxShape.circle, // Makes it round
+              top: 10,
+              right: 10,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  shape: BoxShape.circle,
+                ),
+                child: IconButton(
+                  onPressed: () {
+                    setState(() {
+                      isFavorite = !isFavorite;
+                    });
+                  },
+                  icon: Icon(
+                    isFavorite ? Icons.favorite : Icons.favorite_border,
+                    color: isFavorite ? Colors.blue : Colors.blue,
                   ),
-                  child: IconButton(
-                    onPressed: () {},
-                    icon: Icon(
-                      Icons.favorite_border,
-                      color: Colors.blue, // Icon color
-                      // size: 10,
-                    ),
-                  ),
-                )),
+                ),
+              ),
+            ),
           ],
         ),
       ),

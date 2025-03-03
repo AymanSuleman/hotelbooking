@@ -4,11 +4,15 @@ import 'package:hotelbooking/payment.dart';
 void main() {
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
-    home: ReviewSummaryScreen(),
+    home: ReviewSummaryScreen(showContinueButton: true), // Default with Continue button
   ));
 }
 
 class ReviewSummaryScreen extends StatelessWidget {
+  final bool showContinueButton;
+
+  ReviewSummaryScreen({required this.showContinueButton});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,39 +54,30 @@ class ReviewSummaryScreen extends StatelessWidget {
                       Row(
                         children: [
                           Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 6, vertical: 2),
+                            padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                             decoration: BoxDecoration(
                               color: Colors.blue.shade100,
                               borderRadius: BorderRadius.circular(4),
                             ),
-                            child: Text("20% Off",
-                                style: TextStyle(
-                                    color: Colors.blue, fontSize: 12)),
+                            child: Text("20% Off", style: TextStyle(color: Colors.blue, fontSize: 12)),
                           ),
                           Spacer(),
                           Icon(Icons.star, color: Colors.orange, size: 18),
-                          Text(" 4.5",
-                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          Text(" 4.5", style: TextStyle(fontWeight: FontWeight.bold)),
                         ],
                       ),
                       SizedBox(height: 4),
-                      Text("HarborHaven Hideaway",
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold)),
+                      Text("HarborHaven Hideaway", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                       SizedBox(height: 4),
                       Row(
                         children: [
                           Icon(Icons.location_on, size: 16, color: Colors.grey),
                           SizedBox(width: 4),
-                          Text("New York, USA",
-                              style: TextStyle(color: Colors.grey)),
+                          Text("New York, USA", style: TextStyle(color: Colors.grey)),
                         ],
                       ),
                       SizedBox(height: 4),
-                      Text("\$650 /night",
-                          style: TextStyle(
-                              color: Colors.blue, fontWeight: FontWeight.bold)),
+                      Text("\$650 /night", style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold)),
                     ],
                   ),
                 ),
@@ -111,28 +106,27 @@ class ReviewSummaryScreen extends StatelessWidget {
               ),
             ),
             Spacer(),
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  padding: EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+            if (showContinueButton) // Show "Continue" button only when needed
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    padding: EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
-                ),
-                onPressed: () {
-                  Navigator.push(
+                  onPressed: () {
+                    Navigator.push(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => PaymentSuccessPage(),
-                      ));
-                },
-                child: Text("Continue",
-                    style: TextStyle(fontSize: 16, color: Colors.white)),
+                      MaterialPageRoute(builder: (context) => PaymentSuccessPage()),
+                    );
+                  },
+                  child: Text("Continue", style: TextStyle(fontSize: 16, color: Colors.white)),
+                ),
               ),
-            ),
           ],
         ),
       ),
@@ -146,9 +140,7 @@ class ReviewSummaryScreen extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(title, style: TextStyle(color: Colors.grey)),
-          Text(value,
-              style: TextStyle(
-                  fontWeight: isBold ? FontWeight.bold : FontWeight.normal)),
+          Text(value, style: TextStyle(fontWeight: isBold ? FontWeight.bold : FontWeight.normal)),
         ],
       ),
     );

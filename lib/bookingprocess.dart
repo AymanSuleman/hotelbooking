@@ -138,7 +138,7 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
         Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => ReviewSummaryScreen(),
+              builder: (context) => ReviewSummaryScreen(showContinueButton: true,),
             ));
       },
       style: ElevatedButton.styleFrom(

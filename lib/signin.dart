@@ -99,7 +99,7 @@ class SignInScreen extends StatelessWidget {
                   Navigator.push(context,
                       MaterialPageRoute(builder: (context) => ChangePass()));
                 },
-                child: Text("Forgot Password?"),
+                child: Text("Forgot Password?",style: TextStyle(color: Colors.black),),
               ),
             ),
             SizedBox(height: 20),

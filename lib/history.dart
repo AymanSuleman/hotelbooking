@@ -186,7 +186,9 @@ class BookingCard extends StatelessWidget {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => ReviewSummaryScreen(showContinueButton: false,),
+                              builder: (context) => ReviewSummaryScreen(
+                                showContinueButton: false,
+                              ),
                             ));
                       },
                       child: Text("View Booking",
@@ -238,23 +240,48 @@ class BookingCard extends StatelessWidget {
                   ),
                 ],
               ),
+            // if (booking["status"] == "Canceled")
+            //   ElevatedButton(
+            //     style: ElevatedButton.styleFrom(
+            //       backgroundColor: Colors.blue,
+            //       shape: RoundedRectangleBorder(
+            //           borderRadius: BorderRadius.circular(8)),
+            //     ),
+            //     onPressed: () {
+            //       Navigator.push(
+            //           context,
+            //           MaterialPageRoute(
+            //             builder: (context) => HotelDetail(image: ''),
+            //           ));
+            //     },
+            //     child: Text(
+            //       "Re-Book",
+            //       style: TextStyle(color: Colors.white),
+            //     ),
+            //   ),
             if (booking["status"] == "Canceled")
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8)),
-                ),
-                onPressed: () {
-                  Navigator.push(
+              SizedBox(
+                width: double.infinity, // Makes the button take full width
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    minimumSize: Size(120, 40), // Width: 150, Height: 50
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => HotelDetail(image: ''),
-                      ));
-                },
-                child: Text(
-                  "Re-Book",
-                  style: TextStyle(color: Colors.white),
+                      ),
+                    );
+                  },
+                  child: Text(
+                    "Re-Book",
+                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  ),
                 ),
               ),
           ],

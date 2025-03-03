@@ -514,6 +514,7 @@
 import 'package:flutter/material.dart';
 import 'package:hotelbooking/details.dart';
 import 'package:hotelbooking/home.dart';
+import 'package:hotelbooking/reviewSummery.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -694,7 +695,13 @@ class BookingCard extends StatelessWidget {
                           backgroundColor: Colors.blue,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8))),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ReviewSummaryScreen(),
+                            ));
+                      },
                       child: Text("View Booking",
                           style: TextStyle(color: Colors.white)),
                     ),
@@ -753,10 +760,10 @@ class BookingCard extends StatelessWidget {
                 ),
                 onPressed: () {
                   Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => HotelDetail(image: ''),
-                            ));
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => HotelDetail(image: ''),
+                      ));
                 },
                 child: Text(
                   "Re-Book",

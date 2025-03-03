@@ -18,7 +18,9 @@ class ReviewSummaryScreen extends StatelessWidget {
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
         title: Text("Review Summary", style: TextStyle(color: Colors.black)),
         centerTitle: true,

@@ -240,25 +240,6 @@ class BookingCard extends StatelessWidget {
                   ),
                 ],
               ),
-            // if (booking["status"] == "Canceled")
-            //   ElevatedButton(
-            //     style: ElevatedButton.styleFrom(
-            //       backgroundColor: Colors.blue,
-            //       shape: RoundedRectangleBorder(
-            //           borderRadius: BorderRadius.circular(8)),
-            //     ),
-            //     onPressed: () {
-            //       Navigator.push(
-            //           context,
-            //           MaterialPageRoute(
-            //             builder: (context) => HotelDetail(image: ''),
-            //           ));
-            //     },
-            //     child: Text(
-            //       "Re-Book",
-            //       style: TextStyle(color: Colors.white),
-            //     ),
-            //   ),
             if (booking["status"] == "Canceled")
               SizedBox(
                 width: double.infinity, // Makes the button take full width

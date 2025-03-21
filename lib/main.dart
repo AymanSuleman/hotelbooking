@@ -36,29 +36,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: Scaffold(
-        appBar: AppBar(title: Text("MongoDB in Flutter")),
-        body: FutureBuilder(
-          future: MongoDatabase.fetchUsers(),
-          builder:
-              (context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return Center(child: Text("Error: ${snapshot.error}"));
-            } else {
-              return ListView(
-                children: snapshot.data!.map((user) {
-                  return ListTile(
-                    title: Text(user['name']),
-                    subtitle: Text(user['email']),
-                  );
-                }).toList(),
-              );
-            }
-          },
-        ),
-      ),
+      home: FirstScreen(),
     );
   }
 }

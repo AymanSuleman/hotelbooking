@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:hotelbooking/home.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:hotelbooking/change_pass.dart';
 import 'package:hotelbooking/locationAdd.dart';
@@ -104,7 +105,7 @@ class _SignInScreenState extends State<SignInScreen> {
         // Navigate to next screen
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => LocationScreen()),
+          MaterialPageRoute(builder: (context) => HomeScreen()),
         );
       } else {
         final errorData = jsonDecode(response.body);

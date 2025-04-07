@@ -192,13 +192,14 @@
 //   }
 // }
 
-
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:hotelbooking/change_pass.dart';
 import 'package:hotelbooking/locationAdd.dart';
 import 'package:hotelbooking/signup.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -239,7 +240,8 @@ class SignInScreen extends StatefulWidget {
   final String? savedEmail;
   final String? savedPassword;
 
-  SignInScreen({this.isRemembered = false, this.savedEmail, this.savedPassword});
+  SignInScreen(
+      {this.isRemembered = false, this.savedEmail, this.savedPassword});
 
   @override
   _SignInScreenState createState() => _SignInScreenState();
@@ -262,18 +264,64 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 
   Future<void> _signIn() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    if (rememberMe) {
-      await prefs.setBool('remember_me', true);
-      await prefs.setString('email', emailController.text);
-      await prefs.setString('password', passwordController.text);
-    } else {
-      await prefs.remove('remember_me');
-      await prefs.remove('email');
-      await prefs.remove('password');
+    final email = emailController.text.trim();
+    final password = passwordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      _showErrorDialog("Please enter both email and password.");
+      return;
     }
-    Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => LocationScreen()));
+
+    try {
+      final response = await http.post(
+        Uri.parse('http://192.168.0.50:5000/api/auth/login'),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({"email": email, "password": password}),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final token = data['token'];
+        final user = data['user'];
+
+        // Store login info if rememberMe is checked
+        if (rememberMe) {
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setBool('remember_me', true);
+          await prefs.setString('email', email);
+          await prefs.setString('password', password);
+        }
+
+        // You may want to save the token if needed
+        // Example: await prefs.setString('token', token);
+
+        // Navigate to next screen
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => LocationScreen()),
+        );
+      } else {
+        final errorData = jsonDecode(response.body);
+        _showErrorDialog(errorData['msg'] ?? 'Login failed');
+      }
+    } catch (e) {
+      print("Login error: $e"); // Add this
+      _showErrorDialog("Something went wrong. Please try again later.");
+    }
+  }
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Login Error'),
+        content: Text(message),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(context), child: Text('OK')),
+        ],
+      ),
+    );
   }
 
   @override
@@ -305,7 +353,8 @@ class _SignInScreenState extends State<SignInScreen> {
               controller: emailController,
               decoration: InputDecoration(
                 hintText: "example@gmail.com",
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
               ),
             ),
             SizedBox(height: 20),
@@ -318,9 +367,11 @@ class _SignInScreenState extends State<SignInScreen> {
                   obscureText: value,
                   decoration: InputDecoration(
                     hintText: "Enter your password",
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10)),
                     suffixIcon: IconButton(
-                      icon: Icon(value ? Icons.visibility_off : Icons.visibility),
+                      icon:
+                          Icon(value ? Icons.visibility_off : Icons.visibility),
                       onPressed: () {
                         obscurePassword.value = !value;
                       },
@@ -348,10 +399,11 @@ class _SignInScreenState extends State<SignInScreen> {
                 ),
                 TextButton(
                   onPressed: () {
-                    Navigator.push(
-                        context, MaterialPageRoute(builder: (context) => ChangePass()));
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => ChangePass()));
                   },
-                  child: Text("Forgot Password?", style: TextStyle(color: Colors.black)),
+                  child: Text("Forgot Password?",
+                      style: TextStyle(color: Colors.black)),
                 ),
               ],
             ),
@@ -363,9 +415,11 @@ class _SignInScreenState extends State<SignInScreen> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
                   padding: EdgeInsets.symmetric(vertical: 15),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
                 ),
-                child: Text("Sign In", style: TextStyle(fontSize: 16, color: Colors.white)),
+                child: Text("Sign In",
+                    style: TextStyle(fontSize: 16, color: Colors.white)),
               ),
             ),
             SizedBox(height: 20),
@@ -385,10 +439,11 @@ class _SignInScreenState extends State<SignInScreen> {
             Center(
               child: TextButton(
                 onPressed: () {
-                  Navigator.push(
-                      context, MaterialPageRoute(builder: (context) => Signup()));
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => Signup()));
                 },
-                child: Text("Don't have an account? Sign Up", style: TextStyle(color: Colors.blue)),
+                child: Text("Don't have an account? Sign Up",
+                    style: TextStyle(color: Colors.blue)),
               ),
             ),
           ],
@@ -404,7 +459,9 @@ class _SignInScreenState extends State<SignInScreen> {
       },
       child: Container(
         padding: EdgeInsets.all(12),
-        decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: Colors.grey.shade300)),
+        decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(color: Colors.grey.shade300)),
         child: Icon(icon, size: 30, color: Colors.blue),
       ),
     );

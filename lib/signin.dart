@@ -324,133 +324,163 @@ class _SignInScreenState extends State<SignInScreen> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Padding(
-        padding: EdgeInsets.all(20.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: Text(
-                "Sign In",
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-            ),
-            SizedBox(height: 10),
-            Center(
-              child: Text(
-                "Hi! Welcome back, you've been missed",
-                style: TextStyle(color: Colors.grey),
-              ),
-            ),
-            SizedBox(height: 30),
-            Text("Email"),
-            TextField(
-              controller: emailController,
-              decoration: InputDecoration(
-                hintText: "example@gmail.com",
-                border:
-                    OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-              ),
-            ),
-            SizedBox(height: 20),
-            Text("Password"),
-            ValueListenableBuilder(
-              valueListenable: obscurePassword,
-              builder: (context, value, child) {
-                return TextField(
-                  controller: passwordController,
-                  obscureText: value,
-                  decoration: InputDecoration(
-                    hintText: "Enter your password",
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                    suffixIcon: IconButton(
-                      icon:
-                          Icon(value ? Icons.visibility_off : Icons.visibility),
-                      onPressed: () {
-                        obscurePassword.value = !value;
-                      },
-                    ),
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    backgroundColor: Colors.white,
+    body: SafeArea(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: IntrinsicHeight(
+                child: Padding(
+                  padding: EdgeInsets.all(20.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Spacer(),
+                      Center(
+                        child: Text(
+                          "Sign In",
+                          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      Center(
+                        child: Text(
+                          "Hi! Welcome back, you've been missed",
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                      ),
+                      SizedBox(height: 30),
+                      Text("Email"),
+                      TextField(
+                        controller: emailController,
+                        decoration: InputDecoration(
+                          hintText: "example@gmail.com",
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                      Text("Password"),
+                      ValueListenableBuilder(
+                        valueListenable: obscurePassword,
+                        builder: (context, value, child) {
+                          return TextField(
+                            controller: passwordController,
+                            obscureText: value,
+                            decoration: InputDecoration(
+                              hintText: "Enter your password",
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  value ? Icons.visibility_off : Icons.visibility,
+                                ),
+                                onPressed: () {
+                                  obscurePassword.value = !value;
+                                },
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                      SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Checkbox(
+                                value: rememberMe,
+                                onChanged: (bool? value) {
+                                  setState(() {
+                                    rememberMe = value ?? false;
+                                  });
+                                },
+                              ),
+                              Text("Remember Me"),
+                            ],
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => ChangePass()),
+                              );
+                            },
+                            child: Text(
+                              "Forgot Password?",
+                              style: TextStyle(color: Colors.black),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 20),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: _signIn,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue,
+                            padding: EdgeInsets.symmetric(vertical: 15),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          child: Text(
+                            "Sign In",
+                            style: TextStyle(fontSize: 16, color: Colors.white),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                      Center(child: Text("Or sign in with")),
+                      SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          socialButton(FontAwesomeIcons.facebook),
+                          SizedBox(width: 20),
+                          socialButton(FontAwesomeIcons.google),
+                          SizedBox(width: 20),
+                          socialButton(FontAwesomeIcons.instagram),
+                        ],
+                      ),
+                      SizedBox(height: 20),
+                      Center(
+                        child: TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => Signup()),
+                            );
+                          },
+                          child: Text(
+                            "Don't have an account? Sign Up",
+                            style: TextStyle(color: Colors.blue),
+                          ),
+                        ),
+                      ),
+                      Spacer(),
+                    ],
                   ),
-                );
-              },
-            ),
-            SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Checkbox(
-                      value: rememberMe,
-                      onChanged: (bool? value) {
-                        setState(() {
-                          rememberMe = value ?? false;
-                        });
-                      },
-                    ),
-                    Text("Remember Me"),
-                  ],
                 ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => ChangePass()));
-                  },
-                  child: Text("Forgot Password?",
-                      style: TextStyle(color: Colors.black)),
-                ),
-              ],
-            ),
-            SizedBox(height: 20),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: _signIn,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  padding: EdgeInsets.symmetric(vertical: 15),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)),
-                ),
-                child: Text("Sign In",
-                    style: TextStyle(fontSize: 16, color: Colors.white)),
               ),
             ),
-            SizedBox(height: 20),
-            Center(child: Text("Or sign in with")),
-            SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                socialButton(FontAwesomeIcons.facebook),
-                SizedBox(width: 20),
-                socialButton(FontAwesomeIcons.google),
-                SizedBox(width: 20),
-                socialButton(FontAwesomeIcons.instagram),
-              ],
-            ),
-            SizedBox(height: 20),
-            Center(
-              child: TextButton(
-                onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => Signup()));
-                },
-                child: Text("Don't have an account? Sign Up",
-                    style: TextStyle(color: Colors.blue)),
-              ),
-            ),
-          ],
-        ),
+          );
+        },
       ),
-    );
-  }
+    ),
+  );
+}
+}
 
   Widget socialButton(IconData icon) {
     return GestureDetector(
@@ -466,4 +496,5 @@ class _SignInScreenState extends State<SignInScreen> {
       ),
     );
   }
-}
+
+

@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:hotelbooking/details.dart';
 import 'package:hotelbooking/favorite.dart';
@@ -36,7 +38,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
                   _isSearching = false;
                   _searchController.clear();
                   if (widget.onSearch != null) {
-                    widget.onSearch!(""); // Reset search
+                    widget.onSearch!("");
                   }
                 });
               },
@@ -50,7 +52,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
                 hintText: "Search...",
                 border: InputBorder.none,
               ),
-              onChanged: widget.onSearch, // Call search function
+              onChanged: widget.onSearch,
             )
           : Text(widget.title,
               style:
@@ -65,7 +67,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
               if (!_isSearching) {
                 _searchController.clear();
                 if (widget.onSearch != null) {
-                  widget.onSearch!(""); // Reset search
+                  widget.onSearch!("");
                 }
               }
             });
@@ -105,143 +107,103 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: CurvedNavigationBar(
         key: _bottomNavigationKey,
         backgroundColor: Colors.transparent,
-        color: _selectedIndex == 0 ||
-                _selectedIndex == 1 ||
-                _selectedIndex == 2 ||
-                _selectedIndex == 3
-            ? Colors.blue // background for selected items
-            : Colors.white, // background for non-selected items
-        buttonBackgroundColor: _selectedIndex == 0 ||
-                _selectedIndex == 1 ||
-                _selectedIndex == 2 ||
-                _selectedIndex == 3
-            ? Colors.blue // background for selected button
-            : Colors.white, // background for non-selected button
+        color: Colors.blue,
+        buttonBackgroundColor: Colors.blue,
         height: 60,
         animationDuration: Duration(milliseconds: 300),
         animationCurve: Curves.easeInOut,
         index: _selectedIndex,
         onTap: _onItemTapped,
         items: <Widget>[
-          Icon(Icons.home,
-              size: 30,
-              color: _selectedIndex == 0 ? Colors.white : Colors.white),
-          Icon(Icons.favorite,
-              size: 30,
-              color: _selectedIndex == 1 ? Colors.white : Colors.white),
-          Icon(Icons.history,
-              size: 30,
-              color: _selectedIndex == 2 ? Colors.white : Colors.white),
-          Icon(Icons.person,
-              size: 30,
-              color: _selectedIndex == 3 ? Colors.white : Colors.white),
+          Icon(Icons.home, size: 30, color: Colors.white),
+          Icon(Icons.favorite, size: 30, color: Colors.white),
+          Icon(Icons.history, size: 30, color: Colors.white),
+          Icon(Icons.person, size: 30, color: Colors.white),
         ],
       ),
     );
   }
 }
 
-// ✅ Sample Pages
 class HomePage extends StatefulWidget {
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  final List<Map<String, dynamic>> popularPlaces = [
-    {
-      'image':
-          'https://t4.ftcdn.net/jpg/06/32/20/07/240_F_632200724_WuOGPlu1XfDjqUinsBGzHXaa8TVtdqD9.jpg',
-      'title': 'The Reefs',
-      'rating': 4.9
-    },
-    {
-      'image':
-          'https://t3.ftcdn.net/jpg/03/21/78/98/240_F_321789819_Jyv66AM5PoY0j9tZzjkB1c807zQQXtZh.jpg',
-      'title': 'Devils Cove',
-      'rating': 4.7
-    },
-    {
-      'image':
-          'https://t3.ftcdn.net/jpg/09/79/53/60/240_F_979536087_YmIDF56Qtz7i1JiEXv3eXzI5gitM8BvS.jpg',
-      'title': 'Devils Cove',
-      'rating': 4.7
-    },
-    {
-      'image':
-          'https://as2.ftcdn.net/v2/jpg/09/64/96/87/1000_F_964968792_O79xKuKm2BYv0dFoQ4b1ryvzd4RgNeRD.jpg',
-      'title': 'Devils Cove',
-      'rating': 4.7
-    },
-  ];
+  Map<String, dynamic>? featuredCardData;
+  List<Map<String, dynamic>> popularPlaces = [];
+  List<Map<String, dynamic>> featuredListings = [];
 
-  final List<Map<String, dynamic>> otherStays = [
-    {
-      "name": "GoldenValley",
-      "price": "\$150/night",
-      "location": "New York, USA",
-      "rating": 4.9,
-      "discount": "10% Off",
-      "image":
-          'https://t3.ftcdn.net/jpg/09/79/53/60/240_F_979536087_YmIDF56Qtz7i1JiEXv3eXzI5gitM8BvS.jpg',
-    },
-    {
-      "name": "AlohaVista",
-      "price": "\$450/night",
-      "location": "New York, USA",
-      "rating": 4.8,
-      "discount": "10% Off",
-      "image":
-          'https://as2.ftcdn.net/v2/jpg/09/64/96/87/1000_F_964968792_O79xKuKm2BYv0dFoQ4b1ryvzd4RgNeRD.jpg',
-    },
-    {
-      "name": "AlohaVista",
-      "price": "\$450/night",
-      "location": "New York, USA",
-      "rating": 4.8,
-      "discount": "10% Off",
-      "image":
-          'https://as2.ftcdn.net/v2/jpg/09/64/96/87/1000_F_964968792_O79xKuKm2BYv0dFoQ4b1ryvzd4RgNeRD.jpg',
-    },
-    {
-      "name": "AlohaVista",
-      "price": "\$450/night",
-      "location": "New York, USA",
-      "rating": 4.8,
-      "discount": "10% Off",
-      "image":
-          'https://as2.ftcdn.net/v2/jpg/09/64/96/87/1000_F_964968792_O79xKuKm2BYv0dFoQ4b1ryvzd4RgNeRD.jpg',
-    },
-  ];
-  final List<Map<String, dynamic>> featuredListings = [
-    {
-      "title": "Japanese-Style Hotel",
-      "location": "Manado, Sulawesi Utara",
-      "price": "\$10,000/night",
-      "oldPrice": "\$15,000",
-      "size": "2,000 Sqft",
-      "imageUrl":
-          'https://t3.ftcdn.net/jpg/09/79/53/60/240_F_979536087_YmIDF56Qtz7i1JiEXv3eXzI5gitM8BvS.jpg',
-    },
-    {
-      "title": "Japanese-Style Hotel",
-      "location": "Manado, Sulawesi Utara",
-      "price": "\$10,000/night",
-      "oldPrice": "\$15,000",
-      "size": "2,000 Sqft",
-      "imageUrl":
-          'https://as2.ftcdn.net/v2/jpg/09/64/96/87/1000_F_964968792_O79xKuKm2BYv0dFoQ4b1ryvzd4RgNeRD.jpg',
-    },
-    {
-      "title": "Japanese-Style Hotel",
-      "location": "Manado, Sulawesi Utara",
-      "price": "\$10,000/night",
-      "oldPrice": "\$15,000",
-      "size": "2,000 Sqft",
-      "imageUrl":
-          'https://t3.ftcdn.net/jpg/09/79/53/60/240_F_979536087_YmIDF56Qtz7i1JiEXv3eXzI5gitM8BvS.jpg',
+  @override
+  void initState() {
+    super.initState();
+    fetchFeaturedCard();
+    fetchPopularPlaces();
+    fetchOtherStays();
+  }
+
+  Future<void> fetchFeaturedCard() async {
+    final url = Uri.parse('http://192.168.0.50:5000/api/featured');
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        if (data.isNotEmpty) {
+          setState(() {
+            featuredCardData = data[0];
+          });
+        }
+      }
+    } catch (e) {
+      print('Error fetching featured card: $e');
     }
-  ];
+  }
+
+  Future<void> fetchPopularPlaces() async {
+    final url = Uri.parse('http://192.168.0.50:5000/api/popular-stays');
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        setState(() {
+          popularPlaces = data
+              .map<Map<String, dynamic>>((item) => {
+                    'title': item['name'],
+                    'rating': item['rating'].toDouble(),
+                    'image': item['imageUrl'],
+                  })
+              .toList();
+        });
+      }
+    } catch (e) {
+      print('Error fetching popular places: $e');
+    }
+  }
+
+  Future<void> fetchOtherStays() async {
+    final url = Uri.parse('http://192.168.0.50:5000/api/other-stays');
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        setState(() {
+          featuredListings = data
+              .map<Map<String, dynamic>>((item) => {
+                    'title': item['name'],
+                    'location': item['location'],
+                    'price': item['price'],
+                    'imageUrl': item['imageUrl'],
+                    'size': '2,000 Sqft',
+                  })
+              .toList();
+        });
+      }
+    } catch (e) {
+      print('Error fetching other stays: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -253,144 +215,127 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              FeaturedCard(),
+              featuredCardData != null
+                  ? FeaturedCard(
+                      title: featuredCardData!['title'],
+                      subtitle: featuredCardData!['subtitle'],
+                      imageUrl: featuredCardData!['imageUrl'],
+                    )
+                  : Center(child: CircularProgressIndicator()),
               SizedBox(height: 20),
               Text('What else is popular',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               SizedBox(height: 10),
-              Container(
-                height: 200,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: popularPlaces.length,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 10),
-                      child: PopularPlaceCard(
-                        image: popularPlaces[index]['image'],
-                        title: popularPlaces[index]['title'],
-                        rating: popularPlaces[index]['rating'],
+              popularPlaces.isNotEmpty
+                  ? Container(
+                      height: 200,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: popularPlaces.length,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 10),
+                            child: PopularPlaceCard(
+                              image: popularPlaces[index]['image'],
+                              title: popularPlaces[index]['title'],
+                              rating: popularPlaces[index]['rating'],
+                            ),
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
-              ),
+                    )
+                  : Center(child: CircularProgressIndicator()),
               SizedBox(height: 20),
               Text('Other Stays',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               SizedBox(height: 10),
-
-              //new
-              ListView.builder(
-                physics: NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                itemCount: featuredListings.length,
-                itemBuilder: (context, index) {
-                  var listing = featuredListings[index];
-                  return Card(
-                    color: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    elevation: 5,
-                    margin: EdgeInsets.only(bottom: 16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.vertical(
-                              top: Radius.circular(15),
-                              bottom: Radius.circular(15)),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black
-                                      .withOpacity(0.7), // Shadow color
-                                  spreadRadius: 6, // Spread of the shadow
-                                  blurRadius: 8, // Blur effect for the shadow
-                                  offset: Offset(4,
-                                      8), // Shadow position (vertical offset)
-                                ),
-                              ],
-                            ),
-                            child: Image.network(
-                              listing["imageUrl"],
-                              height: 200,
-                              width: double.infinity,
-                              fit: BoxFit.cover,
-                            ),
+              featuredListings.isNotEmpty
+                  ? ListView.builder(
+                      physics: NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: featuredListings.length,
+                      itemBuilder: (context, index) {
+                        var listing = featuredListings[index];
+                        return Card(
+                          color: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(10.0),
+                          elevation: 5,
+                          margin: EdgeInsets.only(bottom: 16),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Row to align title on the left and price on the right
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      listing["title"],
-                                      style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold),
-                                      maxLines: 1,
-                                      overflow: TextOverflow
-                                          .ellipsis, // Prevents text overflow
+                              ClipRRect(
+                                borderRadius: BorderRadius.vertical(
+                                    top: Radius.circular(15),
+                                    bottom: Radius.circular(15)),
+                                child: Image.network(
+                                  listing["imageUrl"],
+                                  height: 200,
+                                  width: double.infinity,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            listing["title"],
+                                            style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                        Text(
+                                          listing["price"],
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.orange),
+                                        ),
+                                      ],
                                     ),
-                                  ),
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      Text(
-                                        listing["price"],
-                                        style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.orange),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 4),
-
-                              // Location Row
-                              Row(
-                                children: [
-                                  Icon(Icons.location_on,
-                                      size: 16, color: Colors.grey),
-                                  SizedBox(width: 4),
-                                  Text(listing["location"],
-                                      style: TextStyle(color: Colors.grey)),
-                                ],
-                              ),
-                              SizedBox(height: 4),
-
-                              // Size Row
-                              Row(
-                                children: [
-                                  Icon(Icons.square_foot,
-                                      size: 16, color: Colors.grey),
-                                  SizedBox(width: 4),
-                                  Text(listing["size"],
-                                      style: TextStyle(color: Colors.grey)),
-                                ],
+                                    SizedBox(height: 4),
+                                    Row(
+                                      children: [
+                                        Icon(Icons.location_on,
+                                            size: 16, color: Colors.grey),
+                                        SizedBox(width: 4),
+                                        Text(listing["location"],
+                                            style:
+                                                TextStyle(color: Colors.grey)),
+                                      ],
+                                    ),
+                                    SizedBox(height: 4),
+                                    Row(
+                                      children: [
+                                        Icon(Icons.square_foot,
+                                            size: 16, color: Colors.grey),
+                                        SizedBox(width: 4),
+                                        Text(listing["size"],
+                                            style:
+                                                TextStyle(color: Colors.grey)),
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ),
                             ],
                           ),
-                        ),
-                      ],
-// );
-                      // ],
-                    ),
-                  );
-                },
-              ),
+                        );
+                      },
+                    )
+                  : Center(child: CircularProgressIndicator()),
             ],
           ),
         ),
@@ -400,6 +345,16 @@ class _HomePageState extends State<HomePage> {
 }
 
 class FeaturedCard extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final String imageUrl;
+
+  FeaturedCard({
+    required this.title,
+    required this.subtitle,
+    required this.imageUrl,
+  });
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -407,8 +362,7 @@ class FeaturedCard extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
         image: DecorationImage(
-          image: NetworkImage(
-              'https://t3.ftcdn.net/jpg/04/16/48/08/240_F_416480811_HmtgLEq1GLmqy0WpKuAfuaYFn7u08IyF.jpg'),
+          image: NetworkImage(imageUrl),
           fit: BoxFit.cover,
         ),
       ),
@@ -431,30 +385,22 @@ class FeaturedCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Discover the most popular places',
+                  title,
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                // Spacer()
-                SizedBox(
-                  height: 10,
-                ),
+                SizedBox(height: 10),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20)),
                   ),
-                  onPressed: () {
-                    // Add navigation or action
-                  },
-                  child: Text(
-                    'Explore Now',
-                    style: TextStyle(color: Colors.white),
-                  ),
+                  onPressed: () {},
+                  child: Text(subtitle, style: TextStyle(color: Colors.white)),
                 ),
               ],
             ),
@@ -464,8 +410,6 @@ class FeaturedCard extends StatelessWidget {
     );
   }
 }
-
-// Populer place card
 
 class PopularPlaceCard extends StatefulWidget {
   final String image;
@@ -483,7 +427,7 @@ class PopularPlaceCard extends StatefulWidget {
 }
 
 class _PopularPlaceCardState extends State<PopularPlaceCard> {
-  bool isFavorite = false; // Track favorite state
+  bool isFavorite = false;
 
   @override
   Widget build(BuildContext context) {
@@ -496,7 +440,7 @@ class _PopularPlaceCardState extends State<PopularPlaceCard> {
           ),
         );
       },
-      splashColor: Colors.blue.withOpacity(0.5), // blue ripple effect
+      splashColor: Colors.blue.withOpacity(0.5),
       borderRadius: BorderRadius.circular(15),
       child: Container(
         width: 160,
@@ -562,7 +506,7 @@ class _PopularPlaceCardState extends State<PopularPlaceCard> {
                   },
                   icon: Icon(
                     isFavorite ? Icons.favorite : Icons.favorite_border,
-                    color: isFavorite ? Colors.blue : Colors.blue,
+                    color: Colors.blue,
                   ),
                 ),
               ),

@@ -307,50 +307,14 @@
 
 
 
-// new code//
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hotelbooking/home.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:hotelbooking/change_pass.dart';
-// import 'package:hotelbooking/locationAdd.dart';
 import 'package:hotelbooking/signup.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  bool isRemembered = prefs.getBool('remember_me') ?? false;
-  String? savedEmail = prefs.getString('email');
-  String? savedPassword = prefs.getString('password');
-
-  runApp(MyApp(
-    isRemembered: isRemembered,
-    savedEmail: savedEmail,
-    savedPassword: savedPassword,
-  ));
-}
-
-class MyApp extends StatelessWidget {
-  final bool isRemembered;
-  final String? savedEmail;
-  final String? savedPassword;
-
-  MyApp({required this.isRemembered, this.savedEmail, this.savedPassword});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: SignInScreen(
-        isRemembered: isRemembered,
-        savedEmail: savedEmail,
-        savedPassword: savedPassword,
-      ),
-    );
-  }
-}
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignInScreen extends StatefulWidget {
   final bool isRemembered;
@@ -624,4 +588,3 @@ class _SignInScreenState extends State<SignInScreen> {
     );
   }
 }
-

@@ -358,7 +358,7 @@ class _SignInScreenState extends State<SignInScreen> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://192.168.0.50:5000/api/auth/login'),
+        Uri.parse('http://192.168.0.23:5000/api/auth/login'),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({"email": email, "password": password}),
       );
@@ -384,7 +384,7 @@ class _SignInScreenState extends State<SignInScreen> {
         // Navigate to home screen
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => HomeScreen()),
+          MaterialPageRoute(builder: (context) => HomeScreen(userId: userId)),
         );
       } else {
         final errorData = jsonDecode(response.body);

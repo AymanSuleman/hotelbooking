@@ -129,6 +129,55 @@
 //   }
 // }
 
+// import 'package:flutter/material.dart';
+// import 'package:hotelbooking/home.dart';
+// import 'package:hotelbooking/signin.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
+
+// void main() async {
+//   WidgetsFlutterBinding.ensureInitialized();
+//   SharedPreferences prefs = await SharedPreferences.getInstance();
+//   bool isRemembered = prefs.getBool('remember_me') ?? false;
+//   String? savedEmail = prefs.getString('email');
+//   String? savedPassword = prefs.getString('password');
+//   String? savedUserId = prefs.getString('userId'); // Retrieve saved userId
+
+//   runApp(MyApp(
+//     isRemembered: isRemembered,
+//     savedEmail: savedEmail,
+//     savedPassword: savedPassword,
+//     savedUserId: savedUserId,
+//   ));
+// }
+
+// class MyApp extends StatelessWidget {
+//   final bool isRemembered;
+//   final String? savedEmail;
+//   final String? savedPassword;
+//   final String? savedUserId;
+
+//   MyApp({
+//     required this.isRemembered,
+//     this.savedEmail,
+//     this.savedPassword,
+//     this.savedUserId,
+//   });
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       debugShowCheckedModeBanner: false,
+//       home: isRemembered && savedUserId != null // Check if user is remembered
+//           ? HomeScreen(userId: userId) // Directly navigate to home if the user is logged in
+//           : SignInScreen(
+//               isRemembered: isRemembered,
+//               savedEmail: savedEmail,
+//               savedPassword: savedPassword,
+//             ),
+//     );
+//   }
+// }
+
 import 'package:flutter/material.dart';
 import 'package:hotelbooking/home.dart';
 import 'package:hotelbooking/signin.dart';
@@ -167,8 +216,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: isRemembered && savedUserId != null // Check if user is remembered
-          ? HomeScreen() // Directly navigate to home if the user is logged in
+      home: isRemembered && savedUserId != null
+          ? HomeScreen(userId: savedUserId!) // ✅ Use savedUserId here
           : SignInScreen(
               isRemembered: isRemembered,
               savedEmail: savedEmail,

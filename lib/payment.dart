@@ -273,6 +273,8 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage>
   late Animation<double> _scaleAnimation;
   late Animation<Color?> _colorAnimation;
   late Animation<double> _iconAnimation;
+  
+  get userId => null;
 
   @override
   void initState() {
@@ -356,7 +358,7 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage>
                     context,
                     MaterialPageRoute(
                       builder: (context) =>
-                          HomeScreen(), // Replace with your Home widget
+                          HomeScreen(userId: userId), // Replace with your Home widget
                     ));
               },
               child: Text(

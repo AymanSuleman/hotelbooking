@@ -212,7 +212,7 @@ class BookingCard extends StatelessWidget {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => HotelDetail(image: ''),
+                              builder: (context) => HotelDetail(image: '', userId: '', roomId: null,),
                             ));
                       },
                       child: Text(
@@ -255,7 +255,7 @@ class BookingCard extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => HotelDetail(image: ''),
+                        builder: (context) => HotelDetail(image: '', userId: '', roomId: '',),
                       ),
                     );
                   },

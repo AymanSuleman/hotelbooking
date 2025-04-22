@@ -9,7 +9,7 @@ class HotelDetail extends StatefulWidget {
   final String image;
 
   HotelDetail({
-    required this.image,
+    required this.image, required String userId, required roomId,
   });
 
   @override

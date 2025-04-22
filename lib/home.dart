@@ -153,7 +153,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> fetchFeaturedCard() async {
-    final url = Uri.parse('http://192.168.0.23:5000/api/featured');
+    final url = Uri.parse('http://172.26.192.1:5000/api/featured');
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
@@ -163,7 +163,9 @@ class _HomePageState extends State<HomePage> {
             data[0]['images'].isNotEmpty) {
           setState(() {
             featuredCardData = data[0];
-           images = (data[0]['images'] as List).map((img) => img.toString()).toList();
+            images = (data[0]['images'] as List)
+                .map((img) => img.toString())
+                .toList();
 
             currentImageIndex = 0;
             isLoading = false;
@@ -184,7 +186,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> fetchPopularPlaces() async {
-    final url = Uri.parse('http://192.168.0.23:5000/api/popular-stays');
+    final url = Uri.parse('http://172.26.192.1:5000/api/popular-stays');
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
@@ -206,7 +208,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> fetchOtherStays() async {
-    final url = Uri.parse('http://192.168.0.23:5000/api/other-stays');
+    final url = Uri.parse('http://172.26.192.1:5000/api/other-stays');
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
@@ -360,8 +362,8 @@ class _HomePageState extends State<HomePage> {
                                         Text(listing["size"],
                                             style:
                                                 TextStyle(color: Colors.grey)),
-                                      ],  ),
-                              
+                                      ],
+                                    ),
                                   ],
                                 ),
                               ),
@@ -471,7 +473,7 @@ class PopularCard extends StatefulWidget {
 class _PopularCardState extends State<PopularCard> {
   bool isFavorite = false;
 
-  final String baseUrl = 'http://192.168.0.24:5000/api/wishlist';
+  final String baseUrl = 'http://172.26.192.1:5000/api/wishlist';
 
   Future<void> _toggleWishlist() async {
     setState(() {
@@ -524,7 +526,11 @@ class _PopularCardState extends State<PopularCard> {
         Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => HotelDetail(image: widget.image, userId: widget.userId, roomId: widget.roomId,)),
+              builder: (context) => HotelDetail(
+                    image: widget.image,
+                    userId: widget.userId,
+                    roomId: widget.roomId,
+                  )),
         );
       },
       splashColor: Colors.blue.withOpacity(0.5),
@@ -582,7 +588,7 @@ class _PopularCardState extends State<PopularCard> {
                   size: 24,
                 ),
               ),
-              ),
+            ),
           ],
         ),
       ),

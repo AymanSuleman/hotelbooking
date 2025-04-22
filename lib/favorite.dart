@@ -1,4 +1,3 @@
-
 // import 'package:flutter/material.dart';
 // import 'package:hotelbooking/home.dart';
 
@@ -302,7 +301,6 @@
 //   }
 // }
 
-
 //new //
 // import 'dart:convert';
 // import 'package:flutter/material.dart';
@@ -331,7 +329,7 @@
 //   }
 // Future<void> _fetchWishlist() async {
 //   final response = await http.get(
-//     Uri.parse('http://192.168.0.23:5000/api/wishlist/${widget.userId}')
+//     Uri.parse('http://172.26.192.1:5000/api/wishlist/${widget.userId}')
 //   );
 
 //   if (response.statusCode == 200) {
@@ -585,18 +583,6 @@
 //   }
 // }
 
-
-
-
-
-
-
-
-
-
-
-
-
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -623,8 +609,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
 
   Future<void> _fetchWishlist() async {
     final response = await http.get(
-      Uri.parse('http://192.168.0.23:5000/api/wishlist/${widget.userId}')
-    );
+        Uri.parse('http://172.26.192.1:5000/api/wishlist/${widget.userId}'));
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
@@ -682,13 +667,16 @@ class _WishlistScreenState extends State<WishlistScreen> {
                             fit: BoxFit.cover,
                           ),
                         )
-                      : Icon(Icons.image_not_supported, size: 80), // Default placeholder icon
+                      : Icon(Icons.image_not_supported,
+                          size: 80), // Default placeholder icon
                   SizedBox(width: 16),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(item['name'] ?? 'Unknown Name', // Fallback text for name
+                        Text(
+                            item['name'] ??
+                                'Unknown Name', // Fallback text for name
                             style: TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.bold)),
                         Text(item['price']?.toString() ?? 'Price Unavailable',
@@ -751,7 +739,8 @@ class _WishlistScreenState extends State<WishlistScreen> {
 
                     // Ensure room data is not null before accessing its properties
                     return FavoriteItem(
-                      imagePath: room['images'] ?? '', // Fallback to empty string if imageUrl is missing
+                      imagePath: room['images'] ??
+                          '', // Fallback to empty string if imageUrl is missing
                       title: room['name'] ?? 'Unknown', // Fallback to "Unknown"
                       price: room['price']?.toString() ?? 'Price Unavailable',
                       rating: (room['rating'] ?? 4.5).toDouble(),
@@ -797,7 +786,8 @@ class FavoriteItem extends StatelessWidget {
                       height: 80,
                       fit: BoxFit.cover,
                     )
-                  : Icon(Icons.image_not_supported, size: 80), // Default icon for missing images
+                  : Icon(Icons.image_not_supported,
+                      size: 80), // Default icon for missing images
             ),
             const SizedBox(width: 8),
             Expanded(

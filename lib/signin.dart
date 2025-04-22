@@ -304,9 +304,6 @@
 //     );
 //   }
 
-
-
-
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hotelbooking/home.dart';
@@ -358,7 +355,7 @@ class _SignInScreenState extends State<SignInScreen> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://192.168.0.23:5000/api/auth/login'),
+        Uri.parse('http://172.26.192.1:5000/api/auth/login'),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({"email": email, "password": password}),
       );

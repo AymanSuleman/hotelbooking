@@ -856,10 +856,291 @@
 // }
 
 //------------------
+
+// import 'dart:convert';
+// import 'package:flutter/material.dart';
+// import 'package:http/http.dart' as http;
+// import 'package:hotelbooking/home.dart'; // Make sure this contains CustomAppBar
+
+// class WishlistScreen extends StatefulWidget {
+//   final String userId;
+
+//   const WishlistScreen({Key? key, required this.userId}) : super(key: key);
+
+//   @override
+//   _WishlistScreenState createState() => _WishlistScreenState();
+// }
+
+// class _WishlistScreenState extends State<WishlistScreen> {
+//   List<dynamic> wishlist = [];
+//   bool isLoading = true;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _fetchWishlist();
+//   }
+
+//   Future<void> _fetchWishlist() async {
+//     try {
+//       final response = await http.get(
+//         Uri.parse('http://192.168.0.39:5000/api/wishlist/${widget.userId}'),
+//       );
+
+//       print("Status Code: ${response.statusCode}");
+//       print("Response Body: ${response.body}");
+
+//       if (response.statusCode == 200) {
+//         final data = jsonDecode(response.body);
+
+//         setState(() {
+//           wishlist = data.where((item) => item['roomId'] != null).toList();
+//           isLoading = false;
+//         });
+//       } else {
+//         print("Server error: ${response.statusCode}");
+//         setState(() {
+//           isLoading = false;
+//         });
+//       }
+//     } catch (e) {
+//       print("Fetch exception: $e");
+//       setState(() {
+//         isLoading = false;
+//       });
+//     }
+//   }
+
+//   void _removeItem(int index) {
+//     setState(() {
+//       wishlist.removeAt(index);
+//     });
+//   }
+
+//   void _showDeleteBottomSheet(BuildContext context, int index) {
+//     final item = wishlist[index];
+//     final room = item['roomId'];
+
+//     if (room == null) return;
+
+//     showModalBottomSheet(
+//       context: context,
+//       shape: RoundedRectangleBorder(
+//         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+//       ),
+//       builder: (context) {
+//         return Padding(
+//           padding: const EdgeInsets.all(16.0),
+//           child: Column(
+//             mainAxisSize: MainAxisSize.min,
+//             children: [
+//               Text('Remove from bookmark?',
+//                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+//               SizedBox(height: 16),
+//               Row(
+//                 children: [
+//                   room['images'] != null
+//                       ? ClipRRect(
+//                           borderRadius: BorderRadius.circular(10),
+//                           child: Image.network(
+//                             room['images'],
+//                             width: 80,
+//                             height: 80,
+//                             fit: BoxFit.cover,
+//                           ),
+//                         )
+//                       : Icon(Icons.image_not_supported, size: 80),
+//                   SizedBox(width: 16),
+//                   Expanded(
+//                     child: Column(
+//                       crossAxisAlignment: CrossAxisAlignment.start,
+//                       children: [
+//                         Text(room['name'] ?? 'Unknown Name',
+//                             style: TextStyle(
+//                                 fontSize: 16, fontWeight: FontWeight.bold)),
+//                         Text(room['price']?.toString() ?? 'Price Unavailable',
+//                             style: TextStyle(color: Colors.blue)),
+//                       ],
+//                     ),
+//                   ),
+//                 ],
+//               ),
+//               SizedBox(height: 16),
+//               Row(
+//                 children: [
+//                   Expanded(
+//                     child: ElevatedButton(
+//                       onPressed: () => Navigator.pop(context),
+//                       style: ElevatedButton.styleFrom(
+//                           backgroundColor: Colors.blue),
+//                       child:
+//                           Text('Cancel', style: TextStyle(color: Colors.white)),
+//                     ),
+//                   ),
+//                   SizedBox(width: 16),
+//                   Expanded(
+//                     child: ElevatedButton(
+//                       onPressed: () {
+//                         _removeItem(index);
+//                         Navigator.pop(context);
+//                       },
+//                       style: ElevatedButton.styleFrom(
+//                           backgroundColor: Colors.blue),
+//                       child: Text('Yes, remove',
+//                           style: TextStyle(color: Colors.white)),
+//                     ),
+//                   ),
+//                 ],
+//               ),
+//             ],
+//           ),
+//         );
+//       },
+//     );
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       backgroundColor: Colors.white,
+//       appBar: CustomAppBar(
+//         title: 'Favorite',
+//         onSearch: (query) {},
+//       ),
+//       body: isLoading
+//           ? Center(child: CircularProgressIndicator())
+//           : wishlist.isEmpty
+//               ? Center(
+//                   child: Text(
+//                     "No items in wishlist.",
+//                     style: TextStyle(color: Colors.red),
+//                   ),
+//                 )
+//               : ListView.builder(
+//                   itemCount: wishlist.length,
+//                   itemBuilder: (context, index) {
+//                     final item = wishlist[index];
+//                     final room = item['roomId'];
+
+//                     if (room == null) return SizedBox(); // Skip null entries
+
+//                     return FavoriteItem(
+//                       imagePath:
+//                           (room['images'] is List && room['images'].isNotEmpty)
+//                               ? room['images'][0]
+//                               : '',
+//                       title: room['name'] ?? 'Unknown',
+//                       price: room['price']?.toString() ?? 'Price Unavailable',
+//                       rating: (room['rating'] ?? 4.5).toDouble(),
+//                       onRemove: () => _showDeleteBottomSheet(context, index),
+//                     );
+//                   },
+//                 ),
+//     );
+//   }
+// }
+
+// class FavoriteItem extends StatelessWidget {
+//   const FavoriteItem({
+//     Key? key,
+//     required this.imagePath,
+//     required this.title,
+//     required this.price,
+//     required this.rating,
+//     required this.onRemove,
+//   }) : super(key: key);
+
+//   final String imagePath;
+//   final String title;
+//   final String price;
+//   final double rating;
+//   final VoidCallback onRemove;
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Card(
+//       margin: const EdgeInsets.symmetric(vertical: 4.0),
+//       child: Padding(
+//         padding: const EdgeInsets.all(6.0),
+//         child: Row(
+//           children: [
+//             ClipRRect(
+//               borderRadius: BorderRadius.circular(6.0),
+//               child: imagePath.isNotEmpty
+//                   ? Image.network(
+//                       imagePath,
+//                       width: 80,
+//                       height: 80,
+//                       fit: BoxFit.cover,
+//                     )
+//                   : Icon(Icons.image_not_supported, size: 80),
+//             ),
+//             const SizedBox(width: 8),
+//             Expanded(
+//               child: Column(
+//                 crossAxisAlignment: CrossAxisAlignment.start,
+//                 children: [
+//                   Row(
+//                     mainAxisAlignment: MainAxisAlignment.end,
+//                     children: [
+//                       GestureDetector(
+//                         onTap: onRemove,
+//                         child: Icon(
+//                           Icons.favorite,
+//                           color: Colors.blue,
+//                           size: 20,
+//                         ),
+//                       ),
+//                     ],
+//                   ),
+//                   const SizedBox(height: 4),
+//                   Text(
+//                     title,
+//                     style: const TextStyle(
+//                       fontSize: 16,
+//                       fontWeight: FontWeight.bold,
+//                     ),
+//                     maxLines: 1,
+//                     overflow: TextOverflow.ellipsis,
+//                   ),
+//                   const SizedBox(height: 4),
+//                   Row(
+//                     children: [
+//                       const Icon(
+//                         Icons.star,
+//                         color: Colors.yellow,
+//                         size: 14,
+//                       ),
+//                       Text(
+//                         rating.toString(),
+//                         style:
+//                             const TextStyle(fontSize: 12, color: Colors.black),
+//                       ),
+//                     ],
+//                   ),
+//                   const SizedBox(height: 4),
+//                   Text(
+//                     price,
+//                     style: const TextStyle(
+//                       fontSize: 14,
+//                       color: Colors.blue,
+//                       fontWeight: FontWeight.bold,
+//                     ),
+//                   ),
+//                 ],
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:hotelbooking/home.dart'; // Make sure this contains CustomAppBar
+import 'package:hotelbooking/home.dart';
 
 class WishlistScreen extends StatefulWidget {
   final String userId;
@@ -886,24 +1167,18 @@ class _WishlistScreenState extends State<WishlistScreen> {
         Uri.parse('http://192.168.0.39:5000/api/wishlist/${widget.userId}'),
       );
 
-      print("Status Code: ${response.statusCode}");
-      print("Response Body: ${response.body}");
-
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-
         setState(() {
           wishlist = data.where((item) => item['roomId'] != null).toList();
           isLoading = false;
         });
       } else {
-        print("Server error: ${response.statusCode}");
         setState(() {
           isLoading = false;
         });
       }
     } catch (e) {
-      print("Fetch exception: $e");
       setState(() {
         isLoading = false;
       });
@@ -933,59 +1208,60 @@ class _WishlistScreenState extends State<WishlistScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('Remove from bookmark?',
+              const Text('Remove from bookmark?',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Row(
                 children: [
-                  room['images'] != null
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: Image.network(
-                            room['images'],
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: room['images'] is List && room['images'].isNotEmpty
+                        ? Image.network(
+                            room['images'][0],
                             width: 80,
                             height: 80,
                             fit: BoxFit.cover,
-                          ),
-                        )
-                      : Icon(Icons.image_not_supported, size: 80),
-                  SizedBox(width: 16),
+                          )
+                        : const Icon(Icons.image_not_supported, size: 80),
+                  ),
+                  const SizedBox(width: 16),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(room['name'] ?? 'Unknown Name',
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.bold)),
+                        Text(room['location'] ?? 'Unknown Location'),
                         Text(room['price']?.toString() ?? 'Price Unavailable',
-                            style: TextStyle(color: Colors.blue)),
+                            style: const TextStyle(color: Colors.blue)),
                       ],
                     ),
                   ),
                 ],
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Row(
                 children: [
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () => Navigator.pop(context),
                       style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blue),
-                      child:
-                          Text('Cancel', style: TextStyle(color: Colors.white)),
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Cancel',
+                          style: TextStyle(color: Colors.white)),
                     ),
                   ),
-                  SizedBox(width: 16),
+                  const SizedBox(width: 16),
                   Expanded(
                     child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue),
                       onPressed: () {
                         _removeItem(index);
                         Navigator.pop(context);
                       },
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue),
-                      child: Text('Yes, remove',
+                      child: const Text('Yes, remove',
                           style: TextStyle(color: Colors.white)),
                     ),
                   ),
@@ -1007,33 +1283,34 @@ class _WishlistScreenState extends State<WishlistScreen> {
         onSearch: (query) {},
       ),
       body: isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : wishlist.isEmpty
-              ? Center(
-                  child: Text(
-                    "No items in wishlist.",
-                    style: TextStyle(color: Colors.red),
+              ? const Center(
+                  child: Text("No items in wishlist.",
+                      style: TextStyle(color: Colors.red)))
+              : Padding(
+                  padding: const EdgeInsets.all(15.0),
+                  child: ListView.builder(
+                    itemCount: wishlist.length,
+                    itemBuilder: (context, index) {
+                      final item = wishlist[index];
+                      final room = item['roomId'];
+                      if (room == null) return const SizedBox();
+
+                      return FavoriteItem(
+                        imagePath: (room['images'] is List &&
+                                room['images'].isNotEmpty)
+                            ? room['images'][0]
+                            : '',
+                        title: room['name'] ?? 'Unknown',
+                        location: room['location'] ?? 'Unknown',
+                        price: room['price']?.toString() ?? 'Price Unavailable',
+                        rating: (room['rating'] ?? 4.5).toDouble(),
+                        discount: '10% Off',
+                        onRemove: () => _showDeleteBottomSheet(context, index),
+                      );
+                    },
                   ),
-                )
-              : ListView.builder(
-                  itemCount: wishlist.length,
-                  itemBuilder: (context, index) {
-                    final item = wishlist[index];
-                    final room = item['roomId'];
-
-                    if (room == null) return SizedBox(); // Skip null entries
-
-                    return FavoriteItem(
-                      imagePath:
-                          (room['images'] is List && room['images'].isNotEmpty)
-                              ? room['images'][0]
-                              : '',
-                      title: room['name'] ?? 'Unknown',
-                      price: room['price']?.toString() ?? 'Price Unavailable',
-                      rating: (room['rating'] ?? 4.5).toDouble(),
-                      onRemove: () => _showDeleteBottomSheet(context, index),
-                    );
-                  },
                 ),
     );
   }
@@ -1044,15 +1321,19 @@ class FavoriteItem extends StatelessWidget {
     Key? key,
     required this.imagePath,
     required this.title,
+    required this.location,
     required this.price,
     required this.rating,
+    required this.discount,
     required this.onRemove,
   }) : super(key: key);
 
   final String imagePath;
   final String title;
+  final String location;
   final String price;
   final double rating;
+  final String discount;
   final VoidCallback onRemove;
 
   @override
@@ -1072,7 +1353,7 @@ class FavoriteItem extends StatelessWidget {
                       height: 80,
                       fit: BoxFit.cover,
                     )
-                  : Icon(Icons.image_not_supported, size: 80),
+                  : const Icon(Icons.image_not_supported, size: 80),
             ),
             const SizedBox(width: 8),
             Expanded(
@@ -1080,11 +1361,27 @@ class FavoriteItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          discount,
+                          style: const TextStyle(
+                            fontSize: 10,
+                            color: Colors.blue,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
                       GestureDetector(
                         onTap: onRemove,
-                        child: Icon(
+                        child: const Icon(
                           Icons.favorite,
                           color: Colors.blue,
                           size: 20,
@@ -1093,39 +1390,39 @@ class FavoriteItem extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 4),
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 4),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Icon(
-                        Icons.star,
-                        color: Colors.yellow,
-                        size: 14,
+                      Expanded(
+                        child: Text(
+                          title,
+                          style: const TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
-                      Text(
-                        rating.toString(),
-                        style:
-                            const TextStyle(fontSize: 12, color: Colors.black),
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.star,
+                            color: Colors.yellow,
+                            size: 14,
+                          ),
+                          Text(
+                            rating.toString(),
+                            style: const TextStyle(fontSize: 12),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    price,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Colors.blue,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  Text(location, style: const TextStyle(fontSize: 12)),
+                  Text('\$${price}/night',
+                      style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.blue,
+                          fontWeight: FontWeight.bold)),
                 ],
               ),
             ),

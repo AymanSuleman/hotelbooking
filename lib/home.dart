@@ -225,14 +225,13 @@ class _HomeScreen1State extends State<HomeScreen1> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              isLoading
-                  ? Center(child: CircularProgressIndicator())
-                  : FeaturedCard(
-                      title: featuredCardData!['title'],
-                      subtitle: featuredCardData!['subtitle'],
-                      images: images,
-                      currentImageIndex: currentImageIndex,
-                    ),
+              featuredCardData != null
+                  ? FeaturedCard(
+                      // title: featuredCardData!['title'],
+                      // subtitle: featuredCardData!['subtitle'],
+                      imageUrl: featuredCardData!['imageUrl'],
+                    )
+                  : Center(child: CircularProgressIndicator()),
               SizedBox(height: 20),
               Text('What else is popular',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
@@ -358,16 +357,14 @@ class _HomeScreen1State extends State<HomeScreen1> {
 }
 
 class FeaturedCard extends StatelessWidget {
-  final String title;
-  final String subtitle;
-  final List<String> images;
-  final int currentImageIndex;
+  // final String title;
+  // final String subtitle;
+  final String imageUrl;
 
   FeaturedCard({
-    required this.title,
-    required this.subtitle,
-    required this.images,
-    required this.currentImageIndex,
+    // required this.title,
+    // required this.subtitle,
+    required this.imageUrl,
   });
 
   @override
@@ -377,7 +374,7 @@ class FeaturedCard extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
         image: DecorationImage(
-          image: NetworkImage(images[currentImageIndex]),
+          image: NetworkImage(imageUrl),
           fit: BoxFit.cover,
         ),
       ),
@@ -400,7 +397,7 @@ class FeaturedCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  title,
+                  "Discover the most popular places",
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 18,
@@ -415,7 +412,8 @@ class FeaturedCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(20)),
                   ),
                   onPressed: () {},
-                  child: Text(subtitle, style: TextStyle(color: Colors.white)),
+                  child: Text('Explore Now',
+                      style: TextStyle(color: Colors.white)),
                 ),
               ],
             ),

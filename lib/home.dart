@@ -556,10 +556,26 @@ class _PopularCardState extends State<PopularCard> {
               right: 8,
               child: GestureDetector(
                 onTap: _toggleWishlist,
-                child: Icon(
-                  isFavorite ? Icons.favorite : Icons.favorite_border,
-                  color: Colors.red,
-                  size: 24,
+                child: Container(
+                  padding:
+                      EdgeInsets.all(6), // Adjust for spacing around the icon
+                  decoration: BoxDecoration(
+                    color: Colors.white
+                        .withOpacity(0.8), // Background color of the circle
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 4,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Icon(
+                    isFavorite ? Icons.favorite : Icons.favorite_border,
+                    color: Colors.blue,
+                    size: 24,
+                  ),
                 ),
               ),
             ),

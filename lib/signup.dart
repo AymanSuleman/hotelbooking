@@ -39,7 +39,7 @@ class _SignupState extends State<Signup> {
       _isLoading = true;
     });
 
-    final url = Uri.parse("http://192.168.0.26:5000/api/auth/register");
+    final url = Uri.parse("http://192.168.0.39:5000/api/auth/register");
 
     try {
       final response = await http.post(

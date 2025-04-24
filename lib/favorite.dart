@@ -46,10 +46,28 @@ class _WishlistScreenState extends State<WishlistScreen> {
     }
   }
 
-  void _removeItem(int index) {
-    setState(() {
-      wishlist.removeAt(index);
-    });
+  Future<void> _removeItem(int index) async {
+    final item = wishlist[index];
+    final roomId = item['roomId']?['_id'];
+
+    if (roomId == null) return;
+
+    final url = Uri.parse('http://192.168.0.39:5000/api/wishlist');
+    final headers = {'Content-Type': 'application/json'};
+    final body = jsonEncode({'userId': widget.userId, 'roomId': roomId});
+
+    try {
+      final response = await http.delete(url, headers: headers, body: body);
+      if (response.statusCode == 200) {
+        setState(() {
+          wishlist.removeAt(index);
+        });
+      } else {
+        print('Failed to delete item: ${response.body}');
+      }
+    } catch (e) {
+      print('Error while deleting item: $e');
+    }
   }
 
   void _showDeleteBottomSheet(BuildContext context, int index) {

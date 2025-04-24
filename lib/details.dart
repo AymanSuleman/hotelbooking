@@ -737,8 +737,8 @@ class _HotelDetailState extends State<HotelDetail>
   }
 
   Future<void> fetchRoomDetails() async {
-    final url = Uri.parse(
-        'http://192.168.0.39:5000/api/rooms/${widget.roomId}'); // replace with your actual server
+    final url =
+        Uri.parse('http://192.168.0.39:5000/api/rooms/${widget.roomId}');
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
@@ -805,7 +805,11 @@ class _HotelDetailState extends State<HotelDetail>
                     autoPlay: true,
                     viewportFraction: 1,
                     onPageChanged: (index, reason) {
-                      setState(() => _currentImageIndex = index);
+                      setState(() {
+                        _currentImageIndex = index %
+                            room!.images
+                                .length; // Ensure index stays within bounds
+                      });
                     },
                   ),
                   items: room!.images.map((image) {
@@ -932,6 +936,30 @@ class _HotelDetailState extends State<HotelDetail>
     );
   }
 
+  // Widget _buildAboutSection(String aboutText) {
+  //   bool isTextLong = aboutText.length > 100;
+  //   return Padding(
+  //     padding: EdgeInsets.all(20),
+  //     child: Column(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: [
+  //         Text(
+  //           _isExpanded ? aboutText : aboutText.substring(0, 200) + "...",
+  //           style: TextStyle(fontSize: 16),
+  //         ),
+  //         SizedBox(height: 10),
+  //         if (isTextLong)
+  //           InkWell(
+  //             onTap: () => setState(() => _isExpanded = !_isExpanded),
+  //             child: Text(_isExpanded ? "Read Less" : "Read More",
+  //                 style: TextStyle(
+  //                     color: Colors.blue, fontWeight: FontWeight.bold)),
+  //           ),
+  //       ],
+  //     ),
+  //   );
+  // }
+
   Widget _buildAboutSection(String aboutText) {
     bool isTextLong = aboutText.length > 100;
     return Padding(
@@ -940,7 +968,11 @@ class _HotelDetailState extends State<HotelDetail>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            _isExpanded ? aboutText : aboutText.substring(0, 200) + "...",
+            _isExpanded
+                ? aboutText
+                : aboutText.length > 200
+                    ? aboutText.substring(0, 200) + "..."
+                    : aboutText, // Check length before substring
             style: TextStyle(fontSize: 16),
           ),
           SizedBox(height: 10),

@@ -439,82 +439,82 @@
 //     );
 //   }
 
-//   Future<void> _selectDateTime(BuildContext context, bool isCheckIn) async {
-//     DateTime initialDate = isCheckIn ? checkInDateTime : checkOutDateTime;
+// Future<void> _selectDateTime(BuildContext context, bool isCheckIn) async {
+//   DateTime initialDate = isCheckIn ? checkInDateTime : checkOutDateTime;
 
-//     DateTime? pickedDate = await showDatePicker(
-//       context: context,
-//       initialDate: initialDate,
-//       firstDate: DateTime.now(),
-//       lastDate: DateTime(2100),
-//     );
+//   DateTime? pickedDate = await showDatePicker(
+//     context: context,
+//     initialDate: initialDate,
+//     firstDate: DateTime.now(),
+//     lastDate: DateTime(2100),
+//   );
 
-//     if (pickedDate == null) return;
+//   if (pickedDate == null) return;
 
-//     TimeOfDay? pickedTime = await showTimePicker(
-//       context: context,
-//       initialTime: TimeOfDay.fromDateTime(initialDate),
-//     );
+//   TimeOfDay? pickedTime = await showTimePicker(
+//     context: context,
+//     initialTime: TimeOfDay.fromDateTime(initialDate),
+//   );
 
-//     if (pickedTime == null) return;
+//   if (pickedTime == null) return;
 
-//     setState(() {
-//       if (isCheckIn) {
-//         checkInDateTime = DateTime(
-//           pickedDate.year,
-//           pickedDate.month,
-//           pickedDate.day,
-//           pickedTime.hour,
-//           pickedTime.minute,
-//         );
-//       } else {
-//         checkOutDateTime = DateTime(
-//           pickedDate.year,
-//           pickedDate.month,
-//           pickedDate.day,
-//           pickedTime.hour,
-//           pickedTime.minute,
-//         );
-//       }
-//     });
-//   }
+//   setState(() {
+//     if (isCheckIn) {
+//       checkInDateTime = DateTime(
+//         pickedDate.year,
+//         pickedDate.month,
+//         pickedDate.day,
+//         pickedTime.hour,
+//         pickedTime.minute,
+//       );
+//     } else {
+//       checkOutDateTime = DateTime(
+//         pickedDate.year,
+//         pickedDate.month,
+//         pickedDate.day,
+//         pickedTime.hour,
+//         pickedTime.minute,
+//       );
+//     }
+//   });
+// }
 
-//   Widget _buildDateTimeSelector(
-//       String title, DateTime dateTime, bool isCheckIn) {
-//     return Column(
-//       crossAxisAlignment: CrossAxisAlignment.start,
-//       children: [
-//         Text(title,
-//             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-//         SizedBox(height: 5),
-//         GestureDetector(
-//           onTap: () => _selectDateTime(context, isCheckIn),
-//           child: Container(
-//             padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-//             decoration: BoxDecoration(
-//               color: Colors.blue,
-//               borderRadius: BorderRadius.circular(8),
-//             ),
-//             child: Row(
-//               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//               children: [
-//                 Text(
-//                   "${_getWeekday(dateTime.weekday)}, ${dateTime.day} ${_getMonth(dateTime.month)} ${dateTime.year}",
-//                   style: TextStyle(
-//                       color: Colors.white, fontWeight: FontWeight.bold),
-//                 ),
-//                 Text(
-//                   "${_formatTime(dateTime.hour, dateTime.minute)}",
-//                   style: TextStyle(
-//                       color: Colors.white, fontWeight: FontWeight.bold),
-//                 ),
-//               ],
-//             ),
+// Widget _buildDateTimeSelector(
+//     String title, DateTime dateTime, bool isCheckIn) {
+//   return Column(
+//     crossAxisAlignment: CrossAxisAlignment.start,
+//     children: [
+//       Text(title,
+//           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+//       SizedBox(height: 5),
+//       GestureDetector(
+//         onTap: () => _selectDateTime(context, isCheckIn),
+//         child: Container(
+//           padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+//           decoration: BoxDecoration(
+//             color: Colors.blue,
+//             borderRadius: BorderRadius.circular(8),
+//           ),
+//           child: Row(
+//             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//             children: [
+//               Text(
+//                 "${_getWeekday(dateTime.weekday)}, ${dateTime.day} ${_getMonth(dateTime.month)} ${dateTime.year}",
+//                 style: TextStyle(
+//                     color: Colors.white, fontWeight: FontWeight.bold),
+//               ),
+//               Text(
+//                 "${_formatTime(dateTime.hour, dateTime.minute)}",
+//                 style: TextStyle(
+//                     color: Colors.white, fontWeight: FontWeight.bold),
+//               ),
+//             ],
 //           ),
 //         ),
-//       ],
-//     );
-//   }
+//       ),
+//     ],
+//   );
+// }
 
 //   String _getMonth(int month) {
 //     return [
@@ -778,6 +778,7 @@ class _HotelDetailState extends State<HotelDetail>
     }
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         centerTitle: true,
         title: Text('Room Details'),
@@ -901,64 +902,47 @@ class _HotelDetailState extends State<HotelDetail>
         ),
       ),
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(8),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
+        padding: const EdgeInsets.all(8.0),
+        child: Card(
+          child: Padding(
+            padding:
+                const EdgeInsets.symmetric(vertical: 20.0, horizontal: 20.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("Total Price", style: TextStyle(color: Colors.grey)),
-                Text("\$${room!.price}/night",
-                    style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.blue,
-                        fontWeight: FontWeight.bold)),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("Total Price", style: TextStyle(color: Colors.grey)),
+                    Text("\$${room!.price}/night",
+                        style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.blue,
+                            fontWeight: FontWeight.bold)),
+                  ],
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12))),
+                  onPressed: () => _showBookingBottomSheet(context, room!),
+                  child: Text("Book Now",
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white)),
+                ),
               ],
             ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12))),
-              onPressed: () => showGuestSelectionSheet(context),
-              child: Text("Book Now",
-                  style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white)),
-            ),
-          ],
+          ),
         ),
       ),
     );
   }
-
-  // Widget _buildAboutSection(String aboutText) {
-  //   bool isTextLong = aboutText.length > 100;
-  //   return Padding(
-  //     padding: EdgeInsets.all(20),
-  //     child: Column(
-  //       crossAxisAlignment: CrossAxisAlignment.start,
-  //       children: [
-  //         Text(
-  //           _isExpanded ? aboutText : aboutText.substring(0, 200) + "...",
-  //           style: TextStyle(fontSize: 16),
-  //         ),
-  //         SizedBox(height: 10),
-  //         if (isTextLong)
-  //           InkWell(
-  //             onTap: () => setState(() => _isExpanded = !_isExpanded),
-  //             child: Text(_isExpanded ? "Read Less" : "Read More",
-  //                 style: TextStyle(
-  //                     color: Colors.blue, fontWeight: FontWeight.bold)),
-  //           ),
-  //       ],
-  //     ),
-  //   );
-  // }
 
   Widget _buildAboutSection(String aboutText) {
     bool isTextLong = aboutText.length > 100;
@@ -1023,6 +1007,162 @@ class _HotelDetailState extends State<HotelDetail>
   }
 }
 
+//check in or check out
+
+void _showBookingBottomSheet(BuildContext context, Room room) {
+  DateTime checkInDateTime = DateTime(2025, 10, 4, 14, 0);
+  DateTime checkOutDateTime = DateTime(2025, 11, 3, 11, 0);
+
+  showModalBottomSheet(
+    context: context,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    ),
+    isScrollControlled: true,
+    builder: (BuildContext context) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20),
+        child: StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("Check In & Check Out",
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  SizedBox(height: 10),
+                  _buildDateTimeSelector(
+                      context, "Check In", checkInDateTime, true, setState),
+                  SizedBox(height: 10),
+                  _buildDateTimeSelector(
+                      context, "Check Out", checkOutDateTime, false, setState),
+                  SizedBox(
+                    height: 30,
+                  ),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8)),
+                      ),
+                      onPressed: () {
+                        showGuestSelectionSheet(context);
+                      },
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(vertical: 12),
+                        child: Text("Continue",
+                            style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold)),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      );
+    },
+  );
+}
+
+Widget _buildDateTimeSelector(BuildContext context, String title,
+    DateTime dateTime, bool isCheckIn, StateSetter setState) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+      SizedBox(height: 5),
+      GestureDetector(
+        onTap: () async {
+          final selected = await _selectDateTime(context, dateTime);
+          if (selected != null) {
+            setState(() {
+              dateTime = selected;
+            });
+          }
+        },
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          decoration: BoxDecoration(
+            color: Colors.blue,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "${_getWeekday(dateTime.weekday)}, ${dateTime.day} ${_getMonth(dateTime.month)} ${dateTime.year}",
+                style:
+                    TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+              Text(
+                "${_formatTime(dateTime.hour, dateTime.minute)}",
+                style:
+                    TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+Future<DateTime?> _selectDateTime(
+    BuildContext context, DateTime initialDate) async {
+  DateTime? pickedDate = await showDatePicker(
+    context: context,
+    initialDate: initialDate,
+    firstDate: DateTime.now(),
+    lastDate: DateTime(2100),
+  );
+  if (pickedDate == null) return null;
+
+  TimeOfDay? pickedTime = await showTimePicker(
+    context: context,
+    initialTime: TimeOfDay.fromDateTime(initialDate),
+  );
+  if (pickedTime == null) return null;
+
+  return DateTime(pickedDate.year, pickedDate.month, pickedDate.day,
+      pickedTime.hour, pickedTime.minute);
+}
+
+String _getMonth(int month) {
+  return [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec"
+  ][month - 1];
+}
+
+String _getWeekday(int day) {
+  return ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][day - 1];
+}
+
+String _formatTime(int hour, int minute) {
+  String amPm = hour >= 12 ? "PM" : "AM";
+  int formattedHour = hour > 12 ? hour - 12 : (hour == 0 ? 12 : hour);
+  return "$formattedHour:${minute.toString().padLeft(2, '0')} $amPm";
+}
+
+//
+
 void showGuestSelectionSheet(BuildContext context) {
   showModalBottomSheet(
     context: context,
@@ -1039,22 +1179,28 @@ class GuestSelectionBottomSheet extends StatefulWidget {
 }
 
 class _GuestSelectionBottomSheetState extends State<GuestSelectionBottomSheet> {
-  int adults = 1, children = 0, infants = 0;
+  int adults = 1;
+  int children = 0;
+  int infants = 0;
 
-  void updateGuest(String type, bool increment) {
+  void updateGuestCount(String type, bool increment) {
     setState(() {
-      if (type == 'Adults') {
-        if (increment)
-          adults++;
-        else if (adults > 1) adults--;
-      } else if (type == 'Children') {
-        if (increment)
-          children++;
-        else if (children > 0) children--;
-      } else {
-        if (increment)
-          infants++;
-        else if (infants > 0) infants--;
+      switch (type) {
+        case 'Adults':
+          if (increment)
+            adults++;
+          else if (adults > 1) adults--;
+          break;
+        case 'Children':
+          if (increment)
+            children++;
+          else if (children > 0) children--;
+          break;
+        case 'Infants':
+          if (increment)
+            infants++;
+          else if (infants > 0) infants--;
+          break;
       }
     });
   }
@@ -1111,12 +1257,12 @@ class _GuestSelectionBottomSheetState extends State<GuestSelectionBottomSheet> {
           children: [
             IconButton(
               icon: Icon(Icons.remove_circle, color: Colors.blue),
-              onPressed: () => updateGuest(label, false),
+              onPressed: () => updateGuestCount(label, false),
             ),
             Text('$count'),
             IconButton(
               icon: Icon(Icons.add_circle, color: Colors.blue),
-              onPressed: () => updateGuest(label, true),
+              onPressed: () => updateGuestCount(label, true),
             )
           ],
         )

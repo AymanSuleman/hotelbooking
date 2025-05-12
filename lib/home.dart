@@ -100,7 +100,10 @@ class _HomeScreenState extends State<HomeScreen> {
     final List<Widget> screens = [
       HomeScreen1(userId: widget.userId),
       WishlistScreen(userId: widget.userId),
-      MyBookingsScreen(),
+      MyBookingsScreen(
+        userId: widget.userId,
+        roomId: '',
+      ),
       ProfileScreen(),
     ];
 
@@ -184,7 +187,7 @@ class _HomeScreen1State extends State<HomeScreen1> {
   Future<void> fetchRoomsByCategory(
       String category, Function(List<Map<String, dynamic>>) onSuccess) async {
     final url =
-        Uri.parse('http://192.168.0.39:5000/api/rooms/category/$category');
+        Uri.parse('http://192.168.0.33:5000/api/rooms/category/$category');
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
@@ -447,7 +450,7 @@ class PopularCard extends StatefulWidget {
 class _PopularCardState extends State<PopularCard> {
   bool isFavorite = false;
 
-  final String baseUrl = 'http://192.168.0.39:5000/api/wishlist';
+  final String baseUrl = 'http://192.168.0.33:5000/api/wishlist';
 
   Future<void> _toggleWishlist() async {
     setState(() {

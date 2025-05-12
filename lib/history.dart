@@ -1,55 +1,50 @@
+//----------------------------------------------------
 import 'package:flutter/material.dart';
-import 'package:hotelbooking/details.dart';
 import 'package:hotelbooking/home.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:hotelbooking/reviewSummery.dart';
 
-void main() {
-  runApp(MaterialApp(
-    debugShowCheckedModeBanner: false,
-    home: MyBookingsScreen(),
-  ));
-}
-
 class MyBookingsScreen extends StatefulWidget {
+  final String userId;
+
+  final String roomId;
+  const MyBookingsScreen({Key? key, required this.userId, required this.roomId})
+      : super(key: key);
+
   @override
   _MyBookingsScreenState createState() => _MyBookingsScreenState();
 }
 
 class _MyBookingsScreenState extends State<MyBookingsScreen> {
-  String selectedFilter = "Active";
+  List<dynamic> allBookings = [];
 
-  final List<Map<String, dynamic>> bookings = [
-    {
-      "image":
-          "https://t4.ftcdn.net/jpg/06/32/20/07/240_F_632200724_WuOGPlu1XfDjqUinsBGzHXaa8TVtdqD9.jpg",
-      "name": "HarborHaven Hideaway",
-      "location": "New York, USA",
-      "rating": 4.8,
-      "discount": "10% OFF",
-      "price": "\$700/night",
-      "status": "Active",
-    },
-    {
-      "image":
-          'https://as2.ftcdn.net/v2/jpg/09/64/96/87/1000_F_964968792_O79xKuKm2BYv0dFoQ4b1ryvzd4RgNeRD.jpg',
-      "name": "AlohaVista",
-      "location": "New York, USA",
-      "rating": 4.6,
-      "discount": "15% OFF",
-      "price": "\$450/night",
-      "status": "Completed",
-    },
-    {
-      "image":
-          "https://t4.ftcdn.net/jpg/06/32/20/07/240_F_632200724_WuOGPlu1XfDjqUinsBGzHXaa8TVtdqD9.jpg",
-      "name": "GoldenValley",
-      "location": "New York, USA",
-      "rating": 4.9,
-      "discount": "5% OFF",
-      "price": "\$150/night",
-      "status": "Canceled",
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+    fetchBookings(widget.userId);
+  }
+
+  Future<void> fetchBookings(String userId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('http://192.168.0.33:5000/api/bookings/user/$userId'),
+      );
+
+      if (response.statusCode == 200) {
+        setState(() {
+          allBookings = json.decode(response.body);
+        });
+      } else {
+        print("Error: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Exception: $e");
+    }
+  }
+
+  List<dynamic> get filteredBookings =>
+      allBookings.where((b) => b["status"] == "Confirmed").toList();
 
   @override
   Widget build(BuildContext context) {
@@ -57,222 +52,157 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
       backgroundColor: Colors.white,
       appBar: CustomAppBar(
         title: 'History',
-        onSearch: (String) {},
+        onSearch: (query) {},
       ),
-      body: Column(
+      body: filteredBookings.isEmpty
+          ? Center(child: Text("No confirmed bookings."))
+          : ListView.builder(
+              itemCount: filteredBookings.length,
+              itemBuilder: (context, index) {
+                return BookingCard(
+                  booking: filteredBookings[index],
+                  userId: widget.userId,
+                  roomId: widget.roomId,
+                );
+              },
+            ),
+    );
+  }
+}
+
+//----------------------------------
+class BookingCard extends StatelessWidget {
+  final Map<String, dynamic> booking;
+  final String userId;
+  final String roomId;
+  BookingCard(
+      {required this.booking, required this.userId, required this.roomId});
+
+  @override
+  Widget build(BuildContext context) {
+    final room = booking["room"] ?? {};
+    final String name = room["name"] ?? "Unnamed Room";
+    final String location = room["location"] ?? "Unknown Location";
+    final double price = (room["price"] ?? 0).toDouble();
+    final List images = room["images"] ?? [];
+    final String imageUrl =
+        images.isNotEmpty ? images[0] : 'https://via.placeholder.com/100';
+
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade300),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                FilterButton(
-                    label: "Active",
-                    isSelected: selectedFilter == "Active",
-                    onTap: () => setState(() => selectedFilter = "Active")),
-                FilterButton(
-                    label: "Completed",
-                    isSelected: selectedFilter == "Completed",
-                    onTap: () => setState(() => selectedFilter = "Completed")),
-                FilterButton(
-                    label: "Canceled",
-                    isSelected: selectedFilter == "Canceled",
-                    onTap: () => setState(() => selectedFilter = "Canceled")),
-              ],
+          // Room Image
+          ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: Image.network(
+              imageUrl,
+              width: double.infinity,
+              height: 160, // Adjusted height for a compact look
+              fit: BoxFit.cover,
             ),
           ),
-          Expanded(
-            child: ListView(
-              children: bookings
-                  .where((booking) => booking["status"] == selectedFilter)
-                  .map((booking) {
-                return BookingCard(
-                  booking: booking,
-                  onCancel: () {
-                    setState(() {
-                      booking["status"] = "Canceled";
-                    });
-                  },
-                );
-              }).toList(),
+          SizedBox(height: 10),
+
+          // Room Name
+          Text(
+            name,
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+
+          // Room Location
+          Text(
+            location,
+            style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+          ),
+
+          // Room Price
+          SizedBox(height: 4),
+          Text(
+            "\$${price.toStringAsFixed(0)} / night",
+            style: TextStyle(
+                fontSize: 15,
+                color: Colors.blue.shade700,
+                fontWeight: FontWeight.w600),
+          ),
+
+          // Add Review Button
+          SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: () => _showReviewDialog(context),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                padding: EdgeInsets.symmetric(vertical: 12),
+              ),
+              icon: Icon(Icons.reviews, color: Colors.white),
+              label: Text("Add Review", style: TextStyle(color: Colors.white)),
             ),
           ),
         ],
       ),
     );
   }
-}
 
-class BookingCard extends StatelessWidget {
-  final Map<String, dynamic> booking;
-  final VoidCallback? onCancel;
+  void _showReviewDialog(BuildContext context) {
+    final reviewController = TextEditingController();
 
-  BookingCard({required this.booking, this.onCancel});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Add Review"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: Image.network(
-                    booking["image"],
-                    width: 100,
-                    height: 100,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        booking["name"],
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      Text(
-                        booking["location"],
-                        style: TextStyle(color: Colors.grey[600], fontSize: 14),
-                      ),
-                      SizedBox(height: 5),
-                      Text(
-                        booking["price"],
-                        style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.blue),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+            TextField(
+              controller: reviewController,
+              decoration: InputDecoration(
+                hintText: "Write your review...",
+                border: OutlineInputBorder(),
+              ),
+              maxLines: 3,
             ),
             SizedBox(height: 10),
-            if (booking["status"] == "Active")
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8))),
-                      onPressed: onCancel,
-                      child:
-                          Text("Cancle", style: TextStyle(color: Colors.white)),
-                    ),
-                  ),
-                  SizedBox(width: 10),
-                  Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8))),
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ReviewSummaryScreen(
-                                showContinueButton: false,
-                              ),
-                            ));
-                      },
-                      child: Text("View Booking",
-                          style: TextStyle(color: Colors.white)),
-                    ),
-                  ),
-                ],
+            ElevatedButton(
+              onPressed: () {
+                String comment = reviewController.text;
+
+                if (comment.isNotEmpty) {
+                  // Call the submitReview function with dynamic userId, roomId, rating, and comment
+                  submitReview(
+                    userId: userId, // Use the passed userId dynamically
+                    roomId: booking["room"]["id"], // Room ID
+                    comment: comment,
+                  );
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Review submitted successfully!")),
+                  );
+                } else {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Please write a comment.")),
+                  );
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
               ),
-            if (booking["status"] == "Completed")
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8)),
-                      ),
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => HotelDetail(
-                                image: '',
-                                userId: '',
-                                roomId: '',
-                              ),
-                            ));
-                      },
-                      child: Text(
-                        "Re-Book",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 10),
-                  Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8)),
-                      ),
-                      onPressed: () {
-                        _showReviewDialog(context);
-                      },
-                      child: Text(
-                        "Add Review",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            if (booking["status"] == "Canceled")
-              SizedBox(
-                width: double.infinity, // Makes the button take full width
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                    minimumSize: Size(120, 40), // Width: 150, Height: 50
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => HotelDetail(
-                          image: '',
-                          userId: '',
-                          roomId: '',
-                        ),
-                      ),
-                    );
-                  },
-                  child: Text(
-                    "Re-Book",
-                    style: TextStyle(color: Colors.white, fontSize: 16),
-                  ),
-                ),
-              ),
+              child: Text("Submit", style: TextStyle(color: Colors.white)),
+            ),
           ],
         ),
       ),
@@ -280,67 +210,26 @@ class BookingCard extends StatelessWidget {
   }
 }
 
-class FilterButton extends StatelessWidget {
-  final String label;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  FilterButton(
-      {required this.label, required this.isSelected, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return TextButton(
-      style: TextButton.styleFrom(
-        backgroundColor: isSelected ? Colors.blue : Colors.white,
-        foregroundColor: isSelected ? Colors.white : Colors.black,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      ),
-      onPressed: onTap,
-      child: Text(label),
-    );
-  }
-}
-
-void _showReviewDialog(BuildContext context) {
-  TextEditingController reviewController = TextEditingController();
-
-  showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: Text("Add Review"),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: reviewController,
-                decoration: InputDecoration(
-                  hintText: "Write your review...",
-                  border: OutlineInputBorder(),
-                ),
-                maxLines: 3,
-              ),
-              SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: () {
-                  String userReview = reviewController.text;
-                  if (userReview.isNotEmpty) {
-                    Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text("Review submitted!")));
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                ),
-                child: Text("Submit", style: TextStyle(color: Colors.white)),
-              ),
-            ],
-          ),
-        ),
-      );
-    },
+// Update submitReview to check for valid ObjectId format
+Future<void> submitReview({
+  required String userId,
+  required String roomId,
+  required String comment,
+}) async {
+  final url = Uri.parse('http://192.168.0.33:5000/api/reviews');
+  final response = await http.post(
+    url,
+    headers: {"Content-Type": "application/json"},
+    body: jsonEncode({
+      "userId": userId,
+      "roomId": roomId,
+      "comment": comment,
+    }),
   );
+
+  if (response.statusCode == 201) {
+    print("Review submitted successfully");
+  } else {
+    print("Failed to submit review: ${response.body}");
+  }
 }

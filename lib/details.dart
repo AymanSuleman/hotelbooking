@@ -736,6 +736,7 @@ class _HotelDetailState extends State<HotelDetail>
   Room? room;
   bool isLoading = true;
   bool isFavorite = false;
+  List<dynamic> reviews = [];
 
   @override
   void initState() {
@@ -743,11 +744,12 @@ class _HotelDetailState extends State<HotelDetail>
     _tabController = TabController(length: 3, vsync: this);
     fetchRoomDetails();
     checkFavoriteStatus();
+    fetchAndSetReviews();
   }
 
   Future<void> fetchRoomDetails() async {
     final url =
-        Uri.parse('http://192.168.0.39:5000/api/rooms/${widget.roomId}');
+        Uri.parse('http://192.168.0.33:5000/api/rooms/${widget.roomId}');
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
@@ -766,7 +768,7 @@ class _HotelDetailState extends State<HotelDetail>
 
   Future<void> checkFavoriteStatus() async {
     final url =
-        Uri.parse("http://192.168.0.39:5000/api/wishlist/${widget.userId}");
+        Uri.parse("http://192.168.0.33:5000/api/wishlist/${widget.userId}");
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
@@ -782,7 +784,7 @@ class _HotelDetailState extends State<HotelDetail>
   }
 
   Future<void> toggleFavorite() async {
-    final url = Uri.parse("http://192.168.0.39:5000/api/wishlist");
+    final url = Uri.parse("http://192.168.0.33:5000/api/wishlist");
     try {
       final response = isFavorite
           ? await http.delete(
@@ -811,6 +813,20 @@ class _HotelDetailState extends State<HotelDetail>
       }
     } catch (e) {
       print("Error toggling favorite: $e");
+    }
+  }
+
+  Future<void> fetchAndSetReviews() async {
+    final url =
+        Uri.parse('http://192.168.0.33:5000/api/reviews/${widget.roomId}');
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      setState(() {
+        reviews = data["reviews"];
+      });
+    } else {
+      print("Error fetching reviews: ${response.body}");
     }
   }
 
@@ -944,7 +960,7 @@ class _HotelDetailState extends State<HotelDetail>
               ],
             ),
             Container(
-              height: 400,
+              height: 200,
               child: TabBarView(
                 controller: _tabController,
                 children: [
@@ -985,7 +1001,8 @@ class _HotelDetailState extends State<HotelDetail>
                           EdgeInsets.symmetric(horizontal: 30, vertical: 15),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12))),
-                  onPressed: () => _showBookingBottomSheet(context, room!),
+                  onPressed: () =>
+                      _showBookingBottomSheet(context, room!, widget.userId),
                   child: Text("Book Now",
                       style: TextStyle(
                           fontSize: 18,
@@ -1045,16 +1062,30 @@ class _HotelDetailState extends State<HotelDetail>
   }
 
   Widget _buildReviewSection() {
-    return ListView(
+    if (reviews.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Text(
+            "No reviews yet.",
+            style: TextStyle(fontSize: 16, color: Colors.grey),
+          ),
+        ),
+      );
+    }
+
+    return ListView.builder(
       padding: EdgeInsets.all(20),
-      children: [
-        _buildReviewItem("John Doe", "Amazing experience!"),
-        _buildReviewItem("Jane Smith", "Would stay again!"),
-      ],
+      itemCount: reviews.length,
+      itemBuilder: (context, index) {
+        return _buildReviewItem(reviews[index]);
+      },
     );
   }
 
-  Widget _buildReviewItem(String name, String comment) {
+  Widget _buildReviewItem(Map<String, dynamic> review) {
+    final String name = review["userId"]?["name"] ?? "Anonymous";
+    final String comment = review["comment"] ?? "";
     return ListTile(
       leading: CircleAvatar(child: Icon(Icons.person)),
       title: Text(name, style: TextStyle(fontWeight: FontWeight.bold)),
@@ -1062,63 +1093,90 @@ class _HotelDetailState extends State<HotelDetail>
     );
   }
 }
+//review
+
+Future<List<dynamic>> fetchReviews(String roomId) async {
+  final url = Uri.parse('http://192.168.0.33:5000/api/reviews/$roomId');
+  final response = await http.get(url);
+
+  if (response.statusCode == 200) {
+    final data = jsonDecode(response.body);
+    return data["reviews"];
+  } else {
+    print("Error fetching reviews: ${response.body}");
+    return [];
+  }
+}
 
 //check in or check out
 
-void _showBookingBottomSheet(BuildContext context, Room room) {
-  DateTime checkInDateTime = DateTime(2025, 10, 4, 14, 0);
-  DateTime checkOutDateTime = DateTime(2025, 11, 3, 11, 0);
+void _showBookingBottomSheet(BuildContext context, Room room, String userId) {
+  DateTime checkInDate = DateTime.now();
+  DateTime checkOutDate = DateTime.now().add(Duration(days: 1));
 
   showModalBottomSheet(
     context: context,
+    isScrollControlled: true,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
     ),
-    isScrollControlled: true,
-    builder: (BuildContext context) {
+    builder: (context) {
       return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20),
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+          left: 16,
+          right: 16,
+          top: 20,
+        ),
         child: StatefulBuilder(
-          builder: (BuildContext context, StateSetter setState) {
-            return SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("Check In & Check Out",
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                  SizedBox(height: 10),
-                  _buildDateTimeSelector(
-                      context, "Check In", checkInDateTime, true, setState),
-                  SizedBox(height: 10),
-                  _buildDateTimeSelector(
-                      context, "Check Out", checkOutDateTime, false, setState),
-                  SizedBox(
-                    height: 30,
-                  ),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8)),
+          builder: (context, setState) {
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text("Select Check-in and Check-out Dates",
+                    style:
+                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                SizedBox(height: 12),
+                _buildDateTimeSelector(context, "Check In", checkInDate,
+                    () async {
+                  final selected = await _selectDateTime(context, checkInDate);
+                  if (selected != null) {
+                    setState(() => checkInDate = selected);
+                  }
+                }),
+                SizedBox(height: 10),
+                _buildDateTimeSelector(context, "Check Out", checkOutDate,
+                    () async {
+                  final selected = await _selectDateTime(context, checkOutDate);
+                  if (selected != null) {
+                    setState(() => checkOutDate = selected);
+                  }
+                }),
+                SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context); // Close current modal
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      shape: RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.vertical(top: Radius.circular(20)),
                       ),
-                      onPressed: () {
-                        showGuestSelectionSheet(context);
+                      builder: (context) {
+                        return GuestSelectionBottomSheet(
+                          userId: userId,
+                          roomId: room.id,
+                          checkInDate: checkInDate,
+                          checkOutDate: checkOutDate,
+                          pricePerNight: room.price,
+                        );
                       },
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(vertical: 12),
-                        child: Text("Continue",
-                            style: TextStyle(
-                                fontSize: 18,
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold)),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+                    );
+                  },
+                  child: Text("Continue"),
+                ),
+              ],
             );
           },
         ),
@@ -1127,22 +1185,15 @@ void _showBookingBottomSheet(BuildContext context, Room room) {
   );
 }
 
-Widget _buildDateTimeSelector(BuildContext context, String title,
-    DateTime dateTime, bool isCheckIn, StateSetter setState) {
+Widget _buildDateTimeSelector(
+    BuildContext context, String title, DateTime dateTime, VoidCallback onTap) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       Text(title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
       SizedBox(height: 5),
       GestureDetector(
-        onTap: () async {
-          final selected = await _selectDateTime(context, dateTime);
-          if (selected != null) {
-            setState(() {
-              dateTime = selected;
-            });
-          }
-        },
+        onTap: onTap,
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           decoration: BoxDecoration(
@@ -1190,45 +1241,49 @@ Future<DateTime?> _selectDateTime(
       pickedTime.hour, pickedTime.minute);
 }
 
-String _getMonth(int month) {
-  return [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec"
-  ][month - 1];
-}
+String _getMonth(int month) => [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec"
+    ][month - 1];
 
-String _getWeekday(int day) {
-  return ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][day - 1];
-}
+String _getWeekday(int day) =>
+    ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][day - 1];
 
 String _formatTime(int hour, int minute) {
   String amPm = hour >= 12 ? "PM" : "AM";
-  int formattedHour = hour > 12 ? hour - 12 : (hour == 0 ? 12 : hour);
+  int formattedHour = hour % 12 == 0 ? 12 : hour % 12;
   return "$formattedHour:${minute.toString().padLeft(2, '0')} $amPm";
 }
 
 //
 
-void showGuestSelectionSheet(BuildContext context) {
-  showModalBottomSheet(
-    context: context,
-    shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
-    builder: (context) => GuestSelectionBottomSheet(),
-  );
-}
+// Updated GuestSelectionBottomSheet with booking API integration and dynamic parameters
 
 class GuestSelectionBottomSheet extends StatefulWidget {
+  final String userId;
+  final String roomId;
+  final DateTime checkInDate;
+  final DateTime checkOutDate;
+  final double pricePerNight;
+
+  GuestSelectionBottomSheet({
+    required this.userId,
+    required this.roomId,
+    required this.checkInDate,
+    required this.checkOutDate,
+    required this.pricePerNight,
+  });
+
   @override
   _GuestSelectionBottomSheetState createState() =>
       _GuestSelectionBottomSheetState();
@@ -1261,68 +1316,141 @@ class _GuestSelectionBottomSheetState extends State<GuestSelectionBottomSheet> {
     });
   }
 
+  Future<void> bookRoom() async {
+    final url = Uri.parse('http://192.168.0.33:5000/api/bookings');
+    final totalGuests = adults + children + infants;
+    final nights = widget.checkOutDate.difference(widget.checkInDate).inDays;
+    final totalPrice = widget.pricePerNight * nights;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => Center(child: CircularProgressIndicator()),
+    );
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        "userId": widget.userId,
+        "roomId": widget.roomId,
+        "checkInDate": widget.checkInDate.toIso8601String(),
+        "checkOutDate": widget.checkOutDate.toIso8601String(),
+        "guests": totalGuests,
+        "totalPrice": totalPrice
+      }),
+    );
+
+    Navigator.pop(context);
+
+    if (response.statusCode == 201) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Booking successful!")),
+      );
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => UserInfo()),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Booking failed: ${response.body}")),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text("Select Guests",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          Text("Select Guest",
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           SizedBox(height: 10),
-          buildCounter("Adults", adults),
-          buildCounter("Children", children),
-          buildCounter("Infants", infants),
+          buildGuestRow("Adults", "Ages 18 or Above", adults),
+          buildGuestRow("Children", "Ages 2-17", children),
+          buildGuestRow("Infants", "Under Age 2", infants),
           SizedBox(height: 20),
           ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => UserInfo()),
-              );
-            },
+            onPressed: bookRoom,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8)),
+            ),
             child: SizedBox(
               width: double.infinity,
               height: 50,
               child: Center(
-                  child: Text("Continue",
-                      style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold))),
+                child: Text("Continue",
+                    style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold)),
+              ),
             ),
-            style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8))),
-          )
+          ),
+          SizedBox(height: 10),
         ],
       ),
     );
   }
 
-  Widget buildCounter(String label, int count) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Column(
+  Widget buildGuestRow(String title, String subtitle, int count) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [Text(label), Text("Age details")]),
-        Row(
-          children: [
-            IconButton(
-              icon: Icon(Icons.remove_circle, color: Colors.blue),
-              onPressed: () => updateGuestCount(label, false),
-            ),
-            Text('$count'),
-            IconButton(
-              icon: Icon(Icons.add_circle, color: Colors.blue),
-              onPressed: () => updateGuestCount(label, true),
-            )
-          ],
-        )
-      ],
+            children: [
+              Text(title,
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              Text(subtitle,
+                  style: TextStyle(fontSize: 14, color: Colors.grey)),
+            ],
+          ),
+          Row(
+            children: [
+              IconButton(
+                onPressed: () => updateGuestCount(title, false),
+                icon: Icon(Icons.remove_circle, color: Colors.blue),
+              ),
+              Text(count.toString(),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              IconButton(
+                onPressed: () => updateGuestCount(title, true),
+                icon: Icon(Icons.add_circle, color: Colors.blue),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
+}
+
+void showGuestSelectionSheet({
+  required BuildContext context,
+  required String userId,
+  required String roomId,
+  required DateTime checkInDate,
+  required DateTime checkOutDate,
+  required double pricePerNight,
+}) {
+  showModalBottomSheet(
+    context: context,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+    ),
+    builder: (context) => GuestSelectionBottomSheet(
+      userId: userId,
+      roomId: roomId,
+      checkInDate: checkInDate,
+      checkOutDate: checkOutDate,
+      pricePerNight: pricePerNight,
+    ),
+  );
 }

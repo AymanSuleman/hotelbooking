@@ -184,9 +184,105 @@
 //     );
 //   }
 // }
+//----------------------------------------
 
+// import 'package:flutter/material.dart';
 
+// class MyProfile extends StatefulWidget {
+//   @override
+//   _MyProfileState createState() => _MyProfileState();
+// }
+
+// class _MyProfileState extends State<MyProfile> {
+//   bool isEditing = false;
+//   TextEditingController nameController =
+//       TextEditingController(text: "Antony William");
+//   TextEditingController emailController =
+//       TextEditingController(text: "AntonyWilliam12@gmail.com");
+//   TextEditingController phoneController =
+//       TextEditingController(text: "08212452533");
+//   TextEditingController idController =
+//       TextEditingController(text: "12364648811");
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(title: Text("Personal Info")),
+//       body: Padding(
+//         padding: const EdgeInsets.all(20.0),
+//         child: Column(
+//           children: [
+//             CircleAvatar(
+//               radius: 50,
+//               backgroundImage: AssetImage("assets/profile.jpg"),
+//               child: Stack(
+//                 children: [
+//                   Positioned(
+//                     bottom: 0,
+//                     right: 0,
+//                     child: GestureDetector(
+//                       onTap: () {
+//                         // Handle profile picture update
+//                       },
+//                       child: CircleAvatar(
+//                         radius: 15,
+//                         backgroundColor: Colors.blue,
+//                         child: Icon(Icons.edit, size: 15, color: Colors.white),
+//                       ),
+//                     ),
+//                   ),
+//                 ],
+//               ),
+//             ),
+//             SizedBox(height: 20),
+//             buildTextField("Full Name", nameController),
+//             buildTextField("Email", emailController),
+//             buildTextField("Phone Number", phoneController),
+//             buildTextField("Government ID", idController),
+//             SizedBox(height: 20),
+//             ElevatedButton(
+//               onPressed: () {
+//                 setState(() => isEditing = !isEditing);
+//               },
+//               style: ElevatedButton.styleFrom(
+//                 backgroundColor: Colors.blue,
+//                 padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+//               ),
+//               child: Text(
+//                 isEditing ? "Save" : "Edit",
+//                 style: TextStyle(fontSize: 16 , color: Colors.white),
+//               ),
+//               // Navigator.push(context, route)
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget buildTextField(String label, TextEditingController controller) {
+//     return Padding(
+//       padding: const EdgeInsets.symmetric(vertical: 10.0),
+//       child: TextFormField(
+//         controller: controller,
+//         enabled: isEditing,
+//         decoration: InputDecoration(
+//           labelText: label,
+//                 border: OutlineInputBorder(borderSide: BorderSide.none, borderRadius: BorderRadius.circular(8)),
+
+//           // border: BorderRadius.all(BorderRadius.circular(20)),
+//           filled: true,
+//           fillColor: Colors.grey[200],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+//----------------------------------
+import 'dart:convert'; // For JSON decoding
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class MyProfile extends StatefulWidget {
   @override
@@ -195,14 +291,56 @@ class MyProfile extends StatefulWidget {
 
 class _MyProfileState extends State<MyProfile> {
   bool isEditing = false;
-  TextEditingController nameController =
-      TextEditingController(text: "Antony William");
-  TextEditingController emailController =
-      TextEditingController(text: "AntonyWilliam12@gmail.com");
-  TextEditingController phoneController =
-      TextEditingController(text: "08212452533");
-  TextEditingController idController =
-      TextEditingController(text: "12364648811");
+  bool isLoading = true; // To show loading indicator
+  TextEditingController nameController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController phoneController = TextEditingController();
+  TextEditingController idController = TextEditingController();
+
+  // Example API URL
+  final String apiUrl =
+      "http://192.168.0.33:5000/api/auth/users"; // Replace with your actual API URL
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUserData(); // Fetch user data when the page loads
+  }
+
+  // Method to fetch user data from API
+  Future<void> fetchUserData() async {
+    try {
+      final response = await http.get(Uri.parse(apiUrl));
+
+      if (response.statusCode == 200) {
+        // If the server returns a 200 OK response, parse the JSON
+        var data = jsonDecode(response.body);
+
+        setState(() {
+          // Set the fetched data to the text controllers (assuming the response is a list of users)
+          var user = data[
+              0]; // Assuming the response is an array and we want the first user
+          nameController.text = user['name'];
+          emailController.text = user['email'];
+          phoneController.text =
+              user['phone'] ?? '9876586707'; // Handle optional fields
+          idController.text = user['_id'];
+          isLoading = false; // Data is loaded
+        });
+      } else {
+        // If the server returns an error, show a message
+        setState(() {
+          isLoading = false;
+        });
+        throw Exception('Failed to load user data');
+      }
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      print("Error fetching user data: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -210,52 +348,57 @@ class _MyProfileState extends State<MyProfile> {
       appBar: AppBar(title: Text("Personal Info")),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
-        child: Column(
-          children: [
-            CircleAvatar(
-              radius: 50,
-              backgroundImage: AssetImage("assets/profile.jpg"),
-              child: Stack(
+        child: isLoading
+            ? Center(
+                child:
+                    CircularProgressIndicator()) // Show loading indicator while data is being fetched
+            : Column(
                 children: [
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: GestureDetector(
-                      onTap: () {
-                        // Handle profile picture update
-                      },
-                      child: CircleAvatar(
-                        radius: 15,
-                        backgroundColor: Colors.blue,
-                        child: Icon(Icons.edit, size: 15, color: Colors.white),
-                      ),
+                  CircleAvatar(
+                    radius: 50,
+                    backgroundImage: AssetImage("assets/profile.jpg"),
+                    child: Stack(
+                      children: [
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: GestureDetector(
+                            onTap: () {
+                              // Handle profile picture update
+                            },
+                            child: CircleAvatar(
+                              radius: 15,
+                              backgroundColor: Colors.blue,
+                              child: Icon(Icons.edit,
+                                  size: 15, color: Colors.white),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  buildTextField("Full Name", nameController),
+                  buildTextField("Email", emailController),
+                  buildTextField("Phone Number", phoneController),
+                  buildTextField("Government ID", idController),
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() => isEditing = !isEditing);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                    ),
+                    child: Text(
+                      isEditing ? "Save" : "Edit",
+                      style: TextStyle(fontSize: 16, color: Colors.white),
                     ),
                   ),
                 ],
               ),
-            ),
-            SizedBox(height: 20),
-            buildTextField("Full Name", nameController),
-            buildTextField("Email", emailController),
-            buildTextField("Phone Number", phoneController),
-            buildTextField("Government ID", idController),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                setState(() => isEditing = !isEditing);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-              ),
-              child: Text(
-                isEditing ? "Save" : "Edit",
-                style: TextStyle(fontSize: 16 , color: Colors.white),
-              ),
-              // Navigator.push(context, route)
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -268,9 +411,9 @@ class _MyProfileState extends State<MyProfile> {
         enabled: isEditing,
         decoration: InputDecoration(
           labelText: label,
-                border: OutlineInputBorder(borderSide: BorderSide.none, borderRadius: BorderRadius.circular(8)),
-         
-          // border: BorderRadius.all(BorderRadius.circular(20)),
+          border: OutlineInputBorder(
+              borderSide: BorderSide.none,
+              borderRadius: BorderRadius.circular(8)),
           filled: true,
           fillColor: Colors.grey[200],
         ),

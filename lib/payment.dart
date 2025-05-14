@@ -262,6 +262,10 @@ import 'package:flutter/material.dart';
 import 'package:hotelbooking/home.dart';
 
 class PaymentSuccessPage extends StatefulWidget {
+  final String userId;
+
+  const PaymentSuccessPage({required this.userId, Key? key}) : super(key: key);
+
   @override
   _PaymentSuccessPageState createState() => _PaymentSuccessPageState();
 }
@@ -273,7 +277,7 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage>
   late Animation<double> _scaleAnimation;
   late Animation<Color?> _colorAnimation;
   late Animation<double> _iconAnimation;
-  
+
   get userId => null;
 
   @override
@@ -346,20 +350,19 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage>
             SizedBox(height: 30),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue, // Set background color to blue
+                backgroundColor: Colors.blue,
                 padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
               ),
               onPressed: () {
-                // Navigate back to home page after payment success
                 Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          HomeScreen(userId: userId), // Replace with your Home widget
-                    ));
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => HomeScreen(userId: widget.userId),
+                  ),
+                );
               },
               child: Text(
                 'Back to Home',

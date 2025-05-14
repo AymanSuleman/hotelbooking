@@ -25,7 +25,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
   Future<void> _fetchWishlist() async {
     try {
       final response = await http.get(
-        Uri.parse('http://192.168.0.33:5000/api/wishlist/${widget.userId}'),
+        Uri.parse('http://192.168.0.36:5000/api/wishlist/${widget.userId}'),
       );
 
       if (response.statusCode == 200) {
@@ -52,7 +52,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
 
     if (roomId == null) return;
 
-    final url = Uri.parse('http://192.168.0.33:5000/api/wishlist');
+    final url = Uri.parse('http://192.168.0.36:5000/api/wishlist');
     final headers = {'Content-Type': 'application/json'};
     final body = jsonEncode({'userId': widget.userId, 'roomId': roomId});
 

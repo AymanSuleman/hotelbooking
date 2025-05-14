@@ -677,6 +677,7 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:hotelbooking/payment.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:hotelbooking/userInfo.dart';
@@ -749,7 +750,7 @@ class _HotelDetailState extends State<HotelDetail>
 
   Future<void> fetchRoomDetails() async {
     final url =
-        Uri.parse('http://192.168.0.33:5000/api/rooms/${widget.roomId}');
+        Uri.parse('http://192.168.0.36:5000/api/rooms/${widget.roomId}');
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
@@ -768,7 +769,7 @@ class _HotelDetailState extends State<HotelDetail>
 
   Future<void> checkFavoriteStatus() async {
     final url =
-        Uri.parse("http://192.168.0.33:5000/api/wishlist/${widget.userId}");
+        Uri.parse("http://192.168.0.36:5000/api/wishlist/${widget.userId}");
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
@@ -784,7 +785,7 @@ class _HotelDetailState extends State<HotelDetail>
   }
 
   Future<void> toggleFavorite() async {
-    final url = Uri.parse("http://192.168.0.33:5000/api/wishlist");
+    final url = Uri.parse("http://192.168.0.36:5000/api/wishlist");
     try {
       final response = isFavorite
           ? await http.delete(
@@ -818,7 +819,7 @@ class _HotelDetailState extends State<HotelDetail>
 
   Future<void> fetchAndSetReviews() async {
     final url =
-        Uri.parse('http://192.168.0.33:5000/api/reviews/${widget.roomId}');
+        Uri.parse('http://192.168.0.36:5000/api/reviews/${widget.roomId}');
     final response = await http.get(url);
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
@@ -1096,7 +1097,7 @@ class _HotelDetailState extends State<HotelDetail>
 //review
 
 Future<List<dynamic>> fetchReviews(String roomId) async {
-  final url = Uri.parse('http://192.168.0.33:5000/api/reviews/$roomId');
+  final url = Uri.parse('http://192.168.0.36:5000/api/reviews/$roomId');
   final response = await http.get(url);
 
   if (response.statusCode == 200) {
@@ -1317,7 +1318,7 @@ class _GuestSelectionBottomSheetState extends State<GuestSelectionBottomSheet> {
   }
 
   Future<void> bookRoom() async {
-    final url = Uri.parse('http://192.168.0.33:5000/api/bookings');
+    final url = Uri.parse('http://192.168.0.36:5000/api/bookings');
     final totalGuests = adults + children + infants;
     final nights = widget.checkOutDate.difference(widget.checkInDate).inDays;
     final totalPrice = widget.pricePerNight * nights;
@@ -1349,7 +1350,10 @@ class _GuestSelectionBottomSheetState extends State<GuestSelectionBottomSheet> {
       );
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (_) => UserInfo()),
+        MaterialPageRoute(
+            builder: (_) => PaymentSuccessPage(
+                  userId: widget.userId,
+                )),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(

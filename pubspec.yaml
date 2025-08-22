@@ -43,6 +43,8 @@ dependencies:
   flutter_switch: ^0.3.2
   shared_preferences: ^2.5.2
   mongo_dart: ^0.9.1
+  fluttertoast: ^8.2.12
+  google_fonts: ^6.3.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

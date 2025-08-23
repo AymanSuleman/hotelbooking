@@ -749,8 +749,7 @@ class _HotelDetailState extends State<HotelDetail>
   }
 
   Future<void> fetchRoomDetails() async {
-    final url =
-        Uri.parse('http://192.168.0.36:5000/api/rooms/${widget.roomId}');
+    final url = Uri.parse('http://172.26.0.1:5000/api/rooms/${widget.roomId}');
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
@@ -769,7 +768,7 @@ class _HotelDetailState extends State<HotelDetail>
 
   Future<void> checkFavoriteStatus() async {
     final url =
-        Uri.parse("http://192.168.0.36:5000/api/wishlist/${widget.userId}");
+        Uri.parse("http://172.26.0.1:5000/api/wishlist/${widget.userId}");
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
@@ -785,7 +784,7 @@ class _HotelDetailState extends State<HotelDetail>
   }
 
   Future<void> toggleFavorite() async {
-    final url = Uri.parse("http://192.168.0.36:5000/api/wishlist");
+    final url = Uri.parse("http://172.26.0.1:5000/api/wishlist");
     try {
       final response = isFavorite
           ? await http.delete(
@@ -819,7 +818,7 @@ class _HotelDetailState extends State<HotelDetail>
 
   Future<void> fetchAndSetReviews() async {
     final url =
-        Uri.parse('http://192.168.0.36:5000/api/reviews/${widget.roomId}');
+        Uri.parse('http://172.26.0.1:5000/api/reviews/${widget.roomId}');
     final response = await http.get(url);
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
@@ -1097,7 +1096,7 @@ class _HotelDetailState extends State<HotelDetail>
 //review
 
 Future<List<dynamic>> fetchReviews(String roomId) async {
-  final url = Uri.parse('http://192.168.0.36:5000/api/reviews/$roomId');
+  final url = Uri.parse('http://172.26.0.1:5000/api/reviews/$roomId');
   final response = await http.get(url);
 
   if (response.statusCode == 200) {
@@ -1318,7 +1317,7 @@ class _GuestSelectionBottomSheetState extends State<GuestSelectionBottomSheet> {
   }
 
   Future<void> bookRoom() async {
-    final url = Uri.parse('http://192.168.0.36:5000/api/bookings');
+    final url = Uri.parse('http://172.26.0.1:5000/api/bookings');
     final totalGuests = adults + children + infants;
     final nights = widget.checkOutDate.difference(widget.checkInDate).inDays;
     final totalPrice = widget.pricePerNight * nights;

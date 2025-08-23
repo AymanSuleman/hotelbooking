@@ -49,7 +49,7 @@
 
 //     try {
 //       final response = await http.post(
-//         Uri.parse('http://192.168.0.36:5000/api/auth/login'),
+//         Uri.parse('http://172.26.0.1:5000/api/auth/login'),
 //         headers: {"Content-Type": "application/json"},
 //         body: jsonEncode({"email": email, "password": password}),
 //       );
@@ -329,7 +329,7 @@ class _SignInScreenState extends State<SignInScreen> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://192.168.0.36:5000/api/auth/login'),
+        Uri.parse('http://172.26.0.1:5000/api/auth/login'),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({"email": email, "password": password}),
       );

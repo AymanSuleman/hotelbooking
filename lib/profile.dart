@@ -71,7 +71,7 @@ class ProfileScreen extends StatelessWidget {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => Signup(),
+                        builder: (context) => SignUpScreen(),
                       ));
                 },
               ),

@@ -332,188 +332,420 @@
 
 
 import 'dart:convert';
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:http/http.dart' as http;
-import 'signin.dart'; // Import your sign-in page
 
-class SignUpScreen extends StatefulWidget {
-  const SignUpScreen({Key? key}) : super(key: key);
+import 'signin.dart';
 
+class Signup extends StatefulWidget {
   @override
-  _SignUpScreenState createState() => _SignUpScreenState();
+  _SignupState createState() => _SignupState();
 }
 
-class _SignUpScreenState extends State<SignUpScreen> {
-  final TextEditingController usernameController = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController =
-      TextEditingController();
+class _SignupState extends State<Signup> {
+  bool _obscurePassword = true;
+  bool _agreeToTerms = false;
+  bool _termsError = false;
+  bool _isLoading = false;
 
-  bool isLoading = false;
+  final _formKey = GlobalKey<FormState>();
+  final String apiBaseUrl = "http://192.168.0.32:5000/api/auth";
 
-  void showToast(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
+  TextEditingController nameController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
+  /// ✅ Register User with API
+  Future<void> registerUser() async {
+    setState(() {
+      _termsError = !_agreeToTerms;
+    });
+
+    if (_formKey.currentState!.validate() && _agreeToTerms) {
+      setState(() {
+        _isLoading = true;
+      });
+
+      final url = Uri.parse("$apiBaseUrl/register");
+
+      try {
+        final response = await http.post(
+          url,
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode({
+            "name": nameController.text.trim(),
+            "email": emailController.text.trim(),
+            "password": passwordController.text.trim(),
+          }),
+        );
+
+        final responseBody = jsonDecode(response.body);
+
+        if (response.statusCode == 201) {
+          Fluttertoast.showToast(
+            msg: "User registered successfully!",
+            backgroundColor: Colors.green,
+            textColor: Colors.white,
+          );
+
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => SignInScreen()),
+          );
+        } else {
+          Fluttertoast.showToast(
+            msg: responseBody["msg"] ?? "Registration failed!",
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+          );
+        }
+      } catch (e) {
+        Fluttertoast.showToast(
+          msg: "Error: ${e.toString()}",
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+        );
+      } finally {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
   }
 
-  Future<void> registerUser() async {
-    final username = usernameController.text.trim();
-    final email = emailController.text.trim();
-    final password = passwordController.text.trim();
-    final confirmPassword = confirmPasswordController.text.trim();
-
-    if (username.isEmpty || email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
-      showToast("All fields are required");
-      return;
-    }
-
-    if (password != confirmPassword) {
-      showToast("Passwords do not match");
-      return;
-    }
-
-    setState(() => isLoading = true);
-
+  /// ✅ Google Sign-In (Send to MongoDB API)
+  Future<void> signInWithGoogle() async {
     try {
-      final url = Uri.parse("http://192.168.0.32:5000/api/auth/register"); // Replace with your API
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+
+      if (googleUser == null) {
+        Fluttertoast.showToast(msg: "Google sign-in cancelled");
+        return;
+      }
+
+      final String email = googleUser.email;
+      final String name = googleUser.displayName ?? "";
+      final String photoUrl = googleUser.photoUrl ?? "";
+
+      final url = Uri.parse("$apiBaseUrl/social-login");
       final response = await http.post(
         url,
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
-          "username": username,
+          "name": name,
           "email": email,
-          "password": password,
+          "photo": photoUrl,
+          "provider": "google"
         }),
       );
 
-      final responseData = jsonDecode(response.body);
+      final responseBody = jsonDecode(response.body);
 
-      if (response.statusCode == 201 || response.statusCode == 200) {
-        // ✅ API sends "msg", not "message"
-        final successMsg = responseData["msg"] ?? "User registered successfully";
-
-        showToast(successMsg);
-
-        // ✅ Navigate to SignInScreen after 1 second delay
-        Future.delayed(const Duration(seconds: 1), () {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) =>  SignInScreen()),
-          );
-        });
+      if (response.statusCode == 200) {
+        Fluttertoast.showToast(
+          msg: "Logged in as $name",
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+        );
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (_) => SignInScreen()));
       } else {
-        final errorMsg = responseData["msg"] ?? "Registration failed";
-        showToast(errorMsg);
+        Fluttertoast.showToast(
+          msg: responseBody["msg"] ?? "Google login failed!",
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+        );
       }
-    } catch (error) {
-      showToast("Something went wrong. Please try again.");
-    } finally {
-      setState(() => isLoading = false);
+    } catch (e) {
+      Fluttertoast.showToast(
+        msg: "Google Sign-in Error: $e",
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
     }
+  }
+
+  /// ✅ Facebook Sign-In (Send to MongoDB API)
+  Future<void> signInWithFacebook() async {
+    try {
+      final LoginResult result = await FacebookAuth.instance.login();
+
+      if (result.status == LoginStatus.success) {
+        final userData = await FacebookAuth.instance.getUserData();
+        final name = userData['name'] ?? '';
+        final email = userData['email'] ?? '';
+        final photo = userData['picture']['data']['url'] ?? '';
+
+        final url = Uri.parse("$apiBaseUrl/social-login");
+        final response = await http.post(
+          url,
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode({
+            "name": name,
+            "email": email,
+            "photo": photo,
+            "provider": "facebook"
+          }),
+        );
+
+        final responseBody = jsonDecode(response.body);
+
+        if (response.statusCode == 200) {
+          Fluttertoast.showToast(
+            msg: "Logged in as $name",
+            backgroundColor: Colors.green,
+            textColor: Colors.white,
+          );
+          Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (_) => SignInScreen()));
+        } else {
+          Fluttertoast.showToast(
+            msg: responseBody["msg"] ?? "Facebook login failed!",
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+          );
+        }
+      } else {
+        Fluttertoast.showToast(msg: "Facebook login cancelled");
+      }
+    } catch (e) {
+      Fluttertoast.showToast(
+        msg: "Facebook Login Error: $e",
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+      );
+    }
+  }
+
+  InputDecoration _inputDecoration(String hint) {
+    return InputDecoration(
+      hintText: hint,
+      filled: true,
+      fillColor: Colors.grey.shade200,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: BorderSide.none,
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: BorderSide(color: Colors.red),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: BorderSide(color: Colors.red),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade100,
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: SingleChildScrollView(
+      backgroundColor: Colors.white,
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(24.0),
+        child: Form(
+          key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 60),
-              const Text(
-                "Create Account",
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 10),
-              const Text("Please fill in the details below to sign up."),
-              const SizedBox(height: 30),
-              TextField(
-                controller: usernameController,
-                decoration: InputDecoration(
-                  labelText: "Username",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+              SizedBox(height: 50),
+              Center(
+                child: Text(
+                  "Create Account",
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
               ),
-              const SizedBox(height: 20),
-              TextField(
+              SizedBox(height: 8),
+              Center(
+                child: Text(
+                  "Fill your information below or register\nwith your social account.",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.grey),
+                ),
+              ),
+              SizedBox(height: 24),
+
+              Text("Name"),
+              SizedBox(height: 8),
+              TextFormField(
+                controller: nameController,
+                decoration: _inputDecoration("John Doe"),
+                validator: (value) => value == null || value.trim().isEmpty
+                    ? "Name is required"
+                    : null,
+              ),
+              SizedBox(height: 16),
+
+              Text("Email"),
+              SizedBox(height: 8),
+              TextFormField(
                 controller: emailController,
-                decoration: InputDecoration(
-                  labelText: "Email",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
+                decoration: _inputDecoration("example@gmail.com"),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return "Email is required";
+                  }
+                  if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w]{2,4}$')
+                      .hasMatch(value.trim())) {
+                    return "Enter a valid email";
+                  }
+                  return null;
+                },
               ),
-              const SizedBox(height: 20),
-              TextField(
+              SizedBox(height: 16),
+
+              Text("Password"),
+              SizedBox(height: 8),
+              TextFormField(
                 controller: passwordController,
-                obscureText: true,
-                decoration: InputDecoration(
-                  labelText: "Password",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              TextField(
-                controller: confirmPasswordController,
-                obscureText: true,
-                decoration: InputDecoration(
-                  labelText: "Confirm Password",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 30),
-              ElevatedButton(
-                onPressed: isLoading ? null : registerUser,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue.shade800,
-                  minimumSize: const Size(double.infinity, 50),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: isLoading
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text(
-                        "Register",
-                        style: TextStyle(color: Colors.white, fontSize: 16),
-                      ),
-              ),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text("Already have an account? "),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>  SignInScreen()),
-                      );
+                obscureText: _obscurePassword,
+                decoration: _inputDecoration("****").copyWith(
+                  suffixIcon: IconButton(
+                    icon: Icon(_obscurePassword
+                        ? Icons.visibility_off
+                        : Icons.visibility),
+                    onPressed: () {
+                      setState(() {
+                        _obscurePassword = !_obscurePassword;
+                      });
                     },
+                  ),
+                ),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return "Password is required";
+                  }
+                  if (value.length < 6) {
+                    return "Minimum 6 characters required";
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 16),
+
+              Row(
+                children: [
+                  Checkbox(
+                    value: _agreeToTerms,
+                    onChanged: (value) {
+                      setState(() {
+                        _agreeToTerms = value!;
+                        _termsError = !_agreeToTerms;
+                      });
+                    },
+                    activeColor: Colors.blue,
+                  ),
+                  Text("Agree with "),
+                  InkWell(
+                    onTap: () {},
                     child: Text(
-                      "Sign In",
+                      "Terms & Condition",
                       style: TextStyle(
-                          color: Colors.blue.shade800,
-                          fontWeight: FontWeight.bold),
+                          color: Colors.blue, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ],
-              )
+              ),
+              if (_termsError)
+                Padding(
+                  padding: const EdgeInsets.only(left: 12),
+                  child: Text(
+                    "You must agree to the Terms & Conditions.",
+                    style: TextStyle(color: Colors.red, fontSize: 12),
+                  ),
+                ),
+              SizedBox(height: 16),
+
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    padding: EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8)),
+                  ),
+                  onPressed: _isLoading ? null : registerUser,
+                  child: _isLoading
+                      ? CircularProgressIndicator(color: Colors.white)
+                      : Text("Sign Up",
+                          style: TextStyle(fontSize: 16, color: Colors.white)),
+                ),
+              ),
+              SizedBox(height: 16),
+
+              Row(
+                children: [
+                  Expanded(child: Divider(thickness: 1)),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 8),
+                    child: Text("Or sign up with"),
+                  ),
+                  Expanded(child: Divider(thickness: 1)),
+                ],
+              ),
+              SizedBox(height: 16),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  socialMediaButton(FontAwesomeIcons.google, signInWithGoogle),
+                  SizedBox(width: 16),
+                  socialMediaButton(
+                      FontAwesomeIcons.facebook, signInWithFacebook),
+                ],
+              ),
+              SizedBox(height: 24),
+
+              Center(
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => SignInScreen()),
+                    );
+                  },
+                  child: RichText(
+                    text: TextSpan(
+                      text: "Already have an account? ",
+                      style: TextStyle(color: Colors.black),
+                      children: [
+                        TextSpan(
+                          text: "Sign In",
+                          style: TextStyle(
+                              color: Colors.blue, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget socialMediaButton(IconData icon, Function onTap) {
+    return GestureDetector(
+      onTap: () => onTap(),
+      child: Container(
+        padding: EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(color: Colors.grey.shade300),
+        ),
+        child: Icon(
+          icon,
+          size: 30,
+          color: Colors.blue,
         ),
       ),
     );

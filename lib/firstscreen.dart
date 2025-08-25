@@ -31,7 +31,7 @@ class _FirstScreenState extends State<FirstScreen> {
     Future.delayed(Duration(seconds: 5), () {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => SignUpScreen()),
+        MaterialPageRoute(builder: (context) => Signup()),
       );
     });
   }

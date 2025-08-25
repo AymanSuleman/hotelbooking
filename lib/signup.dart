@@ -362,86 +362,32 @@ class _SignupState extends State<Signup> {
 
   /// ✅ Register User with API
   Future<void> registerUser() async {
-    setState(() {
-      _termsError = !_agreeToTerms;
-    });
+    final username = usernameController.text.trim();
+    final email = emailController.text.trim();
+    final password = passwordController.text.trim();
+    final confirmPassword = confirmPasswordController.text.trim();
 
-    if (_formKey.currentState!.validate() && _agreeToTerms) {
-      setState(() {
-        _isLoading = true;
-      });
-
-      final url = Uri.parse("$apiBaseUrl/register");
-
-      try {
-        final response = await http.post(
-          url,
-          headers: {"Content-Type": "application/json"},
-          body: jsonEncode({
-            "name": nameController.text.trim(),
-            "email": emailController.text.trim(),
-            "password": passwordController.text.trim(),
-          }),
-        );
-
-        final responseBody = jsonDecode(response.body);
-
-        if (response.statusCode == 201) {
-          Fluttertoast.showToast(
-            msg: "User registered successfully!",
-            backgroundColor: Colors.green,
-            textColor: Colors.white,
-          );
-
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => SignInScreen()),
-          );
-        } else {
-          Fluttertoast.showToast(
-            msg: responseBody["msg"] ?? "Registration failed!",
-            backgroundColor: Colors.red,
-            textColor: Colors.white,
-          );
-        }
-      } catch (e) {
-        Fluttertoast.showToast(
-          msg: "Error: ${e.toString()}",
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-        );
-      } finally {
-        setState(() {
-          _isLoading = false;
-        });
-      }
+    if (username.isEmpty || email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
+      showToast("All fields are required");
+      return;
     }
-  }
 
-  /// ✅ Google Sign-In (Send to MongoDB API)
-  Future<void> signInWithGoogle() async {
+    if (password != confirmPassword) {
+      showToast("Passwords do not match");
+      return;
+    }
+
+    setState(() => isLoading = true);
+
     try {
-      final GoogleSignIn googleSignIn = GoogleSignIn();
-      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
-
-      if (googleUser == null) {
-        Fluttertoast.showToast(msg: "Google sign-in cancelled");
-        return;
-      }
-
-      final String email = googleUser.email;
-      final String name = googleUser.displayName ?? "";
-      final String photoUrl = googleUser.photoUrl ?? "";
-
-      final url = Uri.parse("$apiBaseUrl/social-login");
+      final url = Uri.parse("http://192.168.0.32:5000/api/auth/register"); // Replace with your API
       final response = await http.post(
         url,
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
-          "name": name,
+          "username": username,
           "email": email,
-          "photo": photoUrl,
-          "provider": "google"
+          "password": password,
         }),
       );
 

@@ -329,7 +329,7 @@
 
 //     try {
 //       final response = await http.post(
-//         Uri.parse('http:// 192.168.0.32:5000/api/auth/login'),
+//         Uri.parse('http://192.168.0.36:5000/api/auth/login'),
 //         headers: {"Content-Type": "application/json"},
 //         body: jsonEncode({"email": email, "password": password}),
 //       );
@@ -642,8 +642,8 @@ class _SignInScreenState extends State<SignInScreen> {
       final url = Uri.parse("http://192.168.0.32:5000/api/auth/login");
       final response = await http.post(
         url,
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode({"email": email, "password": password}),
+        headers: {"Content-Type": "application/x-www-form-urlencoded"},
+        body: {"email": email, "password": password},
       );
 
       setState(() => _isLoading = false);
@@ -821,21 +821,19 @@ class _SignInScreenState extends State<SignInScreen> {
               children: [
                 IconButton(
                   icon: const Icon(FontAwesomeIcons.google, color: Colors.red),
-                  onPressed: _signInWithGoogle,
+                  onPressed: () => Fluttertoast.showToast(msg: "Google sign-in coming soon"),
                 ),
                 const SizedBox(width: 20),
                 IconButton(
-                  icon:
-                      const Icon(FontAwesomeIcons.facebook, color: Colors.blue),
-                  onPressed: _signInWithFacebook,
+                  icon: const Icon(FontAwesomeIcons.facebook, color: Colors.blue),
+                  onPressed: () => Fluttertoast.showToast(msg: "Facebook sign-in coming soon"),
                 ),
               ],
             ),
             const SizedBox(height: 20),
             TextButton(
               onPressed: () {
-                Navigator.push(
-                    context, MaterialPageRoute(builder: (context) => Signup()));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpScreen()));
               },
               child: const Text(
                 "Don't have an account? Sign Up",

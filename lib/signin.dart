@@ -15,8 +15,11 @@ class SignInScreen extends StatefulWidget {
   final String? savedEmail;
   final String? savedPassword;
 
-  SignInScreen(
-      {this.isRemembered = false, this.savedEmail, this.savedPassword});
+  SignInScreen({
+    this.isRemembered = false,
+    this.savedEmail,
+    this.savedPassword,
+  });
 
   @override
   _SignInScreenState createState() => _SignInScreenState();
@@ -70,11 +73,14 @@ class _SignInScreenState extends State<SignInScreen> {
         if (data.containsKey('token') && data.containsKey('user')) {
           String userId = data['user']['id']?.toString() ?? '';
           String name = data['user']['name']?.toString() ?? '';
+          String token = data['token']?.toString() ?? '';
 
           SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setString('userId', userId);
+          await prefs.setString('token', token);
+
           if (rememberMe) {
             prefs.setBool('isRemembered', true);
-            prefs.setString('userId', userId);
             prefs.setString('email', email);
             prefs.setString('password', password);
           } else {
@@ -103,7 +109,7 @@ class _SignInScreenState extends State<SignInScreen> {
     }
   }
 
-  /// ✅ Google Sign-In (Fixed)
+  /// ✅ Google Sign-In
   Future<void> _signInWithGoogle() async {
     try {
       final googleSignIn = GoogleSignIn(scopes: ['email']);
@@ -120,7 +126,7 @@ class _SignInScreenState extends State<SignInScreen> {
         textColor: Colors.white,
       );
 
-      // ✅ Navigate to Home (you can also call your API to register/login)
+      // ✅ Navigate to Home (Optional: Call API to register/login Google user)
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => HomeScreen(userId: googleUser.id)),
@@ -251,7 +257,9 @@ class _SignInScreenState extends State<SignInScreen> {
             TextButton(
               onPressed: () {
                 Navigator.push(
-                    context, MaterialPageRoute(builder: (context) => Signup()));
+                  context,
+                  MaterialPageRoute(builder: (context) => Signup()),
+                );
               },
               child: const Text(
                 "Don't have an account? Sign Up",

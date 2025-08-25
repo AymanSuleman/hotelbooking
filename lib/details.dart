@@ -681,6 +681,7 @@ import 'package:hotelbooking/payment.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:hotelbooking/userInfo.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Room {
   final String id;
@@ -1317,50 +1318,63 @@ class _GuestSelectionBottomSheetState extends State<GuestSelectionBottomSheet> {
     });
   }
 
-  Future<void> bookRoom() async {
-    final url = Uri.parse('http://192.168.0.36:5000/api/bookings');
-    final totalGuests = adults + children + infants;
-    final nights = widget.checkOutDate.difference(widget.checkInDate).inDays;
-    final totalPrice = widget.pricePerNight * nights;
+ Future<void> bookRoom() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String? userId = prefs.getString('userId'); // ✅ fetch from saved login
 
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (_) => Center(child: CircularProgressIndicator()),
+  if (userId == null || userId.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("User not logged in. Please sign in.")),
     );
-
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        "userId": widget.userId,
-        "roomId": widget.roomId,
-        "checkInDate": widget.checkInDate.toIso8601String(),
-        "checkOutDate": widget.checkOutDate.toIso8601String(),
-        "guests": totalGuests,
-        "totalPrice": totalPrice
-      }),
-    );
-
-    Navigator.pop(context);
-
-    if (response.statusCode == 201) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Booking successful!")),
-      );
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (_) => PaymentSuccessPage(
-                  userId: widget.userId,
-                )),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Booking failed: ${response.body}")),
-      );
-    }
+    return;
   }
+
+  final url = Uri.parse("http://192.168.0.32:5000/api/bookings");
+  final totalGuests = adults + children + infants;
+  final nights = widget.checkOutDate.difference(widget.checkInDate).inDays;
+  final totalPrice = widget.pricePerNight * nights;
+
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (_) => Center(child: CircularProgressIndicator()),
+  );
+
+  final response = await http.post(
+    url,
+    headers: {
+      'Content-Type': 'application/json',
+      // If your booking API needs token:
+      'Authorization': 'Bearer ${prefs.getString('token') ?? ''}',
+    },
+    body: jsonEncode({
+      "userId": userId, // ✅ Now it's coming from SharedPreferences
+      "roomId": widget.roomId,
+      "checkInDate": widget.checkInDate.toIso8601String(),
+      "checkOutDate": widget.checkOutDate.toIso8601String(),
+      "guests": totalGuests,
+      "totalPrice": totalPrice
+    }),
+  );
+
+  Navigator.pop(context);
+
+  if (response.statusCode == 201) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Booking successful!")),
+    );
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => PaymentSuccessPage(userId: userId),
+      ),
+    );
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Booking failed: ${response.body}")),
+    );
+  }
+}
 
   @override
   Widget build(BuildContext context) {

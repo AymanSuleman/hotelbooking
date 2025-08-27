@@ -6,6 +6,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'signin.dart';
 
@@ -28,7 +29,7 @@ class _SignupState extends State<Signup> {
   TextEditingController passwordController = TextEditingController();
 
   /// ✅ Register User with API
-  Future<void> registerUser() async {
+ Future<void> registerUser() async {
     setState(() {
       _termsError = !_agreeToTerms;
     });
@@ -52,14 +53,29 @@ class _SignupState extends State<Signup> {
         );
 
         final responseBody = jsonDecode(response.body);
+        print("📩 Signup API Response: $responseBody"); // Debugging
 
         if (response.statusCode == 201) {
+          // ✅ Extract userId from response
+          String userId = responseBody['user']?['_id']?.toString() ?? '';
+          String name = responseBody['user']?['name']?.toString() ?? '';
+
+          // ✅ Save to SharedPreferences
+          if (userId.isNotEmpty) {
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+            await prefs.setString('userId', userId);
+            print("✅ UserId saved after signup: $userId");
+          } else {
+            print("❌ UserId not found in response");
+          }
+
           Fluttertoast.showToast(
-            msg: "User registered successfully!",
+            msg: "Welcome, $name!",
             backgroundColor: Colors.green,
             textColor: Colors.white,
           );
 
+          // ✅ Directly go to Home instead of SignIn
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => SignInScreen()),
@@ -84,7 +100,6 @@ class _SignupState extends State<Signup> {
       }
     }
   }
-
   /// ✅ Google Sign-In (Send to MongoDB API)
   Future<void> signInWithGoogle() async {
     try {
@@ -405,10 +420,10 @@ class _SignupState extends State<Signup> {
       onTap: () => onTap(),
       child: Container(
         padding: EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(color: Colors.grey.shade300),
-        ),
+        // decoration: BoxDecoration(
+        //   shape: BoxShape.circle,
+        //   border: Border.all(color: Colors.grey.shade300),
+        // ),
         child: Icon(
           icon,
           size: 30,

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hotelbooking/favorite.dart';
 import 'package:hotelbooking/history.dart';
 import 'package:hotelbooking/profile.dart';
@@ -433,6 +434,7 @@ class PopularCard extends StatefulWidget {
   final double rating;
   final String roomId;
   final String userId;
+  final Function(bool)? onFavoriteChanged; // ✅ Callback for updating parent UI
 
   const PopularCard({
     super.key,
@@ -441,6 +443,7 @@ class PopularCard extends StatefulWidget {
     required this.rating,
     required this.roomId,
     required this.userId,
+    this.onFavoriteChanged,
   });
 
   @override
@@ -450,7 +453,7 @@ class PopularCard extends StatefulWidget {
 class _PopularCardState extends State<PopularCard> {
   bool isFavorite = false;
 
-  final String baseUrl = 'http://192.168.0.36:5000/api/wishlist';
+  final String baseUrl = 'http://192.168.0.32:5000/api/wishlist';
 
   Future<void> _toggleWishlist() async {
     setState(() {
@@ -459,12 +462,6 @@ class _PopularCardState extends State<PopularCard> {
 
     if (isFavorite) {
       try {
-        // 🔍 Debug the IDs before sending the API request
-        print("Sending userId: ${widget.userId}");
-        print("Sending roomId: ${widget.roomId}");
-        print(
-            "Room ID valid format? ${RegExp(r'^[a-f\d]{24}$').hasMatch(widget.roomId)}");
-
         final response = await http.post(
           Uri.parse(baseUrl),
           headers: {"Content-Type": "application/json"},
@@ -475,24 +472,63 @@ class _PopularCardState extends State<PopularCard> {
         );
 
         if (response.statusCode == 201 || response.statusCode == 200) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("✅ Added to wishlist")),
+          Fluttertoast.showToast(
+            msg: "✅ Added to wishlist",
+            backgroundColor: Colors.green,
+            textColor: Colors.white,
           );
+          widget.onFavoriteChanged?.call(true); // ✅ Notify parent
         } else {
           setState(() => isFavorite = false);
           final error = jsonDecode(response.body);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("❌ Error: ${error['error']}")),
+          Fluttertoast.showToast(
+            msg: "❌ Error: ${error['error'] ?? 'Failed'}",
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
           );
         }
       } catch (e) {
         setState(() => isFavorite = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("❌ Network error: $e")),
+        Fluttertoast.showToast(
+          msg: "❌ Network error: $e",
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
         );
       }
     } else {
-      // Optional: Implement deletion if required
+      try {
+        final response = await http.delete(
+          Uri.parse(baseUrl),
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode({
+            "userId": widget.userId,
+            "roomId": widget.roomId,
+          }),
+        );
+
+        if (response.statusCode == 200) {
+          Fluttertoast.showToast(
+            msg: "Removed from wishlist",
+            backgroundColor: Colors.orange,
+            textColor: Colors.white,
+          );
+          widget.onFavoriteChanged?.call(false); // ✅ Notify parent
+        } else {
+          Fluttertoast.showToast(
+            msg: "❌ Failed to remove",
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+          );
+          setState(() => isFavorite = true); // Revert change
+        }
+      } catch (e) {
+        Fluttertoast.showToast(
+          msg: "❌ Network error: $e",
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+        );
+        setState(() => isFavorite = true); // Revert change
+      }
     }
   }
 
@@ -503,11 +539,12 @@ class _PopularCardState extends State<PopularCard> {
         Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => HotelDetail(
-                    image: widget.image,
-                    userId: widget.userId,
-                    roomId: widget.roomId,
-                  )),
+            builder: (context) => HotelDetail(
+              image: widget.image,
+              userId: widget.userId,
+              roomId: widget.roomId,
+            ),
+          ),
         );
       },
       splashColor: Colors.blue.withOpacity(0.5),
@@ -560,11 +597,9 @@ class _PopularCardState extends State<PopularCard> {
               child: GestureDetector(
                 onTap: _toggleWishlist,
                 child: Container(
-                  padding:
-                      EdgeInsets.all(6), // Adjust for spacing around the icon
+                  padding: const EdgeInsets.all(6),
                   decoration: BoxDecoration(
-                    color: Colors.white
-                        .withOpacity(0.8), // Background color of the circle
+                    color: Colors.white.withOpacity(0.8),
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(

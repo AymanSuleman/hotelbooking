@@ -26,10 +26,12 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
+  final _formKey = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   bool rememberMe = false;
   bool _isLoading = false;
+  bool _obscurePassword = true;
 
   @override
   void initState() {
@@ -43,17 +45,10 @@ class _SignInScreenState extends State<SignInScreen> {
 
   /// ✅ Normal Sign-In
   Future<void> _signIn() async {
+    if (!_formKey.currentState!.validate()) return;
+
     final email = emailController.text.trim();
     final password = passwordController.text.trim();
-
-    if (email.isEmpty || password.isEmpty) {
-      Fluttertoast.showToast(msg: "Email and password cannot be empty");
-      return;
-    }
-    if (!RegExp(r'^.+@.+\..+$').hasMatch(email)) {
-      Fluttertoast.showToast(msg: "Enter a valid email");
-      return;
-    }
 
     setState(() => _isLoading = true);
 
@@ -71,7 +66,7 @@ class _SignInScreenState extends State<SignInScreen> {
         final data = jsonDecode(response.body);
 
         if (data.containsKey('token') && data.containsKey('user')) {
-          String userId = data['user']['id']?.toString() ?? '';
+          String userId = data['user']['_id']?.toString() ?? '';
           String name = data['user']['name']?.toString() ?? '';
           String token = data['token']?.toString() ?? '';
 
@@ -126,7 +121,6 @@ class _SignInScreenState extends State<SignInScreen> {
         textColor: Colors.white,
       );
 
-      // ✅ Navigate to Home (Optional: Call API to register/login Google user)
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => HomeScreen(userId: googleUser.id)),
@@ -151,122 +145,205 @@ class _SignInScreenState extends State<SignInScreen> {
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const SizedBox(height: 80),
-            Text(
-              "Sign In",
-              style: GoogleFonts.poppins(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: Colors.blue.shade800,
-              ),
-            ),
-            const SizedBox(height: 30),
-            TextField(
-              controller: emailController,
-              keyboardType: TextInputType.emailAddress,
-              decoration: InputDecoration(
-                labelText: 'Email',
-                prefixIcon: const Icon(Icons.email),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 80),
+              Center(
+                child: Text(
+                  "Sign In",
+                  style: GoogleFonts.poppins(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blue,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 20),
-            TextField(
-              controller: passwordController,
-              obscureText: true,
-              decoration: InputDecoration(
-                labelText: 'Password',
-                prefixIcon: const Icon(Icons.lock),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+              const SizedBox(height: 40),
+
+              /// ✅ Email Field (Grey background)
+              const Text("Email",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+              const SizedBox(height: 8),
+              TextFormField(
+                controller: emailController,
+                keyboardType: TextInputType.emailAddress,
+                decoration: InputDecoration(
+                  hintText: 'example@gmail.com',
+                  filled: true,
+                  fillColor: Colors.grey.shade200,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
                 ),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return "Email is required";
+                  }
+                  if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w]{2,4}$')
+                      .hasMatch(value.trim())) {
+                    return "Enter a valid email";
+                  }
+                  return null;
+                },
               ),
-            ),
-            const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Checkbox(
-                      value: rememberMe,
-                      onChanged: (val) => setState(() => rememberMe = val!),
+
+              const SizedBox(height: 16),
+
+              /// ✅ Password Field
+              const Text("Password",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+              const SizedBox(height: 8),
+              TextFormField(
+                controller: passwordController,
+                obscureText: _obscurePassword,
+                decoration: InputDecoration(
+                  hintText: '****',
+                  filled: true,
+                  fillColor: Colors.grey.shade200,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscurePassword
+                          ? Icons.visibility_off
+                          : Icons.visibility,
                     ),
-                    const Text("Remember me"),
-                  ],
+                    onPressed: () {
+                      setState(() {
+                        _obscurePassword = !_obscurePassword;
+                      });
+                    },
+                  ),
                 ),
-                TextButton(
-                  onPressed: () {
-                    if (emailController.text.isEmpty) {
-                      Fluttertoast.showToast(
-                          msg: "Enter email to reset password");
-                    } else {
-                      Fluttertoast.showToast(
-                          msg:
-                              "Password reset link sent to ${emailController.text}");
-                    }
-                  },
-                  child: const Text("Forgot Password?"),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            _isLoading
-                ? const CircularProgressIndicator()
-                : ElevatedButton(
-                    onPressed: _signIn,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue.shade800,
-                      minimumSize: const Size(double.infinity, 50),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return "Password is required";
+                  }
+                  if (value.length < 6) {
+                    return "Minimum 6 characters required";
+                  }
+                  return null;
+                },
+              ),
+
+              const SizedBox(height: 12),
+
+              /// ✅ Remember Me + Forgot Password
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Checkbox(
+                        value: rememberMe,
+                        onChanged: (val) => setState(() => rememberMe = val!),
+                      ),
+                      const Text("Remember me"),
+                    ],
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      if (emailController.text.isEmpty) {
+                        Fluttertoast.showToast(
+                            msg: "Enter email to reset password");
+                      } else {
+                        Fluttertoast.showToast(
+                            msg:
+                                "Password reset link sent to ${emailController.text}");
+                      }
+                    },
+                    child: const Text("Forgot Password?"),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 20),
+
+              /// ✅ Sign-In Button
+              _isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: _signIn,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: const Text(
+                          "Sign In",
+                          style: TextStyle(fontSize: 16, color: Colors.white),
+                        ),
                       ),
                     ),
-                    child: const Text(
-                      "Sign In",
-                      style: TextStyle(color: Colors.white, fontSize: 16),
+
+              const SizedBox(height: 20),
+
+              /// ✅ Or Sign In with
+              Center(
+                child: Text(
+                  "Or sign in with",
+                  style: GoogleFonts.poppins(color: Colors.grey),
+                ),
+              ),
+              const SizedBox(height: 15),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    icon:
+                        const Icon(FontAwesomeIcons.google, color: Colors.blue,
+                        size: 30,),
+                    onPressed: _signInWithGoogle,
+                  ),
+                  const SizedBox(width: 20),
+                  IconButton(
+                    icon: const Icon(FontAwesomeIcons.facebook,
+                        color: Colors.blue,
+                        size: 30,),
+                    onPressed: _signInWithFacebook,
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 20),
+
+              /// ✅ Navigate to Sign Up
+              Center(
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Signup()),
+                    );
+                  },
+                  child: RichText(
+                    text: const TextSpan(
+                      text: "Don't have an account? ",
+                      style: TextStyle(color: Colors.black),
+                      children: [
+                        TextSpan(
+                          text: "Sign Up",
+                          style: TextStyle(
+                              color: Colors.blue, fontWeight: FontWeight.bold),
+                        ),
+                      ],
                     ),
                   ),
-            const SizedBox(height: 20),
-            Text(
-              "Or sign in with",
-              style: GoogleFonts.poppins(color: Colors.grey),
-            ),
-            const SizedBox(height: 15),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                IconButton(
-                  icon: const Icon(FontAwesomeIcons.google, color: Colors.red),
-                  onPressed: _signInWithGoogle,
                 ),
-                const SizedBox(width: 20),
-                IconButton(
-                  icon:
-                      const Icon(FontAwesomeIcons.facebook, color: Colors.blue),
-                  onPressed: _signInWithFacebook,
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            TextButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Signup()),
-                );
-              },
-              child: const Text(
-                "Don't have an account? Sign Up",
-                style: TextStyle(color: Colors.blue),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

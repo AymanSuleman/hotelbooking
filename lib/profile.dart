@@ -1,23 +1,122 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
-// import 'package:flutter_switch/flutter_switch.dart';/
-import 'package:hotelbooking/myprofile.dart';
-import 'package:hotelbooking/signup.dart';
+import 'package:hotelbooking/signin.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
-  runApp(MyApp());
+class ProfileScreen extends StatefulWidget {
+  @override
+  _ProfileScreenState createState() => _ProfileScreenState();
 }
 
-class MyApp extends StatelessWidget {
+class _ProfileScreenState extends State<ProfileScreen> {
+  String userName = "Loading...";
+  String userEmail = "Loading...";
+  File? _profileImage;
+
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: ProfileScreen(),
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userName = prefs.getString('name') ?? "Guest User";
+      userEmail = prefs.getString('email') ?? "No email";
+    });
+  }
+
+  Future<void> _logout() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => SignInScreen()),
+      (route) => false,
     );
   }
-}
 
-class ProfileScreen extends StatelessWidget {
+  void _editName() {
+    TextEditingController nameController = TextEditingController(text: userName);
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Edit Name"),
+          content: TextField(
+            controller: nameController,
+            decoration: InputDecoration(labelText: "Name"),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text("Cancel"),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                SharedPreferences prefs = await SharedPreferences.getInstance();
+                await prefs.setString('name', nameController.text);
+                setState(() {
+                  userName = nameController.text;
+                });
+                Navigator.pop(context);
+              },
+              child: Text("Save"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _profileImage = File(pickedFile.path);
+      });
+
+      // TODO: Upload to server or save locally if needed
+    }
+  }
+
+  void _showImageOptions() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Wrap(
+        children: [
+          ListTile(
+            leading: Icon(Icons.photo_camera),
+            title: Text("Take Photo"),
+            onTap: () async {
+              Navigator.pop(context);
+              final picker = ImagePicker();
+              final pickedFile = await picker.pickImage(source: ImageSource.camera);
+              if (pickedFile != null) {
+                setState(() {
+                  _profileImage = File(pickedFile.path);
+                });
+              }
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.photo_library),
+            title: Text("Choose from Gallery"),
+            onTap: () async {
+              Navigator.pop(context);
+              await _pickImage();
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,53 +126,48 @@ class ProfileScreen extends StatelessWidget {
           padding: const EdgeInsets.all(20.0),
           child: Column(
             children: [
-              CircleAvatar(
-                radius: 50,
-                backgroundImage: AssetImage("assets/profile.jpg"),
-                child: Stack(
-                  children: [
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: GestureDetector(
-                        onTap: () {
-                          // Handle profile picture update
-                        },
-                        child: CircleAvatar(
-                          radius: 15,
-                          backgroundColor: Colors.blue,
-                          child:
-                              Icon(Icons.edit, size: 15, color: Colors.white),
-                        ),
+              Stack(
+                children: [
+                  CircleAvatar(
+                    radius: 50,
+                    backgroundImage: _profileImage != null
+                        ? FileImage(_profileImage!)
+                        : AssetImage("assets/profile.jpg") as ImageProvider,
+                  ),
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: GestureDetector(
+                      onTap: _showImageOptions, // Change profile image
+                      child: CircleAvatar(
+                        radius: 15,
+                        backgroundColor: Colors.blue,
+                        child: Icon(Icons.edit, size: 15, color: Colors.white),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
               SizedBox(height: 10),
-              Text(
-                "Antony William",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              GestureDetector(
+                onTap: _editName,
+                child: Text(
+                  userName,
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
               ),
-              Text("AntonyWilliam12@gmail.com"),
+              Text(userEmail),
               SizedBox(height: 20),
-              buildListTile(
-                  context, Icons.person, "Personal Info", MyProfile()),
-              buildListTile(context, Icons.lock, "Privacy & Sharing",
-                  PrivacySharingScreen()),
-              buildListTile(context, Icons.notifications, "Notification",
-                  NotificationSettingsScreen()),
-              buildListTile(context, Icons.reviews, "Review"),
+
+              buildListTile(context, Icons.person, "Personal Info"),
+              buildListTile(context, Icons.lock, "Privacy & Sharing", PrivacySharingScreen()),
+              buildListTile(context, Icons.notifications, "Notification", NotificationSettingsScreen()),
+
+              Spacer(),
               ListTile(
                 leading: Icon(Icons.logout, color: Colors.red),
                 title: Text("Log Out", style: TextStyle(color: Colors.red)),
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Signup(),
-                      ));
-                },
+                onTap: _logout,
               ),
             ],
           ),
@@ -82,30 +176,23 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  ListTile buildListTile(BuildContext context, IconData icon, String title,
-      [Widget? page]) {
+  ListTile buildListTile(BuildContext context, IconData icon, String title, [Widget? page]) {
     return ListTile(
       leading: Icon(icon, color: Colors.blue),
       title: Text(title),
       trailing: Icon(Icons.arrow_forward_ios, size: 16),
-      onTap: page != null
-          ? () => Navigator.push(
-              context, MaterialPageRoute(builder: (context) => page))
-          : null,
+      onTap: page != null ? () => Navigator.push(context, MaterialPageRoute(builder: (context) => page)) : null,
     );
   }
 }
 
-// Notification....
-
+// Notification Settings Screen
 class NotificationSettingsScreen extends StatefulWidget {
   @override
-  _NotificationSettingsScreenState createState() =>
-      _NotificationSettingsScreenState();
+  _NotificationSettingsScreenState createState() => _NotificationSettingsScreenState();
 }
 
-class _NotificationSettingsScreenState
-    extends State<NotificationSettingsScreen> {
+class _NotificationSettingsScreenState extends State<NotificationSettingsScreen> {
   bool pushTips = true;
   bool emailTips = true;
   bool pushActivity = true;
@@ -131,40 +218,22 @@ class _NotificationSettingsScreenState
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSection(
-                "SPECIAL TIPS AND OFFERS",
-                pushTips,
-                emailTips,
-                (val) => setState(() => pushTips = val),
-                (val) => setState(() => emailTips = val)),
-            _buildSection(
-                "ACTIVITY",
-                pushActivity,
-                emailActivity,
-                (val) => setState(() => pushActivity = val),
-                (val) => setState(() => emailActivity = val)),
-            _buildSection(
-                "REMINDERS",
-                pushReminders,
-                emailReminders,
-                (val) => setState(() => pushReminders = val),
-                (val) => setState(() => emailReminders = val)),
+            _buildSection("SPECIAL TIPS AND OFFERS", pushTips, emailTips, (val) => setState(() => pushTips = val), (val) => setState(() => emailTips = val)),
+            _buildSection("ACTIVITY", pushActivity, emailActivity, (val) => setState(() => pushActivity = val), (val) => setState(() => emailActivity = val)),
+            _buildSection("REMINDERS", pushReminders, emailReminders, (val) => setState(() => pushReminders = val), (val) => setState(() => emailReminders = val)),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildSection(String title, bool pushValue, bool emailValue,
-      Function(bool) onPushChanged, Function(bool) onEmailChanged) {
+  Widget _buildSection(String title, bool pushValue, bool emailValue, Function(bool) onPushChanged, Function(bool) onEmailChanged) {
     return Padding(
       padding: EdgeInsets.only(bottom: 16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title,
-              style:
-                  TextStyle(fontWeight: FontWeight.bold, color: Colors.grey)),
+          Text(title, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey)),
           SizedBox(height: 10),
           _buildToggle("Push Notification", pushValue, onPushChanged),
           _buildToggle("Email", emailValue, onEmailChanged),
@@ -191,8 +260,7 @@ class _NotificationSettingsScreenState
   }
 }
 
-//privacy and sharing.....
-
+// Privacy & Sharing Screen
 class PrivacySharingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -212,23 +280,12 @@ class PrivacySharingScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Manage your account data",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+            Text("Manage your account data", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
             SizedBox(height: 8),
-            Text(
-                "You can make a request to download or delete your personal data from Travely.",
-                style: TextStyle(color: Colors.grey)),
+            Text("You can make a request to download or delete your personal data from Travely.", style: TextStyle(color: Colors.grey)),
             SizedBox(height: 20),
-            _buildOption(
-              context,
-              "Request your personal data",
-              "We'll create a file for you to download your personal data.",
-            ),
-            _buildOption(
-              context,
-              "Delete your account",
-              "By doing this your account and data will permanently be deleted.",
-            ),
+            _buildOption(context, "Request your personal data", "We'll create a file for you to download your personal data."),
+            _buildOption(context, "Delete your account", "By doing this your account and data will permanently be deleted."),
           ],
         ),
       ),
@@ -239,8 +296,7 @@ class PrivacySharingScreen extends StatelessWidget {
     return Column(
       children: [
         ListTile(
-          title: Text(title,
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+          title: Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
           subtitle: Text(subtitle, style: TextStyle(color: Colors.grey)),
           trailing: Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
           onTap: () {},

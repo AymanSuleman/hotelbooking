@@ -454,6 +454,27 @@ class _PopularCardState extends State<PopularCard> {
   bool isFavorite = false;
 
   final String baseUrl = 'http://192.168.0.32:5000/api/wishlist';
+  @override
+  void initState() {
+    super.initState();
+    _checkFavoriteStatus(); // ✅ check karega pehle se wishlist me hai ya nahi
+  }
+
+  Future<void> _checkFavoriteStatus() async {
+    final url = Uri.parse("$baseUrl/${widget.userId}");
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final List<dynamic> wishlist = json.decode(response.body);
+        setState(() {
+          isFavorite =
+              wishlist.any((item) => item['roomId']['_id'] == widget.roomId);
+        });
+      }
+    } catch (e) {
+      print("Error checking wishlist: $e");
+    }
+  }
 
   Future<void> _toggleWishlist() async {
     setState(() {

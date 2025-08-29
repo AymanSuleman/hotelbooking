@@ -1,5 +1,6 @@
 //----------------------------------------------------
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:hotelbooking/home.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -28,7 +29,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
   Future<void> fetchBookings(String userId) async {
     try {
       final response = await http.get(
-        Uri.parse('http://192.168.0.32:5000/api/bookings/user/$userId'),
+        Uri.parse('http://172.26.0.1:5000/api/bookings/user/$userId'),
       );
 
       if (response.statusCode == 200) {
@@ -140,7 +141,7 @@ class BookingCard extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
-              onPressed: () => _showReviewDialog(context),
+              onPressed: () => _showReviewDialog(context, userId, booking),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue,
                 shape: RoundedRectangleBorder(
@@ -157,79 +158,204 @@ class BookingCard extends StatelessWidget {
     );
   }
 
-  void _showReviewDialog(BuildContext context) {
-    final reviewController = TextEditingController();
+//   void _showReviewDialog(BuildContext context) {
+//     final reviewController = TextEditingController();
 
-    showDialog(
+//     showDialog(
+//       context: context,
+//       builder: (context) => AlertDialog(
+//         title: Text("Add Review"),
+//         content: Column(
+//           mainAxisSize: MainAxisSize.min,
+//           children: [
+//             TextField(
+//               controller: reviewController,
+//               decoration: InputDecoration(
+//                 hintText: "Write your review...",
+//                 border: OutlineInputBorder(),
+//               ),
+//               maxLines: 3,
+//             ),
+//             SizedBox(height: 10),
+//             ElevatedButton(
+//               onPressed: () {
+//                 String comment = reviewController.text;
+
+//                 if (comment.isNotEmpty) {
+//                   // Call the submitReview function with dynamic userId, roomId, rating, and comment
+//                   submitReview(
+//                     userId: userId, // Use the passed userId dynamically
+//                     roomId: booking["room"]["id"], // Room ID
+//                     comment: comment,
+//                   );
+//                   Navigator.pop(context);
+//                   ScaffoldMessenger.of(context).showSnackBar(
+//                     SnackBar(content: Text("Review submitted successfully!")),
+//                   );
+//                 } else {
+//                   Navigator.pop(context);
+//                   ScaffoldMessenger.of(context).showSnackBar(
+//                     SnackBar(content: Text("Please write a comment.")),
+//                   );
+//                 }
+//               },
+//               style: ElevatedButton.styleFrom(
+//                 backgroundColor: Colors.blue,
+//               ),
+//               child: Text("Submit", style: TextStyle(color: Colors.white)),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+// import 'package:flutter/material.dart';
+// import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+
+  void _showReviewDialog(BuildContext context, String userId, Map booking) {
+    final reviewController = TextEditingController();
+    double rating = 0.0;
+
+    showModalBottomSheet(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text("Add Review"),
-        content: Column(
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => Padding(
+        padding: EdgeInsets.only(
+          left: 20,
+          right: 20,
+          top: 20,
+          bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+        ),
+        child: Column(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 5,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+            ),
+            SizedBox(height: 20),
+            Text(
+              "Add Your Review",
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: 15),
+
+            // ⭐ Rating Bar
+            RatingBar.builder(
+              initialRating: 0,
+              minRating: 1,
+              direction: Axis.horizontal,
+              allowHalfRating: true,
+              itemCount: 5,
+              itemSize: 35,
+              unratedColor: Colors.grey[300],
+              itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+              itemBuilder: (context, _) => Icon(
+                Icons.star,
+                color: Colors.amber,
+              ),
+              onRatingUpdate: (value) {
+                rating = value;
+              },
+            ),
+            SizedBox(height: 15),
+
+            // ✍ Review Input
             TextField(
               controller: reviewController,
               decoration: InputDecoration(
                 hintText: "Write your review...",
-                border: OutlineInputBorder(),
+                filled: true,
+                fillColor: Colors.grey[100],
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
               ),
               maxLines: 3,
             ),
-            SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () {
-                String comment = reviewController.text;
+            SizedBox(height: 20),
 
-                if (comment.isNotEmpty) {
-                  // Call the submitReview function with dynamic userId, roomId, rating, and comment
-                  submitReview(
-                    userId: userId, // Use the passed userId dynamically
-                    roomId: booking["room"]["id"], // Room ID
-                    comment: comment,
-                  );
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("Review submitted successfully!")),
-                  );
-                } else {
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("Please write a comment.")),
-                  );
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
+            // ✅ Submit Button
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  String comment = reviewController.text;
+
+                  if (comment.isNotEmpty && rating > 0) {
+                    // Call the submitReview function
+                    submitReview(
+                      userId: userId,
+                      roomId: booking["room"]["id"],
+                      comment: comment,
+                      // rating: rating,
+                    );
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Review submitted successfully!")),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                          content: Text("Please provide rating & comment.")),
+                    );
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  padding: EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: Text(
+                  "Submit Review",
+                  style: TextStyle(fontSize: 16, color: Colors.white),
+                ),
               ),
-              child: Text("Submit", style: TextStyle(color: Colors.white)),
             ),
           ],
         ),
       ),
     );
   }
-}
 
 // Update submitReview to check for valid ObjectId format
-Future<void> submitReview({
-  required String userId,
-  required String roomId,
-  required String comment,
-}) async {
-  final url = Uri.parse('http://192.168.0.32:5000/api/reviews');
-  final response = await http.post(
-    url,
-    headers: {"Content-Type": "application/json"},
-    body: jsonEncode({
-      "userId": userId,
-      "roomId": roomId,
-      "comment": comment,
-    }),
-  );
+  Future<void> submitReview({
+    required String userId,
+    required String roomId,
+    required String comment,
+  }) async {
+    final url = Uri.parse('http://172.26.0.1:5000/api/reviews');
+    final response = await http.post(
+      url,
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({
+        "userId": userId,
+        "roomId": roomId,
+        "comment": comment,
+      }),
+    );
 
-  if (response.statusCode == 201) {
-    print("Review submitted successfully");
-  } else {
-    print("Failed to submit review: ${response.body}");
+    if (response.statusCode == 201) {
+      print("Review submitted successfully");
+    } else {
+      print("Failed to submit review: ${response.body}");
+    }
   }
 }

@@ -22,14 +22,14 @@ class _SignupState extends State<Signup> {
   bool _isLoading = false;
 
   final _formKey = GlobalKey<FormState>();
-  final String apiBaseUrl = "http://192.168.0.32:5000/api/auth";
+  final String apiBaseUrl = "http://172.26.0.1:5000/api/auth";
 
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
   /// ✅ Register User with API
- Future<void> registerUser() async {
+  Future<void> registerUser() async {
     setState(() {
       _termsError = !_agreeToTerms;
     });
@@ -100,6 +100,7 @@ class _SignupState extends State<Signup> {
       }
     }
   }
+
   /// ✅ Google Sign-In (Send to MongoDB API)
   Future<void> signInWithGoogle() async {
     try {
@@ -252,7 +253,6 @@ class _SignupState extends State<Signup> {
                 ),
               ),
               SizedBox(height: 24),
-
               Text("Name"),
               SizedBox(height: 8),
               TextFormField(
@@ -263,7 +263,6 @@ class _SignupState extends State<Signup> {
                     : null,
               ),
               SizedBox(height: 16),
-
               Text("Email"),
               SizedBox(height: 8),
               TextFormField(
@@ -281,7 +280,6 @@ class _SignupState extends State<Signup> {
                 },
               ),
               SizedBox(height: 16),
-
               Text("Password"),
               SizedBox(height: 8),
               TextFormField(
@@ -310,7 +308,6 @@ class _SignupState extends State<Signup> {
                 },
               ),
               SizedBox(height: 16),
-
               Row(
                 children: [
                   Checkbox(
@@ -343,7 +340,6 @@ class _SignupState extends State<Signup> {
                   ),
                 ),
               SizedBox(height: 16),
-
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -361,7 +357,6 @@ class _SignupState extends State<Signup> {
                 ),
               ),
               SizedBox(height: 16),
-
               Row(
                 children: [
                   Expanded(child: Divider(thickness: 1)),
@@ -373,7 +368,6 @@ class _SignupState extends State<Signup> {
                 ],
               ),
               SizedBox(height: 16),
-
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -384,7 +378,6 @@ class _SignupState extends State<Signup> {
                 ],
               ),
               SizedBox(height: 24),
-
               Center(
                 child: GestureDetector(
                   onTap: () {

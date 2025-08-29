@@ -54,7 +54,7 @@ class _SignInScreenState extends State<SignInScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final url = Uri.parse("http://192.168.0.32:5000/api/auth/login");
+      final url = Uri.parse("http://172.26.0.1:5000/api/auth/login");
       final response = await http.post(
         url,
         headers: {"Content-Type": "application/json"},
@@ -250,12 +250,11 @@ class _SignInScreenState extends State<SignInScreen> {
                   ),
                   TextButton(
                     onPressed: () {
-                      Navigator.push(context, 
-                      MaterialPageRoute(builder: (context) =>
-                        ForgotPasswordScreen()
-                      ,)
-                      
-                      );
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ForgotPasswordScreen(),
+                          ));
                       // if (emailController.text.isEmpty) {
                       //   Fluttertoast.showToast(
                       //       msg: "Enter email to reset password");
@@ -308,16 +307,20 @@ class _SignInScreenState extends State<SignInScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   IconButton(
-                    icon:
-                        const Icon(FontAwesomeIcons.google, color: Colors.blue,
-                        size: 30,),
+                    icon: const Icon(
+                      FontAwesomeIcons.google,
+                      color: Colors.blue,
+                      size: 30,
+                    ),
                     onPressed: _signInWithGoogle,
                   ),
                   const SizedBox(width: 20),
                   IconButton(
-                    icon: const Icon(FontAwesomeIcons.facebook,
-                        color: Colors.blue,
-                        size: 30,),
+                    icon: const Icon(
+                      FontAwesomeIcons.facebook,
+                      color: Colors.blue,
+                      size: 30,
+                    ),
                     onPressed: _signInWithFacebook,
                   ),
                 ],

@@ -147,7 +147,7 @@ class _HomeScreen1State extends State<HomeScreen1> {
   late List<String> images;
   int currentImageIndex = 0;
   bool isLoading = true;
-  late Timer _timer;
+  Timer? _timer;
 
   @override
   void initState() {
@@ -188,7 +188,7 @@ class _HomeScreen1State extends State<HomeScreen1> {
   Future<void> fetchRoomsByCategory(
       String category, Function(List<Map<String, dynamic>>) onSuccess) async {
     final url =
-        Uri.parse('http://192.168.0.32:5000/api/rooms/category/$category');
+        Uri.parse('http://172.26.0.1:5000/api/rooms/category/$category');
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
@@ -214,7 +214,7 @@ class _HomeScreen1State extends State<HomeScreen1> {
 
   @override
   void dispose() {
-    _timer.cancel();
+    _timer?.cancel();
     super.dispose();
   }
 
@@ -263,9 +263,113 @@ class _HomeScreen1State extends State<HomeScreen1> {
                     )
                   : Center(child: CircularProgressIndicator()),
               SizedBox(height: 20),
-              Text('Other Stays',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              SizedBox(height: 10),
+              //     Text('Other Stays',
+              //         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              //     SizedBox(height: 10),
+              //     featuredListings.isNotEmpty
+              //         ? ListView.builder(
+              //             physics: NeverScrollableScrollPhysics(),
+              //             shrinkWrap: true,
+              //             itemCount: featuredListings.length,
+              //             itemBuilder: (context, index) {
+              //               var listing = featuredListings[index];
+              //               return Card(
+              //                 color: Colors.white,
+              //                 shape: RoundedRectangleBorder(
+              //                   borderRadius: BorderRadius.circular(15),
+              //                 ),
+              //                 elevation: 5,
+              //                 margin: EdgeInsets.only(bottom: 16),
+              //                 child: Column(
+              //                   crossAxisAlignment: CrossAxisAlignment.start,
+              //                   children: [
+              //                     ClipRRect(
+              //                       borderRadius: BorderRadius.vertical(
+              //                           top: Radius.circular(15)),
+              //                       child: Image.network(
+              //                         listing["imageUrl"],
+              //                         height: 200,
+              //                         width: double.infinity,
+              //                         fit: BoxFit.cover,
+              //                       ),
+              //                     ),
+              //                     Padding(
+              //                       padding: const EdgeInsets.all(10.0),
+              //                       child: Column(
+              //                         crossAxisAlignment: CrossAxisAlignment.start,
+              //                         children: [
+              //                           Row(
+              //                             mainAxisAlignment:
+              //                                 MainAxisAlignment.spaceBetween,
+              //                             children: [
+              //                               Expanded(
+              //                                 child: Text(
+              //                                   listing["title"],
+              //                                   style: TextStyle(
+              //                                       fontSize: 18,
+              //                                       fontWeight: FontWeight.bold),
+              //                                   maxLines: 1,
+              //                                   overflow: TextOverflow.ellipsis,
+              //                                 ),
+              //                               ),
+              //                               Text(
+              //                                 listing["price"],
+              //                                 style: TextStyle(
+              //                                     fontSize: 16,
+              //                                     fontWeight: FontWeight.bold,
+              //                                     color: Colors.orange),
+              //                               ),
+              //                             ],
+              //                           ),
+              //                           SizedBox(height: 4),
+              //                           Row(
+              //                             children: [
+              //                               Icon(Icons.location_on,
+              //                                   size: 16, color: Colors.grey),
+              //                               SizedBox(width: 4),
+              //                               Text(listing["location"],
+              //                                   style:
+              //                                       TextStyle(color: Colors.grey)),
+              //                             ],
+              //                           ),
+              //                           SizedBox(height: 4),
+              //                           Row(
+              //                             children: [
+              //                               Icon(Icons.square_foot,
+              //                                   size: 16, color: Colors.grey),
+              //                               SizedBox(width: 4),
+              //                               Text(listing["size"],
+              //                                   style:
+              //                                       TextStyle(color: Colors.grey)),
+              //                             ],
+              //                           ),
+              //                         ],
+              //                       ),
+              //                     ),
+              //                   ],
+              //                 ),
+              //               );
+              //             },
+              //           )
+              //         : Center(child: CircularProgressIndicator()),
+              //   ],
+              // ),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text("Other Stays",
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  // Text("See all",
+                  //     style: TextStyle(
+                  //         fontSize: 14,
+                  //         fontWeight: FontWeight.w600,
+                  //         color: Colors.deepPurple))
+                ],
+              ),
+              SizedBox(height: 12),
+
               featuredListings.isNotEmpty
                   ? ListView.builder(
                       physics: NeverScrollableScrollPhysics(),
@@ -273,82 +377,8 @@ class _HomeScreen1State extends State<HomeScreen1> {
                       itemCount: featuredListings.length,
                       itemBuilder: (context, index) {
                         var listing = featuredListings[index];
-                        return Card(
-                          color: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          elevation: 5,
-                          margin: EdgeInsets.only(bottom: 16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.vertical(
-                                    top: Radius.circular(15)),
-                                child: Image.network(
-                                  listing["imageUrl"],
-                                  height: 200,
-                                  width: double.infinity,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Expanded(
-                                          child: Text(
-                                            listing["title"],
-                                            style: TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.bold),
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                        Text(
-                                          listing["price"],
-                                          style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.orange),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(height: 4),
-                                    Row(
-                                      children: [
-                                        Icon(Icons.location_on,
-                                            size: 16, color: Colors.grey),
-                                        SizedBox(width: 4),
-                                        Text(listing["location"],
-                                            style:
-                                                TextStyle(color: Colors.grey)),
-                                      ],
-                                    ),
-                                    SizedBox(height: 4),
-                                    Row(
-                                      children: [
-                                        Icon(Icons.square_foot,
-                                            size: 16, color: Colors.grey),
-                                        SizedBox(width: 4),
-                                        Text(listing["size"],
-                                            style:
-                                                TextStyle(color: Colors.grey)),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
+                        return OtherStayCard(
+                            listing: listing); // 🔥 New Modern Card
                       },
                     )
                   : Center(child: CircularProgressIndicator()),
@@ -360,64 +390,153 @@ class _HomeScreen1State extends State<HomeScreen1> {
   }
 }
 
+// class FeaturedCard extends StatelessWidget {
+//   // final String title;
+//   // final String subtitle;
+//   final String imageUrl;
+
+//   FeaturedCard({
+//     // required this.title,
+//     // required this.subtitle,
+//     required this.imageUrl,
+//   });
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       height: 180,
+//       decoration: BoxDecoration(
+//         borderRadius: BorderRadius.circular(15),
+//         image: DecorationImage(
+//           image: NetworkImage(imageUrl),
+//           fit: BoxFit.cover,
+//         ),
+//       ),
+//       child: Stack(
+//         children: [
+//           Container(
+//             decoration: BoxDecoration(
+//               borderRadius: BorderRadius.circular(15),
+//               gradient: LinearGradient(
+//                 colors: [Colors.black.withOpacity(0.6), Colors.transparent],
+//                 begin: Alignment.bottomCenter,
+//                 end: Alignment.topCenter,
+//               ),
+//             ),
+//           ),
+//           Padding(
+//             padding: EdgeInsets.all(16.0),
+//             child: Column(
+//               mainAxisAlignment: MainAxisAlignment.end,
+//               crossAxisAlignment: CrossAxisAlignment.start,
+//               children: [
+//                 Text(
+//                   "Discover the most popular places",
+//                   style: TextStyle(
+//                     color: Colors.white,
+//                     fontSize: 18,
+//                     fontWeight: FontWeight.bold,
+//                   ),
+//                 ),
+//                 SizedBox(height: 10),
+//                 ElevatedButton(
+//                   style: ElevatedButton.styleFrom(
+//                     backgroundColor: Colors.blue,
+//                     shape: RoundedRectangleBorder(
+//                         borderRadius: BorderRadius.circular(20)),
+//                   ),
+//                   onPressed: () {},
+//                   child: Text('Explore Now',
+//                       style: TextStyle(color: Colors.white)),
+//                 ),
+//               ],
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
 class FeaturedCard extends StatelessWidget {
-  // final String title;
-  // final String subtitle;
   final String imageUrl;
 
-  FeaturedCard({
-    // required this.title,
-    // required this.subtitle,
-    required this.imageUrl,
-  });
+  FeaturedCard({required this.imageUrl});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 180,
+      height: 260,
+      margin: const EdgeInsets.symmetric(vertical: 12),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(24),
         image: DecorationImage(
           image: NetworkImage(imageUrl),
           fit: BoxFit.cover,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black26,
+            blurRadius: 12,
+            offset: Offset(0, 6),
+          )
+        ],
       ),
       child: Stack(
         children: [
+          // Gradient overlay
           Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
+              borderRadius: BorderRadius.circular(24),
               gradient: LinearGradient(
-                colors: [Colors.black.withOpacity(0.6), Colors.transparent],
+                colors: [Colors.black.withOpacity(0.7), Colors.transparent],
                 begin: Alignment.bottomCenter,
                 end: Alignment.topCenter,
               ),
             ),
           ),
-          Padding(
-            padding: EdgeInsets.all(16.0),
+          // Text + Button
+          Positioned(
+            bottom: 28,
+            left: 20,
+            right: 20,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Discover the most popular places",
+                  "Discover the most popular stays",
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 22,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 0.5,
                   ),
                 ),
-                SizedBox(height: 10),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20)),
+                const SizedBox(height: 14),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(30),
+                    border: Border.all(color: Colors.white.withOpacity(0.3)),
                   ),
-                  onPressed: () {},
-                  child: Text('Explore Now',
-                      style: TextStyle(color: Colors.white)),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 28, vertical: 14),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30)),
+                    ),
+                    onPressed: () {},
+                    child: const Text(
+                      "Explore Now ",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -453,7 +572,7 @@ class PopularCard extends StatefulWidget {
 class _PopularCardState extends State<PopularCard> {
   bool isFavorite = false;
 
-  final String baseUrl = 'http://192.168.0.32:5000/api/wishlist';
+  final String baseUrl = 'http://172.26.0.1:5000/api/wishlist';
   @override
   void initState() {
     super.initState();
@@ -553,27 +672,122 @@ class _PopularCardState extends State<PopularCard> {
     }
   }
 
+//   @override
+//   Widget build(BuildContext context) {
+//     return InkWell(
+//       onTap: () {
+//         Navigator.push(
+//           context,
+//           MaterialPageRoute(
+//             builder: (context) => HotelDetail(
+//               image: widget.image,
+//               userId: widget.userId,
+//               roomId: widget.roomId,
+//             ),
+//           ),
+//         );
+//       },
+//       splashColor: Colors.blue.withOpacity(0.5),
+//       borderRadius: BorderRadius.circular(15),
+//       child: Container(
+//         width: 160,
+//         decoration: BoxDecoration(
+//           borderRadius: BorderRadius.circular(15),
+//           image: DecorationImage(
+//             image: NetworkImage(widget.image),
+//             fit: BoxFit.cover,
+//           ),
+//         ),
+//         child: Stack(
+//           children: [
+//             Container(
+//               decoration: BoxDecoration(
+//                 borderRadius: BorderRadius.circular(15),
+//                 color: Colors.black.withOpacity(0.3),
+//               ),
+//             ),
+//             Padding(
+//               padding: const EdgeInsets.all(10.0),
+//               child: Column(
+//                 crossAxisAlignment: CrossAxisAlignment.start,
+//                 children: [
+//                   const Spacer(),
+//                   Text(
+//                     widget.title,
+//                     style: const TextStyle(
+//                       color: Colors.white,
+//                       fontSize: 16,
+//                       fontWeight: FontWeight.bold,
+//                     ),
+//                   ),
+//                   Row(
+//                     children: [
+//                       const Icon(Icons.star, color: Colors.yellow, size: 16),
+//                       const SizedBox(width: 5),
+//                       Text('${widget.rating} Stars',
+//                           style: const TextStyle(color: Colors.white)),
+//                     ],
+//                   ),
+//                 ],
+//               ),
+//             ),
+//             Positioned(
+//               top: 8,
+//               right: 8,
+//               child: GestureDetector(
+//                 onTap: _toggleWishlist,
+//                 child: Container(
+//                   padding: const EdgeInsets.all(6),
+//                   decoration: BoxDecoration(
+//                     color: Colors.white.withOpacity(0.8),
+//                     shape: BoxShape.circle,
+//                     boxShadow: [
+//                       BoxShadow(
+//                         color: Colors.black12,
+//                         blurRadius: 4,
+//                         offset: Offset(0, 2),
+//                       ),
+//                     ],
+//                   ),
+//                   child: Icon(
+//                     isFavorite ? Icons.favorite : Icons.favorite_border,
+//                     color: Colors.blue,
+//                     size: 24,
+//                   ),
+//                 ),
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    return GestureDetector(
       onTap: () {
         Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => HotelDetail(
-              image: widget.image,
-              userId: widget.userId,
-              roomId: widget.roomId,
-            ),
-          ),
-        );
+            context,
+            MaterialPageRoute(
+                builder: (context) => HotelDetail(
+                      image: widget.image,
+                      userId: widget.userId,
+                      roomId: widget.roomId,
+                    )));
       },
-      splashColor: Colors.blue.withOpacity(0.5),
-      borderRadius: BorderRadius.circular(15),
       child: Container(
-        width: 160,
+        width: 190,
+        margin: const EdgeInsets.only(right: 14, bottom: 6),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15),
+          borderRadius: BorderRadius.circular(22),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black12,
+              blurRadius: 10,
+              offset: Offset(0, 6),
+            )
+          ],
           image: DecorationImage(
             image: NetworkImage(widget.image),
             fit: BoxFit.cover,
@@ -581,65 +795,207 @@ class _PopularCardState extends State<PopularCard> {
         ),
         child: Stack(
           children: [
+            // Gradient overlay
             Container(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
-                color: Colors.black.withOpacity(0.3),
+                borderRadius: BorderRadius.circular(22),
+                gradient: LinearGradient(
+                  colors: [Colors.black.withOpacity(0.65), Colors.transparent],
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
+                ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(10.0),
+            // Hotel Info
+            Positioned(
+              bottom: 14,
+              left: 14,
+              right: 14,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Spacer(),
                   Text(
                     widget.title,
                     style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                      fontSize: 17,
+                      fontWeight: FontWeight.w800,
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
+                  const SizedBox(height: 4),
                   Row(
                     children: [
-                      const Icon(Icons.star, color: Colors.yellow, size: 16),
-                      const SizedBox(width: 5),
-                      Text('${widget.rating} Stars',
-                          style: const TextStyle(color: Colors.white)),
+                      Icon(Icons.star, color: Colors.amber, size: 18),
+                      const SizedBox(width: 6),
+                      Text(
+                        "${widget.rating}",
+                        style: const TextStyle(
+                            color: Colors.white70, fontSize: 14),
+                      )
                     ],
                   ),
                 ],
               ),
             ),
+            // Favorite Button
             Positioned(
-              top: 8,
-              right: 8,
+              top: 12,
+              right: 12,
               child: GestureDetector(
                 onTap: _toggleWishlist,
                 child: Container(
-                  padding: const EdgeInsets.all(6),
+                  padding: const EdgeInsets.all(7),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.8),
+                    color: Colors.white,
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 4,
-                        offset: Offset(0, 2),
-                      ),
+                          color: Colors.black26,
+                          blurRadius: 6,
+                          offset: Offset(0, 3))
                     ],
                   ),
                   child: Icon(
                     isFavorite ? Icons.favorite : Icons.favorite_border,
-                    color: Colors.blue,
-                    size: 24,
+                    color: isFavorite ? Colors.red : Colors.black54,
+                    size: 22,
                   ),
                 ),
               ),
-            ),
+            )
           ],
         ),
+      ),
+    );
+  }
+}
+
+class OtherStayCard extends StatelessWidget {
+  final Map<String, dynamic> listing;
+
+  const OtherStayCard({super.key, required this.listing});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 4))
+        ],
+      ),
+      child: Row(
+        children: [
+          // Left Side - Image
+          ClipRRect(
+            borderRadius: BorderRadius.horizontal(left: Radius.circular(20)),
+            child: Image.network(
+              listing["imageUrl"],
+              height: 130,
+              width: 120,
+              fit: BoxFit.cover,
+            ),
+          ),
+
+          // Right Side - Info
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Title + Favorite
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          listing["title"],
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      Icon(Icons.favorite_border,
+                          color: Colors.redAccent, size: 20),
+                    ],
+                  ),
+
+                  const SizedBox(height: 6),
+
+                  // Location
+                  Row(
+                    children: [
+                      Icon(Icons.location_on,
+                          size: 16, color: Colors.blueAccent),
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: Text(
+                          listing["location"],
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.grey.shade600,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 6),
+
+                  // Amenities Row
+                  Row(
+                    children: [
+                      Icon(Icons.wifi, size: 16, color: Colors.green),
+                      SizedBox(width: 4),
+                      Icon(Icons.pool, size: 16, color: Colors.teal),
+                      SizedBox(width: 4),
+                      Icon(Icons.local_parking, size: 16, color: Colors.orange),
+                    ],
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  // Price + Rating Row
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        listing["price"],
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.deepPurple,
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          Icon(Icons.star, size: 16, color: Colors.amber),
+                          SizedBox(width: 4),
+                          Text(
+                            (listing["rating"] ?? 4.5).toString(),
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          )
+        ],
       ),
     );
   }

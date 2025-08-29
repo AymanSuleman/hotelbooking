@@ -13,7 +13,7 @@ void main() async {
 
   runApp(MyApp(
     isLoggedIn: isLoggedIn,
-    savedUserId: savedUserId,
+    savedUserId: savedUserId, isRemembered: true,
   ));
 }
 
@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
 
   const MyApp({
     required this.isLoggedIn,
-    this.savedUserId,
+    this.savedUserId, required bool isRemembered,
   });
 
   @override

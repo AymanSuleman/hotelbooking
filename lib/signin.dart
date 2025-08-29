@@ -54,7 +54,7 @@ class _SignInScreenState extends State<SignInScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final url = Uri.parse("http://172.26.0.1:5000/api/auth/login");
+      final url = Uri.parse("http://192.168.0.32:5000/api/auth/login");
       final response = await http.post(
         url,
         headers: {"Content-Type": "application/json"},

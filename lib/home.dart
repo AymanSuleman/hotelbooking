@@ -188,7 +188,7 @@ class _HomeScreen1State extends State<HomeScreen1> {
   Future<void> fetchRoomsByCategory(
       String category, Function(List<Map<String, dynamic>>) onSuccess) async {
     final url =
-        Uri.parse('http://172.26.0.1:5000/api/rooms/category/$category');
+        Uri.parse('http://192.168.0.32:5000/api/rooms/category/$category');
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
@@ -263,98 +263,6 @@ class _HomeScreen1State extends State<HomeScreen1> {
                     )
                   : Center(child: CircularProgressIndicator()),
               SizedBox(height: 20),
-              //     Text('Other Stays',
-              //         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              //     SizedBox(height: 10),
-              //     featuredListings.isNotEmpty
-              //         ? ListView.builder(
-              //             physics: NeverScrollableScrollPhysics(),
-              //             shrinkWrap: true,
-              //             itemCount: featuredListings.length,
-              //             itemBuilder: (context, index) {
-              //               var listing = featuredListings[index];
-              //               return Card(
-              //                 color: Colors.white,
-              //                 shape: RoundedRectangleBorder(
-              //                   borderRadius: BorderRadius.circular(15),
-              //                 ),
-              //                 elevation: 5,
-              //                 margin: EdgeInsets.only(bottom: 16),
-              //                 child: Column(
-              //                   crossAxisAlignment: CrossAxisAlignment.start,
-              //                   children: [
-              //                     ClipRRect(
-              //                       borderRadius: BorderRadius.vertical(
-              //                           top: Radius.circular(15)),
-              //                       child: Image.network(
-              //                         listing["imageUrl"],
-              //                         height: 200,
-              //                         width: double.infinity,
-              //                         fit: BoxFit.cover,
-              //                       ),
-              //                     ),
-              //                     Padding(
-              //                       padding: const EdgeInsets.all(10.0),
-              //                       child: Column(
-              //                         crossAxisAlignment: CrossAxisAlignment.start,
-              //                         children: [
-              //                           Row(
-              //                             mainAxisAlignment:
-              //                                 MainAxisAlignment.spaceBetween,
-              //                             children: [
-              //                               Expanded(
-              //                                 child: Text(
-              //                                   listing["title"],
-              //                                   style: TextStyle(
-              //                                       fontSize: 18,
-              //                                       fontWeight: FontWeight.bold),
-              //                                   maxLines: 1,
-              //                                   overflow: TextOverflow.ellipsis,
-              //                                 ),
-              //                               ),
-              //                               Text(
-              //                                 listing["price"],
-              //                                 style: TextStyle(
-              //                                     fontSize: 16,
-              //                                     fontWeight: FontWeight.bold,
-              //                                     color: Colors.orange),
-              //                               ),
-              //                             ],
-              //                           ),
-              //                           SizedBox(height: 4),
-              //                           Row(
-              //                             children: [
-              //                               Icon(Icons.location_on,
-              //                                   size: 16, color: Colors.grey),
-              //                               SizedBox(width: 4),
-              //                               Text(listing["location"],
-              //                                   style:
-              //                                       TextStyle(color: Colors.grey)),
-              //                             ],
-              //                           ),
-              //                           SizedBox(height: 4),
-              //                           Row(
-              //                             children: [
-              //                               Icon(Icons.square_foot,
-              //                                   size: 16, color: Colors.grey),
-              //                               SizedBox(width: 4),
-              //                               Text(listing["size"],
-              //                                   style:
-              //                                       TextStyle(color: Colors.grey)),
-              //                             ],
-              //                           ),
-              //                         ],
-              //                       ),
-              //                     ),
-              //                   ],
-              //                 ),
-              //               );
-              //             },
-              //           )
-              //         : Center(child: CircularProgressIndicator()),
-              //   ],
-              // ),
-
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -369,7 +277,6 @@ class _HomeScreen1State extends State<HomeScreen1> {
                 ],
               ),
               SizedBox(height: 12),
-
               featuredListings.isNotEmpty
                   ? ListView.builder(
                       physics: NeverScrollableScrollPhysics(),
@@ -378,7 +285,13 @@ class _HomeScreen1State extends State<HomeScreen1> {
                       itemBuilder: (context, index) {
                         var listing = featuredListings[index];
                         return OtherStayCard(
-                            listing: listing); // 🔥 New Modern Card
+                          listing: listing,
+                          userId: widget.userId,
+                          image: listing['image'],
+                          title: listing['title'],
+                          rating: listing['rating'],
+                          roomId: listing['roomId'],
+                        ); // 🔥 New Modern Card
                       },
                     )
                   : Center(child: CircularProgressIndicator()),
@@ -390,73 +303,6 @@ class _HomeScreen1State extends State<HomeScreen1> {
   }
 }
 
-// class FeaturedCard extends StatelessWidget {
-//   // final String title;
-//   // final String subtitle;
-//   final String imageUrl;
-
-//   FeaturedCard({
-//     // required this.title,
-//     // required this.subtitle,
-//     required this.imageUrl,
-//   });
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       height: 180,
-//       decoration: BoxDecoration(
-//         borderRadius: BorderRadius.circular(15),
-//         image: DecorationImage(
-//           image: NetworkImage(imageUrl),
-//           fit: BoxFit.cover,
-//         ),
-//       ),
-//       child: Stack(
-//         children: [
-//           Container(
-//             decoration: BoxDecoration(
-//               borderRadius: BorderRadius.circular(15),
-//               gradient: LinearGradient(
-//                 colors: [Colors.black.withOpacity(0.6), Colors.transparent],
-//                 begin: Alignment.bottomCenter,
-//                 end: Alignment.topCenter,
-//               ),
-//             ),
-//           ),
-//           Padding(
-//             padding: EdgeInsets.all(16.0),
-//             child: Column(
-//               mainAxisAlignment: MainAxisAlignment.end,
-//               crossAxisAlignment: CrossAxisAlignment.start,
-//               children: [
-//                 Text(
-//                   "Discover the most popular places",
-//                   style: TextStyle(
-//                     color: Colors.white,
-//                     fontSize: 18,
-//                     fontWeight: FontWeight.bold,
-//                   ),
-//                 ),
-//                 SizedBox(height: 10),
-//                 ElevatedButton(
-//                   style: ElevatedButton.styleFrom(
-//                     backgroundColor: Colors.blue,
-//                     shape: RoundedRectangleBorder(
-//                         borderRadius: BorderRadius.circular(20)),
-//                   ),
-//                   onPressed: () {},
-//                   child: Text('Explore Now',
-//                       style: TextStyle(color: Colors.white)),
-//                 ),
-//               ],
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
 class FeaturedCard extends StatelessWidget {
   final String imageUrl;
 
@@ -572,7 +418,7 @@ class PopularCard extends StatefulWidget {
 class _PopularCardState extends State<PopularCard> {
   bool isFavorite = false;
 
-  final String baseUrl = 'http://172.26.0.1:5000/api/wishlist';
+  final String baseUrl = 'http://192.168.0.32:5000/api/wishlist';
   @override
   void initState() {
     super.initState();
@@ -672,97 +518,6 @@ class _PopularCardState extends State<PopularCard> {
     }
   }
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return InkWell(
-//       onTap: () {
-//         Navigator.push(
-//           context,
-//           MaterialPageRoute(
-//             builder: (context) => HotelDetail(
-//               image: widget.image,
-//               userId: widget.userId,
-//               roomId: widget.roomId,
-//             ),
-//           ),
-//         );
-//       },
-//       splashColor: Colors.blue.withOpacity(0.5),
-//       borderRadius: BorderRadius.circular(15),
-//       child: Container(
-//         width: 160,
-//         decoration: BoxDecoration(
-//           borderRadius: BorderRadius.circular(15),
-//           image: DecorationImage(
-//             image: NetworkImage(widget.image),
-//             fit: BoxFit.cover,
-//           ),
-//         ),
-//         child: Stack(
-//           children: [
-//             Container(
-//               decoration: BoxDecoration(
-//                 borderRadius: BorderRadius.circular(15),
-//                 color: Colors.black.withOpacity(0.3),
-//               ),
-//             ),
-//             Padding(
-//               padding: const EdgeInsets.all(10.0),
-//               child: Column(
-//                 crossAxisAlignment: CrossAxisAlignment.start,
-//                 children: [
-//                   const Spacer(),
-//                   Text(
-//                     widget.title,
-//                     style: const TextStyle(
-//                       color: Colors.white,
-//                       fontSize: 16,
-//                       fontWeight: FontWeight.bold,
-//                     ),
-//                   ),
-//                   Row(
-//                     children: [
-//                       const Icon(Icons.star, color: Colors.yellow, size: 16),
-//                       const SizedBox(width: 5),
-//                       Text('${widget.rating} Stars',
-//                           style: const TextStyle(color: Colors.white)),
-//                     ],
-//                   ),
-//                 ],
-//               ),
-//             ),
-//             Positioned(
-//               top: 8,
-//               right: 8,
-//               child: GestureDetector(
-//                 onTap: _toggleWishlist,
-//                 child: Container(
-//                   padding: const EdgeInsets.all(6),
-//                   decoration: BoxDecoration(
-//                     color: Colors.white.withOpacity(0.8),
-//                     shape: BoxShape.circle,
-//                     boxShadow: [
-//                       BoxShadow(
-//                         color: Colors.black12,
-//                         blurRadius: 4,
-//                         offset: Offset(0, 2),
-//                       ),
-//                     ],
-//                   ),
-//                   child: Icon(
-//                     isFavorite ? Icons.favorite : Icons.favorite_border,
-//                     color: Colors.blue,
-//                     size: 24,
-//                   ),
-//                 ),
-//               ),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -872,130 +627,237 @@ class _PopularCardState extends State<PopularCard> {
   }
 }
 
-class OtherStayCard extends StatelessWidget {
+class OtherStayCard extends StatefulWidget {
   final Map<String, dynamic> listing;
+  final String image;
+  final String title;
+  final double rating;
+  final String roomId;
+  final String userId;
+  final Function(bool)? onFavoriteChanged;
 
-  const OtherStayCard({super.key, required this.listing});
+  const OtherStayCard({
+    super.key,
+    required this.image,
+    required this.title,
+    required this.rating,
+    required this.roomId,
+    required this.userId,
+    this.onFavoriteChanged,
+    required this.listing,
+  });
+
+  @override
+  _OtherStayCardState createState() => _OtherStayCardState();
+}
+
+class _OtherStayCardState extends State<OtherStayCard> {
+  bool isFavorite = false;
+  final String baseUrl = 'http://192.168.0.32:5000/api/wishlist';
+
+  @override
+  void initState() {
+    super.initState();
+    _checkFavoriteStatus();
+  }
+
+  Future<void> _checkFavoriteStatus() async {
+    final url = Uri.parse("$baseUrl/${widget.userId}");
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final List<dynamic> wishlist = json.decode(response.body);
+        setState(() {
+          isFavorite = wishlist
+              .any((item) => item['roomId']['_id'] == widget.listing["roomId"]);
+        });
+      }
+    } catch (e) {
+      print("Error checking wishlist: $e");
+    }
+  }
+
+  Future<void> _toggleWishlist() async {
+    setState(() {
+      isFavorite = !isFavorite;
+    });
+
+    if (isFavorite) {
+      try {
+        final response = await http.post(
+          Uri.parse(baseUrl),
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode({
+            "userId": widget.userId,
+            "roomId": widget.listing["roomId"],
+          }),
+        );
+
+        if (response.statusCode == 201 || response.statusCode == 200) {
+          Fluttertoast.showToast(
+              msg: "✅ Added to wishlist", backgroundColor: Colors.green);
+          widget.onFavoriteChanged?.call(true);
+        } else {
+          setState(() => isFavorite = false);
+          Fluttertoast.showToast(
+              msg: "❌ Failed to add", backgroundColor: Colors.red);
+        }
+      } catch (e) {
+        setState(() => isFavorite = false);
+        Fluttertoast.showToast(
+            msg: "❌ Network error: $e", backgroundColor: Colors.red);
+      }
+    } else {
+      try {
+        final response = await http.delete(
+          Uri.parse(baseUrl),
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode({
+            "userId": widget.userId,
+            "roomId": widget.listing["roomId"],
+          }),
+        );
+
+        if (response.statusCode == 200) {
+          Fluttertoast.showToast(
+              msg: "Removed from wishlist", backgroundColor: Colors.orange);
+          widget.onFavoriteChanged?.call(false);
+        } else {
+          Fluttertoast.showToast(
+              msg: "❌ Failed to remove", backgroundColor: Colors.red);
+          setState(() => isFavorite = true);
+        }
+      } catch (e) {
+        Fluttertoast.showToast(
+            msg: "❌ Network error: $e", backgroundColor: Colors.red);
+        setState(() => isFavorite = true);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 4))
-        ],
-      ),
-      child: Row(
-        children: [
-          // Left Side - Image
-          ClipRRect(
-            borderRadius: BorderRadius.horizontal(left: Radius.circular(20)),
-            child: Image.network(
-              listing["imageUrl"],
-              height: 130,
-              width: 120,
-              fit: BoxFit.cover,
+    return InkWell(
+      onTap: () {
+        // ✅ Navigate to Room Details Page with full data
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HotelDetail(
+              image: widget.image,
+              userId: widget.userId,
+              roomId: widget.roomId,
             ),
           ),
-
-          // Right Side - Info
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Title + Favorite
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          listing["title"],
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      Icon(Icons.favorite_border,
-                          color: Colors.redAccent, size: 20),
-                    ],
-                  ),
-
-                  const SizedBox(height: 6),
-
-                  // Location
-                  Row(
-                    children: [
-                      Icon(Icons.location_on,
-                          size: 16, color: Colors.blueAccent),
-                      const SizedBox(width: 4),
-                      Expanded(
-                        child: Text(
-                          listing["location"],
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: Colors.grey.shade600,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 6),
-
-                  // Amenities Row
-                  Row(
-                    children: [
-                      Icon(Icons.wifi, size: 16, color: Colors.green),
-                      SizedBox(width: 4),
-                      Icon(Icons.pool, size: 16, color: Colors.teal),
-                      SizedBox(width: 4),
-                      Icon(Icons.local_parking, size: 16, color: Colors.orange),
-                    ],
-                  ),
-
-                  const SizedBox(height: 8),
-
-                  // Price + Rating Row
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        listing["price"],
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.deepPurple,
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          Icon(Icons.star, size: 16, color: Colors.amber),
-                          SizedBox(width: 4),
-                          Text(
-                            (listing["rating"] ?? 4.5).toString(),
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+        );
+      },
+      child: Container(
+        margin: EdgeInsets.only(bottom: 16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+                color: Colors.black12, blurRadius: 8, offset: Offset(0, 4))
+          ],
+        ),
+        child: Row(
+          children: [
+            // Image
+            ClipRRect(
+              borderRadius: BorderRadius.horizontal(left: Radius.circular(20)),
+              child: Image.network(widget.listing["imageUrl"],
+                  height: 130, width: 120, fit: BoxFit.cover),
             ),
-          )
-        ],
+
+            // Info
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Title + Wishlist Icon
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(widget.listing["title"],
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
+                              overflow: TextOverflow.ellipsis),
+                        ),
+                        GestureDetector(
+                          onTap: _toggleWishlist,
+                          child: Icon(
+                              isFavorite
+                                  ? Icons.favorite
+                                  : Icons.favorite_border,
+                              color: Colors.redAccent,
+                              size: 20),
+                        ),
+                      ],
+                    ),
+
+                    SizedBox(height: 6),
+
+                    // Location
+                    Row(
+                      children: [
+                        Icon(Icons.location_on,
+                            size: 16, color: Colors.blueAccent),
+                        SizedBox(width: 4),
+                        Expanded(
+                          child: Text(widget.listing["location"],
+                              style: TextStyle(
+                                  fontSize: 13, color: Colors.grey.shade600),
+                              overflow: TextOverflow.ellipsis),
+                        ),
+                      ],
+                    ),
+
+                    SizedBox(height: 6),
+
+                    // Amenities
+                    Row(
+                      children: [
+                        Icon(Icons.wifi, size: 16, color: Colors.green),
+                        SizedBox(width: 4),
+                        Icon(Icons.pool, size: 16, color: Colors.teal),
+                        SizedBox(width: 4),
+                        Icon(Icons.local_parking,
+                            size: 16, color: Colors.orange),
+                      ],
+                    ),
+
+                    SizedBox(height: 8),
+
+                    // Price + Rating
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(widget.listing["price"].toString(),
+                            style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.deepPurple)),
+                        Row(
+                          children: [
+                            Icon(Icons.star, size: 16, color: Colors.amber),
+                            SizedBox(width: 4),
+                            Text((widget.listing["rating"] ?? 4.5).toString(),
+                                style: TextStyle(
+                                    fontSize: 13, fontWeight: FontWeight.w600)),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

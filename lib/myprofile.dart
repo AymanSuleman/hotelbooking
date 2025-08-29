@@ -299,7 +299,7 @@ class _MyProfileState extends State<MyProfile> {
 
   // Example API URL
   final String apiUrl =
-      "http://192.168.0.36:5000/api/auth/users"; // Replace with your actual API URL
+      "http://192.168.0.32:5000/api/auth/users"; // Replace with your actual API URL
 
   @override
   void initState() {

@@ -22,7 +22,7 @@ class _SignupState extends State<Signup> {
   bool _isLoading = false;
 
   final _formKey = GlobalKey<FormState>();
-  final String apiBaseUrl = "http://172.26.0.1:5000/api/auth";
+  final String apiBaseUrl = "http://192.168.0.32:5000/api/auth";
 
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();

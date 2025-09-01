@@ -34,7 +34,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: isLoggedIn
-          ? HomePage()
+          ? HomeScreen12(
+              userId: savedUserId!,
+            )
           // HomeScreen(userId: savedUserId!)
           : SignInScreen(), // No need for email/password here
     );

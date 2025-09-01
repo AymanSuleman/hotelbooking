@@ -29,7 +29,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
   Future<void> fetchBookings(String userId) async {
     try {
       final response = await http.get(
-        Uri.parse('http://192.168.0.32:5000/api/bookings/user/$userId'),
+        Uri.parse('http://172.26.0.1:5000/api/bookings/user/$userId'),
       );
 
       if (response.statusCode == 200) {
@@ -341,7 +341,7 @@ class BookingCard extends StatelessWidget {
     required String roomId,
     required String comment,
   }) async {
-    final url = Uri.parse('http://192.168.0.32:5000/api/reviews');
+    final url = Uri.parse('http://172.26.0.1:5000/api/reviews');
     final response = await http.post(
       url,
       headers: {"Content-Type": "application/json"},

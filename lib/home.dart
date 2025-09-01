@@ -96,35 +96,83 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+//   @override
+//   Widget build(BuildContext context) {
+//     final List<Widget> screens = [
+//       HomeScreen1(userId: widget.userId),
+//       WishlistScreen(userId: widget.userId),
+//       MyBookingsScreen(
+//         userId: widget.userId,
+//         roomId: '',
+//       ),
+//       ProfileScreen(),
+//     ];
+
+//     return Scaffold(
+//       body: screens[_selectedIndex],
+//       bottomNavigationBar: CurvedNavigationBar(
+//         key: _bottomNavigationKey,
+//         backgroundColor: Colors.transparent,
+//         color: Colors.blue,
+//         buttonBackgroundColor: Colors.blue,
+//         height: 60,
+//         animationDuration: Duration(milliseconds: 300),
+//         animationCurve: Curves.easeInOut,
+//         index: _selectedIndex,
+//         onTap: _onItemTapped,
+//         items: <Widget>[
+//           Icon(Icons.home, size: 30, color: Colors.white),
+//           Icon(Icons.favorite, size: 30, color: Colors.white),
+//           Icon(Icons.history, size: 30, color: Colors.white),
+//           Icon(Icons.person, size: 30, color: Colors.white),
+//         ],
+//       ),
+//     );
+//   }
+// }
+
   @override
   Widget build(BuildContext context) {
     final List<Widget> screens = [
       HomeScreen1(userId: widget.userId),
       WishlistScreen(userId: widget.userId),
-      MyBookingsScreen(
-        userId: widget.userId,
-        roomId: '',
-      ),
+      MyBookingsScreen(userId: widget.userId, roomId: ''),
       ProfileScreen(),
     ];
 
     return Scaffold(
       body: screens[_selectedIndex],
-      bottomNavigationBar: CurvedNavigationBar(
-        key: _bottomNavigationKey,
-        backgroundColor: Colors.transparent,
-        color: Colors.blue,
-        buttonBackgroundColor: Colors.blue,
-        height: 60,
-        animationDuration: Duration(milliseconds: 300),
-        animationCurve: Curves.easeInOut,
-        index: _selectedIndex,
-        onTap: _onItemTapped,
-        items: <Widget>[
-          Icon(Icons.home, size: 30, color: Colors.white),
-          Icon(Icons.favorite, size: 30, color: Colors.white),
-          Icon(Icons.history, size: 30, color: Colors.white),
-          Icon(Icons.person, size: 30, color: Colors.white),
+
+      /// ✅ Modern Material 3 Navigation Bar
+      bottomNavigationBar: NavigationBar(
+        backgroundColor: Colors.white,
+        elevation: 8,
+        surfaceTintColor: Colors.transparent,
+        indicatorColor: Colors.blue.shade100,
+        height: 70,
+        selectedIndex: _selectedIndex,
+        onDestinationSelected: _onItemTapped,
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.home_outlined),
+            selectedIcon: Icon(Icons.home, color: Colors.blue),
+            label: "Home",
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.favorite_border),
+            selectedIcon: Icon(Icons.favorite, color: Colors.blue),
+            label: "Wishlist",
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.history),
+            selectedIcon: Icon(Icons.history, color: Colors.blue),
+            label: "Bookings",
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.person_outline),
+            selectedIcon: Icon(Icons.person, color: Colors.blue),
+            label: "Profile",
+          ),
         ],
       ),
     );
@@ -188,7 +236,7 @@ class _HomeScreen1State extends State<HomeScreen1> {
   Future<void> fetchRoomsByCategory(
       String category, Function(List<Map<String, dynamic>>) onSuccess) async {
     final url =
-        Uri.parse('http://192.168.0.32:5000/api/rooms/category/$category');
+        Uri.parse('http://172.26.0.1:5000/api/rooms/category/$category');
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
@@ -418,7 +466,7 @@ class PopularCard extends StatefulWidget {
 class _PopularCardState extends State<PopularCard> {
   bool isFavorite = false;
 
-  final String baseUrl = 'http://192.168.0.32:5000/api/wishlist';
+  final String baseUrl = 'http://172.26.0.1:5000/api/wishlist';
   @override
   void initState() {
     super.initState();
@@ -614,7 +662,7 @@ class _PopularCardState extends State<PopularCard> {
                   ),
                   child: Icon(
                     isFavorite ? Icons.favorite : Icons.favorite_border,
-                    color: isFavorite ? Colors.red : Colors.black54,
+                    color: isFavorite ? Colors.blue : Colors.black54,
                     size: 22,
                   ),
                 ),
@@ -653,7 +701,7 @@ class OtherStayCard extends StatefulWidget {
 
 class _OtherStayCardState extends State<OtherStayCard> {
   bool isFavorite = false;
-  final String baseUrl = 'http://192.168.0.32:5000/api/wishlist';
+  final String baseUrl = 'http://172.26.0.1:5000/api/wishlist';
 
   @override
   void initState() {
@@ -793,7 +841,7 @@ class _OtherStayCardState extends State<OtherStayCard> {
                               isFavorite
                                   ? Icons.favorite
                                   : Icons.favorite_border,
-                              color: Colors.redAccent,
+                              color: Colors.blue,
                               size: 20),
                         ),
                       ],

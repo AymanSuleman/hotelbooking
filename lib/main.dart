@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hotelbooking/home.dart';
+import 'package:hotelbooking/locationAdd.dart';
 import 'package:hotelbooking/signin.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -13,7 +14,8 @@ void main() async {
 
   runApp(MyApp(
     isLoggedIn: isLoggedIn,
-    savedUserId: savedUserId, isRemembered: true,
+    savedUserId: savedUserId,
+    isRemembered: true,
   ));
 }
 
@@ -23,7 +25,8 @@ class MyApp extends StatelessWidget {
 
   const MyApp({
     required this.isLoggedIn,
-    this.savedUserId, required bool isRemembered,
+    this.savedUserId,
+    required bool isRemembered,
   });
 
   @override
@@ -31,7 +34,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: isLoggedIn
-          ? HomeScreen(userId: savedUserId!)
+          ? HomePage()
+          // HomeScreen(userId: savedUserId!)
           : SignInScreen(), // No need for email/password here
     );
   }

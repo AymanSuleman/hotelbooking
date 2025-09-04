@@ -573,10 +573,10 @@ class _PopularCardState extends State<PopularCard> {
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => HotelDetail(
-                      image: widget.image,
-                      userId: widget.userId,
-                      roomId: widget.roomId,
+                builder: (context) => HotelDetailPage(
+                      // image: widget.image,
+                      // userId: widget.userId,
+                      // roomId: widget.roomId,
                     )));
       },
       child: Container(
@@ -791,10 +791,10 @@ class _OtherStayCardState extends State<OtherStayCard> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => HotelDetail(
-              image: widget.image,
-              userId: widget.userId,
-              roomId: widget.roomId,
+            builder: (context) => HotelDetailPage(
+              // image: widget.image,
+              // userId: widget.userId,
+              // roomId: widget.roomId,
             ),
           ),
         );
